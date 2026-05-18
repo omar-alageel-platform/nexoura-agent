@@ -1995,6 +1995,8 @@ main() {
     run_setup_wizard
     maybe_start_gateway
 
+    echo "git" > "$HERMES_HOME/.install_method"
+
     print_success
 }
 
