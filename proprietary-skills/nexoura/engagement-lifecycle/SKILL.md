@@ -47,8 +47,10 @@ A NEXOURA engagement is a single client project that moves through 6 sequential 
 Each engagement is its own git repository at:
 
 ```
-~/.hermes/nexoura/engagements/<slug>/
+/home/omar/dev/nexoura-engagements/<slug>/
 ```
+
+This directory sits OUTSIDE the Hermes home directory so each engagement is portable — eventually one engagement = one standalone GitHub repo under the omar-alageel-platform org.
 
 Rationale: full audit trail (`git log` is the engagement timeline), isolation (one engagement failing does not corrupt another), portability (zip and hand off; mirror to a client repo), reproducibility (a fresh operator clones, reads `manifest.json` + `README.md`, picks up where the prior operator stopped).
 
@@ -115,7 +117,7 @@ Each stage ends in a gate. No stage may begin until the prior gate is `approved`
 A scaffolded engagement looks like this:
 
 ```
-~/.hermes/nexoura/engagements/<slug>/
+/home/omar/dev/nexoura-engagements/<slug>/
 ├── manifest.json              # machine-readable engagement state
 ├── gate.log.jsonl             # append-only audit trail of all gate decisions
 ├── README.md                  # human-readable engagement summary, populated by operator
@@ -211,7 +213,7 @@ NEXOURA is Arabic-first for the KSA market, English-parallel for international s
 Operator: "start a NEXOURA engagement for APT WATCH supply-chain SaaS":
 
 1. Choose a slug: `apt-watch-supply-chain-saas`.
-2. `mkdir -p ~/.hermes/nexoura/engagements/apt-watch-supply-chain-saas`.
+2. `mkdir -p /home/omar/dev/nexoura-engagements/apt-watch-supply-chain-saas`.
 3. `cd` in and `git init`.
 4. Create the six stage subdirectories (`01-feasibility/` ... `06-operations/`), each with a `.gitkeep`.
 5. Write `manifest.json` with `current_stage: "01-feasibility"`, `created_at` set to now (UTC ISO-8601), empty `gate_history: []`.
