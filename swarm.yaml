@@ -32,6 +32,8 @@ workers:
   - nexoura-engagement-lifecycle
   - nexoura-gate-protocol
   - nexoura-artifact-conventions
+  - nexoura-platform-doctrine
+  - nexoura-memory-and-evolution
   capabilities:
   - product-strategy
   - prioritization
@@ -72,6 +74,8 @@ workers:
   - nexoura-gate-protocol
   - nexoura-artifact-conventions
   - nexoura-tech-architecture-stage
+  - nexoura-platform-doctrine
+  - nexoura-memory-and-evolution
   capabilities:
   - architecture-strategy
   - adr-authoring
@@ -112,6 +116,8 @@ workers:
   - nexoura-gate-protocol
   - nexoura-artifact-conventions
   - nexoura-requirements-stage
+  - nexoura-platform-doctrine
+  - nexoura-memory-and-evolution
   capabilities:
   - ux-strategy
   - accessibility-review
@@ -150,6 +156,8 @@ workers:
   - nexoura-gate-protocol
   - nexoura-artifact-conventions
   - nexoura-branding-stage
+  - nexoura-platform-doctrine
+  - nexoura-memory-and-evolution
   capabilities:
   - brand-governance
   - naming
@@ -188,6 +196,8 @@ workers:
   - nexoura-gate-protocol
   - nexoura-artifact-conventions
   - nexoura-gtm-marketing-stage
+  - nexoura-platform-doctrine
+  - nexoura-memory-and-evolution
   capabilities:
   - gtm-strategy
   - pricing
