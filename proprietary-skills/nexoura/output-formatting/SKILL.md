@@ -157,11 +157,11 @@ For client deliverables where visual fidelity matters, **prefer HTML**. DOCX is 
 
 ## §3.5 Dark / light mode (T15.5)
 
-HTML template supports two themes via CSS variables scoped under `[data-theme="dark"]` and `[data-theme="light"]`. Brand accents (purple/violet/blue/cyan + gradient + O-ring) are **identical in both modes**; only surfaces, text, and borders swap. Pill semantics preserved (red=blocked, etc.) with contrast-tuned hues per mode.
+Two themes via CSS variables under `[data-theme="dark"]` and `[data-theme="light"]`. Brand accents (purple/violet/blue/cyan + gradient + O-ring) are **identical in both modes**; only surfaces, text, borders swap. Pill semantics preserved with contrast-tuned hues.
 
-Light tokens: `--bg-primary:#FFFFFF`, `--text-primary:#0A0F16`, `--text-secondary:#475569`, `--card-bg:#F9FAFB`, `--border-color:#e2e8f0`. Dark tokens unchanged from T15.0.
+Light tokens: `--bg-primary:#FFFFFF`, `--text-primary:#0A0F16`, `--text-secondary:#475569`, `--card-bg:#F9FAFB`, `--border-color:#e2e8f0`. Dark unchanged from T15.0.
 
-A floating top-right button toggles `data-theme` and persists to `localStorage['nx-theme']`. First load honours the server-rendered default unless the OS advertises `prefers-color-scheme: light`. Hidden in print.
+A floating top-right button toggles `data-theme` and persists to `localStorage['nx-theme']`. First load honours the server default unless the OS advertises `prefers-color-scheme: light`. Hidden in print.
 
 ### When to use which
 
@@ -171,7 +171,7 @@ A floating top-right button toggles `data-theme` and persists to `localStorage['
 | Print, PDF distribution, light-host embed | **light** |
 | Stakeholder review where preference is unknown | **both** |
 
-When in doubt: dark — the switcher gives readers an out. Force light only when the channel forbids dark (print, embed in a light host).
+When in doubt: dark — the switcher gives readers an out. Force light only when the channel forbids dark.
 
 ### `render.py --theme` flag
 
@@ -181,9 +181,9 @@ python3 render.py in.md --theme=light --out-dir dist/       # dist/in.light.html
 python3 render.py in.md --theme=both  --out-dir dist/       # dist/in.dark.html + dist/in.light.html
 ```
 
-DOCX is theme-independent (styling lives in `reference.docx`); `--theme` is a no-op for `.docx` outputs.
+DOCX is theme-independent (styling lives in `reference.docx`); `--theme` is a no-op for `.docx`.
 
-Component-level theming (cards, callouts, code blocks for downstream renderers) is covered in **T16 `nexoura-brand-components`** — both skills share the same `--nx-*` / `--bg-*` / `--text-*` CSS variable contract.
+Component-level theming for downstream renderers: **T16 `nexoura-brand-components`** — shares the same `--nx-*` / `--bg-*` / `--text-*` CSS variable contract.
 
 ---
 
