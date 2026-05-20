@@ -155,61 +155,35 @@ For client deliverables where visual fidelity matters, **prefer HTML**. DOCX is 
 
 ---
 
-## §3.5 Dark / light mode
+## §3.5 Dark / light mode (T15.5)
 
-As of T15.5 the HTML template supports two themes. The brand accents (purple / violet / blue / cyan and the signature gradient) are **identical in both modes** — only surfaces, text, and borders shift. Pill semantic colours retain meaning across modes (cyan stays cyan, red stays red).
+HTML template supports two themes via CSS variables scoped under `[data-theme="dark"]` and `[data-theme="light"]`. Brand accents (purple/violet/blue/cyan + gradient + O-ring) are **identical in both modes**; only surfaces, text, and borders swap. Pill semantics preserved (red=blocked, etc.) with contrast-tuned hues per mode.
 
-### Theme tokens (from `nexoura-template.html`)
+Light tokens: `--bg-primary:#FFFFFF`, `--text-primary:#0A0F16`, `--text-secondary:#475569`, `--card-bg:#F9FAFB`, `--border-color:#e2e8f0`. Dark tokens unchanged from T15.0.
 
-| Token              | Dark        | Light        | Role                                |
-|--------------------|-------------|--------------|-------------------------------------|
-| `--bg-primary`     | `#0A0F16`   | `#FFFFFF`    | Page background                     |
-| `--bg-elevated`    | `#101826`   | `#F1F5F9`    | Pre/code blocks                     |
-| `--text-primary`   | `#F5F7FA`   | `#0A0F16`    | Body text                           |
-| `--text-strong`    | `#ffffff`   | `#0A0F16`    | Headings, strong, wordmark          |
-| `--text-secondary` | `#cbd5e1`   | `#475569`    | Subtitle, body p/li                 |
-| `--text-muted`     | `#94a3b8`   | `#64748b`    | Date, author, footer meta           |
-| `--border-color`   | `rgba(120,97,255,0.20)` | `#e2e8f0` (slate-200) | Borders, table rules        |
-| `--card-bg`        | `rgba(120,97,255,0.04)` | `#F9FAFB` | Metric cards (subtle, not pure white) |
+A floating top-right button toggles `data-theme` and persists to `localStorage['nx-theme']`. First load honours the server-rendered default unless the OS advertises `prefers-color-scheme: light`. Hidden in print.
 
-CSS variables are scoped under `[data-theme="dark"]` and `[data-theme="light"]` blocks. The `<html>` root carries `data-theme="…"`, set server-side by `render.py` via the `{{THEME}}` placeholder.
+### When to use which
 
-### Runtime theme switcher
+| Channel | Mode |
+|---|---|
+| Default / stage-transition reports / on-screen client briefing | **dark** |
+| Print, PDF distribution, light-host embed | **light** |
+| Stakeholder review where preference is unknown | **both** |
 
-A small circular button is pinned top-right of every rendered page. It toggles `data-theme` between `dark` and `light` and persists the choice to `localStorage` under the key `nx-theme`. On first load, if no stored choice exists, the page honours the server-rendered default unless the OS advertises `prefers-color-scheme: light`, in which case the page flips to light automatically. The button is hidden in print stylesheets.
-
-### When to use dark vs light
-
-| Audience / Channel                                | Recommended | Why                                         |
-|---------------------------------------------------|-------------|---------------------------------------------|
-| Internal studio review, executive briefing on screen | **dark** | Matches NEXOURA brand identity; less glare in editing sessions |
-| Stage-transition reports for the orchestrator     | **dark**    | Backward-compatible default                 |
-| Print, PDF for distribution                       | **light**   | Saves ink, higher contrast on paper         |
-| Customer-facing portals where the host site is light | **light** | Avoids jarring dark-island embed            |
-| Accessibility-sensitive review (low-vision, high-glare environments) | **light** | Higher contrast for many readers; lets readers opt out via switcher otherwise |
-| Documents likely to be screenshot into a light deck | **light** | Removes the dark→light reflow at paste time |
-
-When in doubt, ship dark — the switcher gives readers an out. Only force light if the delivery channel forbids dark backgrounds (print, embed in a light host).
+When in doubt: dark — the switcher gives readers an out. Force light only when the channel forbids dark (print, embed in a light host).
 
 ### `render.py --theme` flag
 
 ```bash
-# Default — dark (backward compatible, identical to T15.0 behaviour):
-python3 render.py examples/sample-report.md examples/sample-report.html
-
-# Explicit single mode:
-python3 render.py examples/sample-report.md --theme=light --out-dir examples/
-#   -> examples/sample-report.light.html
-
-# Dual-output (recommended for ship): one source, both modes:
-python3 render.py examples/sample-report.md --theme=both --out-dir examples/
-#   -> examples/sample-report.dark.html
-#   -> examples/sample-report.light.html
+python3 render.py in.md out.html                            # dark (backward compatible)
+python3 render.py in.md --theme=light --out-dir dist/       # dist/in.light.html
+python3 render.py in.md --theme=both  --out-dir dist/       # dist/in.dark.html + dist/in.light.html
 ```
 
-Output naming for non-`both` modes when `output` is omitted: `<stem>.<theme>.html`. For `--theme=both` the output positional argument is unused; `--out-dir` (or input's parent dir) controls placement.
+DOCX is theme-independent (styling lives in `reference.docx`); `--theme` is a no-op for `.docx` outputs.
 
-DOCX output is **theme-independent** — DOCX styling lives in `reference.docx`, not the HTML template. The `--theme` flag is a no-op for `.docx` outputs.
+Component-level theming (cards, callouts, code blocks for downstream renderers) is covered in **T16 `nexoura-brand-components`** — both skills share the same `--nx-*` / `--bg-*` / `--text-*` CSS variable contract.
 
 ---
 
