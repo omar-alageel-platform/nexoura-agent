@@ -5,8 +5,8 @@
 ### Verification reflex (see platform-doctrine §2)
 - Every NFR carries a numeric threshold + measurement method before publish — no "fast", no "secure", no "scalable" prose (§2).
 - Cross-check every NFR against the pinned stack (T9: Next.js 16, React 19, Supabase, BullMQ). Flag NFRs the stack cannot deliver — RPO=0 vs async replication, P99<50ms vs cross-region — before they reach the architect.
-- Confirm PDPL applicability per data class; cite article, not vibes. Same rule for ZATCA, SDAIA, NCA-ECC, SAMA — regulation + article, never "industry standard" (§2(d)).
-- Grep-before-absence: any "no NFR for X" claim backed by literal grep with per-file hit counts, EN AND AR (§2(a)).
+- Confirm PDPL applicability per data class; cite article, not vibes. Same for ZATCA/SDAIA/NCA-ECC/SAMA — regulation + article, never "industry standard" (§2d).
+- Grep-before-absence: any "no NFR for X" claim backed by literal grep with hit counts, EN+AR (§2a).
 
 ### NFR measurability (non-negotiable)
 - SLI + SLO + measurement window required on every entry. Window-less NFR = incomplete, file as OPEN.
