@@ -1,270 +1,126 @@
-<!DOCTYPE html>
-<html lang="$lang$" xml:lang="$lang$">
+<!doctype html>
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>$if(title)$$title$$else$NEXOURA Report$endif$</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<title>{{TITLE}} — NEXOURA · STUDIO</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --nx-purple-500: #7861FF;
-    --nx-violet-600: #5B30FF;
-    --nx-blue-500:   #2563FF;
-    --nx-cyan-400:   #00E0FF;
-    --nx-navy-950:   #0A0F16;
-    --nx-white-50:   #F5F7FA;
-    --nx-slate-900:  #101826;
-    --nx-slate-700:  #475569;
-    --nx-gradient: linear-gradient(135deg, #7861FF 0%, #5B30FF 28%, #2563FF 68%, #00E0FF 100%);
+    --nx-purple: #7861FF;
+    --nx-violet: #5B30FF;
+    --nx-blue:   #2563FF;
+    --nx-cyan:   #00E0FF;
+    --nx-navy:   #0A0F16;
+    --nx-white:  #F5F7FA;
+    --nx-slate-900: #101826;
+    --nx-slate-700: #475569;
+    --nx-slate-300: #cbd5e1;
+    --nx-slate-400: #94a3b8;
+    --nx-grad: linear-gradient(135deg, #7861FF 0%, #5B30FF 28%, #2563FF 68%, #00E0FF 100%);
+    --nx-border: rgba(120,97,255,0.20);
   }
   * { box-sizing: border-box; }
-  html, body {
-    margin: 0;
-    padding: 0;
-    background: var(--nx-navy-950);
-    color: var(--nx-white-50);
-    font-family: 'Sora', 'Inter', 'Geist', system-ui, -apple-system, sans-serif;
-    font-weight: 400;
-    line-height: 1.6;
-    -webkit-font-smoothing: antialiased;
-    text-rendering: optimizeLegibility;
-  }
-  .nx-shell {
-    max-width: 880px;
-    margin: 0 auto;
-    padding: 64px 48px 96px;
-  }
-  /* Header */
-  .nx-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 24px;
-    padding-bottom: 32px;
-    border-bottom: 1px solid rgba(255,255,255,0.08);
-    margin-bottom: 48px;
-  }
-  .nx-header-text { flex: 1; min-width: 0; }
-  .nx-kicker {
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--nx-slate-700);
-    margin-bottom: 14px;
-  }
-  .nx-kicker .nx-kicker-accent {
-    background: var(--nx-gradient);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-  }
-  h1.nx-title {
-    font-family: 'Sora', system-ui, sans-serif;
-    font-size: 38px;
-    font-weight: 600;
-    line-height: 1.15;
-    letter-spacing: -0.02em;
-    margin: 0 0 16px;
-    color: var(--nx-white-50);
-  }
-  .nx-meta {
-    font-size: 13px;
-    color: var(--nx-slate-700);
-    display: flex;
-    gap: 18px;
-    flex-wrap: wrap;
-  }
-  .nx-meta span strong { color: var(--nx-white-50); font-weight: 500; }
-  /* O-ring logo mark — CSS only */
-  .nx-oring {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: var(--nx-gradient);
-    flex-shrink: 0;
-    position: relative;
-  }
-  .nx-oring::after {
-    content: "";
-    position: absolute;
-    inset: 4px;
-    border-radius: 50%;
-    background: var(--nx-navy-950);
-  }
-  /* Body typography */
-  h2 {
-    font-family: 'Sora', system-ui, sans-serif;
-    font-size: 22px;
-    font-weight: 600;
-    letter-spacing: -0.01em;
-    color: var(--nx-white-50);
-    margin: 48px 0 18px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-  }
-  h3 {
-    font-family: 'Sora', system-ui, sans-serif;
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--nx-navy);
+    color: var(--nx-white);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Geist, sans-serif;
     font-size: 16px;
-    font-weight: 600;
-    color: var(--nx-white-50);
-    margin: 28px 0 10px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
   }
-  p { margin: 0 0 16px; color: rgba(245,247,250,0.86); }
-  a { color: var(--nx-cyan-400); text-decoration: none; border-bottom: 1px solid rgba(0,224,255,0.3); }
-  a:hover { border-bottom-color: var(--nx-cyan-400); }
-  ul, ol { padding-left: 22px; color: rgba(245,247,250,0.86); }
-  li { margin: 6px 0; }
-  strong { color: var(--nx-white-50); font-weight: 600; }
-  code {
-    font-family: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
-    font-size: 0.88em;
-    background: rgba(255,255,255,0.06);
-    padding: 2px 6px;
-    border-radius: 4px;
-    color: var(--nx-cyan-400);
-  }
-  pre {
-    background: var(--nx-slate-900);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-left: 3px solid var(--nx-purple-500);
-    padding: 16px 20px;
-    border-radius: 8px;
-    overflow-x: auto;
-    font-size: 13px;
-    line-height: 1.55;
-  }
-  pre code { background: transparent; padding: 0; color: rgba(245,247,250,0.92); }
-  blockquote {
-    margin: 20px 0;
-    padding: 4px 0 4px 20px;
-    border-left: 3px solid var(--nx-purple-500);
-    color: rgba(245,247,250,0.78);
-    font-style: normal;
-  }
-  hr { border: 0; border-top: 1px solid rgba(255,255,255,0.08); margin: 40px 0; }
-  /* Cards (use .nx-card div in markdown via raw HTML if desired) */
-  .nx-card {
-    background: var(--nx-slate-900);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-left: 3px solid var(--nx-cyan-400);
-    border-radius: 10px;
-    padding: 20px 24px;
-    margin: 20px 0;
-  }
-  .nx-metrics {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 14px;
-    margin: 24px 0;
-  }
-  .nx-metric {
-    background: var(--nx-slate-900);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 10px;
-    padding: 18px 20px;
-  }
-  .nx-metric-label {
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: var(--nx-slate-700);
-    margin-bottom: 6px;
-  }
-  .nx-metric-value {
-    font-family: 'Sora', system-ui, sans-serif;
-    font-size: 24px;
-    font-weight: 600;
-    color: var(--nx-white-50);
-  }
-  /* Status pills — also auto-applied to literal markers via JS-free strong */
-  .nx-pill,
-  .pill-verified, .pill-resolved, .pill-pending {
-    display: inline-block;
-    font-family: 'Sora', system-ui, sans-serif;
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    padding: 3px 10px;
-    border-radius: 999px;
-    border: 1px solid currentColor;
-    margin-right: 6px;
-    vertical-align: 1px;
-  }
-  .pill-verified { color: var(--nx-cyan-400); background: rgba(0,224,255,0.08); }
-  .pill-resolved { color: var(--nx-purple-500); background: rgba(120,97,255,0.08); }
-  .pill-pending  { color: var(--nx-slate-700); background: rgba(71,85,105,0.12); }
-  /* Tables */
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 20px 0;
-    font-size: 14px;
-  }
-  th, td {
-    text-align: left;
-    padding: 10px 14px;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-  }
-  th {
-    color: var(--nx-slate-700);
-    font-weight: 600;
-    font-size: 11px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-  }
+  .nx-wrap { max-width: 960px; margin: 0 auto; padding: 56px 40px 80px; }
+
+  /* Header */
+  .nx-header { position: relative; display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: start; padding-bottom: 28px; margin-bottom: 40px; border-bottom: 1px solid var(--nx-border); }
+  .nx-kicker { display: inline-block; font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; padding: 6px 12px; border-radius: 999px; background: rgba(120,97,255,0.12); color: var(--nx-purple); border: 1px solid var(--nx-border); }
+  .nx-title { font-family: 'Sora', sans-serif; font-weight: 700; font-size: 2.5rem; line-height: 1.15; margin: 18px 0 8px; color: #ffffff; letter-spacing: -0.01em; }
+  .nx-subtitle { font-family: 'Inter', sans-serif; font-weight: 400; color: var(--nx-slate-300); font-size: 1.05rem; margin: 0; max-width: 64ch; }
+  .nx-date { font-family: 'Inter', sans-serif; font-size: 0.85rem; color: var(--nx-slate-400); text-align: right; white-space: nowrap; }
+  .nx-author { font-family: 'Inter', sans-serif; font-size: 0.8rem; color: var(--nx-slate-400); margin-top: 6px; text-align: right; }
+
+  /* O-ring logo mark (CSS only) */
+  .nx-oring { position: relative; width: 48px; height: 48px; border-radius: 50%; background: var(--nx-grad); padding: 2px; margin-bottom: 12px; margin-left: auto; }
+  .nx-oring::before { content: ""; position: absolute; inset: 2px; background: var(--nx-navy); border-radius: 50%; }
+  .nx-oring::after { content: ""; position: absolute; inset: 11px; border-radius: 50%; background: var(--nx-grad); opacity: 0.95; }
+
+  /* Metric grid */
+  .nx-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; margin: 8px 0 40px; }
+  .nx-metric { padding: 20px 22px; border: 1px solid var(--nx-border); border-radius: 14px; background: rgba(120,97,255,0.04); }
+  .nx-metric .label { font-family: 'Inter', sans-serif; font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--nx-slate-400); margin-bottom: 8px; }
+  .nx-metric .value { font-family: 'Sora', sans-serif; font-weight: 700; font-size: 2rem; line-height: 1.1; color: var(--nx-purple); }
+  .nx-metric:nth-child(3n+2) .value { color: var(--nx-blue); }
+  .nx-metric:nth-child(3n+3) .value { color: var(--nx-cyan); }
+  .nx-metric .delta { font-family: 'Inter', sans-serif; font-size: 0.82rem; color: var(--nx-slate-300); margin-top: 6px; }
+
+  /* Body */
+  .nx-body { font-family: 'Inter', sans-serif; color: var(--nx-white); }
+  .nx-body h2 { font-family: 'Sora', sans-serif; font-weight: 600; font-size: 1.5rem; color: #ffffff; padding-left: 14px; margin-top: 44px; margin-bottom: 14px; border-left: 3px solid; border-image: var(--nx-grad) 1; }
+  .nx-body h3 { font-family: 'Sora', sans-serif; font-weight: 600; font-size: 1.15rem; color: var(--nx-white); margin-top: 28px; margin-bottom: 10px; }
+  .nx-body p, .nx-body li { color: var(--nx-slate-300); }
+  .nx-body strong { color: var(--nx-white); font-weight: 600; }
+  .nx-body code { background: rgba(120,97,255,0.10); padding: 2px 6px; border-radius: 4px; font-family: ui-monospace, 'JetBrains Mono', Menlo, Consolas, monospace; font-size: 0.92em; color: var(--nx-cyan); }
+  .nx-body pre { background: var(--nx-slate-900); padding: 16px 18px; border-radius: 10px; border: 1px solid var(--nx-border); overflow-x: auto; font-size: 0.9rem; }
+  .nx-body pre code { background: transparent; color: var(--nx-white); padding: 0; }
+  .nx-body a { color: var(--nx-cyan); text-decoration: none; border-bottom: 1px solid rgba(0,224,255,0.35); }
+  .nx-body table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 0.95rem; }
+  .nx-body th, .nx-body td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--nx-border); }
+  .nx-body th { font-family: 'Sora', sans-serif; font-weight: 600; color: var(--nx-white); }
+
+  /* Status pills */
+  .pill { display: inline-block; font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.72rem; letter-spacing: 0.10em; text-transform: uppercase; padding: 3px 10px; border-radius: 999px; border: 1px solid; vertical-align: middle; }
+  .pill-verified { color: #34d399; background: rgba(52,211,153,0.10); border-color: rgba(52,211,153,0.35); }
+  .pill-resolved { color: var(--nx-cyan); background: rgba(0,224,255,0.10); border-color: rgba(0,224,255,0.35); }
+  .pill-pending  { color: #fbbf24; background: rgba(251,191,36,0.10); border-color: rgba(251,191,36,0.35); }
+  .pill-blocked  { color: #f87171; background: rgba(248,113,113,0.12); border-color: rgba(248,113,113,0.40); }
+
   /* Footer */
-  .nx-footer {
-    margin-top: 80px;
-    padding-top: 28px;
-    border-top: 1px solid rgba(255,255,255,0.08);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 11px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--nx-slate-700);
-  }
-  .nx-footer .nx-tagline {
-    background: var(--nx-gradient);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    font-weight: 600;
-  }
-  @media (max-width: 600px) {
-    .nx-shell { padding: 36px 22px 64px; }
-    h1.nx-title { font-size: 28px; }
+  .nx-footer { margin-top: 72px; padding-top: 24px; border-top: 1px solid var(--nx-border); display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 16px; font-family: 'Inter', sans-serif; font-size: 0.8rem; color: var(--nx-slate-400); }
+  .nx-wordmark { font-family: 'Sora', sans-serif; font-weight: 700; letter-spacing: 0.16em; color: var(--nx-white); }
+  .nx-tagline { font-family: 'Sora', sans-serif; font-weight: 700; letter-spacing: 0.22em; font-size: 0.85rem; text-align: center; background: var(--nx-grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .nx-ts { text-align: right; }
+
+  @media (max-width: 640px) {
+    .nx-wrap { padding: 32px 20px 56px; }
+    .nx-title { font-size: 1.9rem; }
+    .nx-header { grid-template-columns: 1fr; }
+    .nx-date, .nx-author, .nx-oring { text-align: left; margin-left: 0; }
+    .nx-footer { grid-template-columns: 1fr; text-align: center; }
+    .nx-ts { text-align: center; }
   }
 </style>
 </head>
 <body>
-<div class="nx-shell">
+<div class="nx-wrap">
+
   <header class="nx-header">
-    <div class="nx-header-text">
-      $if(kicker)$<div class="nx-kicker"><span class="nx-kicker-accent">$kicker$</span></div>$else$<div class="nx-kicker"><span class="nx-kicker-accent">NEXOURA · STUDIO</span></div>$endif$
-      $if(title)$<h1 class="nx-title">$title$</h1>$endif$
-      <div class="nx-meta">
-        $if(date)$<span>Date <strong>$date$</strong></span>$endif$
-        $if(author)$<span>Author <strong>$author$</strong></span>$endif$
-        $if(status)$<span>Status <strong>$status$</strong></span>$endif$
-      </div>
+    <div>
+      <span class="nx-kicker">{{KICKER}}</span>
+      <h1 class="nx-title">{{TITLE}}</h1>
+      <p class="nx-subtitle">{{SUBTITLE}}</p>
     </div>
-    <div class="nx-oring" aria-hidden="true"></div>
+    <div>
+      <div class="nx-oring" aria-label="NEXOURA O-ring mark"></div>
+      <div class="nx-date">{{DATE}}</div>
+      <div class="nx-author">{{AUTHOR_PROFILE}}</div>
+    </div>
   </header>
 
+  <section class="nx-metrics">
+    {{METRICS_HTML}}
+  </section>
+
   <main class="nx-body">
-$body$
+    {{BODY_HTML}}
   </main>
 
   <footer class="nx-footer">
-    <span class="nx-tagline">WHERE AI BUILDS</span>
-    <span>$if(date)$$date$$else$NEXOURA · STUDIO$endif$</span>
+    <div class="nx-wordmark">NEXOURA</div>
+    <div class="nx-tagline">WHERE AI BUILDS</div>
+    <div class="nx-ts">Generated {{TIMESTAMP}}</div>
   </footer>
+
 </div>
 </body>
 </html>

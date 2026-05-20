@@ -1,41 +1,45 @@
 ---
-title: "Verification Report — Multi-Tenant Workspace Isolation"
-kicker: "NEXOURA · STUDIO · VERIFICATION REPORT"
+title: "Architecture Review — Sample Engagement"
+kicker: "NEXOURA · STUDIO"
+subtitle: "Tech-stack evaluation and gap analysis for the Phoenix migration"
 date: "2026-05-20"
-author: "product-director"
-status: "Issued"
+author_profile: "T20 · solution-architect"
+status: "draft"
 ---
+
+# Architecture Review — Sample Engagement
 
 ## Executive Summary
 
-This report verifies the workspace-isolation work completed in sprint 24. Two findings were tracked; both are now closed. The platform meets the contractual tenant-isolation criteria defined in the engagement brief and is cleared for the next gate.
+The Phoenix migration is **on track** for stage transition. Three load-bearing
+risks were identified during the architecture review; two have mitigations
+landed, one remains [PENDING] pending vendor confirmation.
 
-<div class="nx-metrics">
-  <div class="nx-metric"><div class="nx-metric-label">Findings</div><div class="nx-metric-value">2</div></div>
-  <div class="nx-metric"><div class="nx-metric-label">Verified</div><div class="nx-metric-value">1</div></div>
-  <div class="nx-metric"><div class="nx-metric-label">Resolved</div><div class="nx-metric-value">1</div></div>
-  <div class="nx-metric"><div class="nx-metric-label">Gate</div><div class="nx-metric-value">PASS</div></div>
-</div>
+This document is a minimal sample demonstrating the NEXOURA branded report
+conventions. Replace the body with real findings before shipping.
 
 ## Findings
 
-### F-01 — Row-level security policy coverage
-
-<span class="pill-verified">VERIFIED</span> Every tenant-scoped table now carries an explicit RLS policy. Coverage was checked against the schema manifest and the 14 in-scope tables matched 1:1. Cross-tenant read attempts return zero rows under the integration-test harness.
-
-Evidence: `tests/isolation/rls_matrix.py` (commit `9c2a1e4`), 142/142 assertions green.
-
-### F-02 — Cache key tenant prefix
-
-<span class="pill-resolved">RESOLVED</span> The Redis adapter previously omitted the tenant prefix on bulk-invalidate calls. Patched in `cache/redis_adapter.py` and re-verified against the cross-tenant fuzz suite. No leaks observed across 10k randomized operations.
+- **F1.** Edge cache hit ratio measured at 87% under simulated peak load. [VERIFIED]
+- **F2.** Read-replica failover completes in 4.2s, inside the 5s SLO. [VERIFIED]
+- **F3.** Per-tenant rate-limit isolation gap closed via Envoy filter rebuild. [RESOLVED]
+- **F4.** Vendor SLA for the auth provider not yet confirmed in writing. [PENDING]
+- **F5.** Cross-region replication lag exceeds 2s during US-EU bursts. [BLOCKED]
 
 ## Decisions
 
-- Proceed to the next engagement gate (operations stage).
-- Adopt the RLS matrix harness as a standing pre-release check.
-- Defer the optional per-tenant cache namespace migration; revisit once tenant count exceeds 50.
+1. Adopt the Envoy-based rate-limit topology described in ADR-014.
+2. Defer cross-region replication redesign to the next engagement stage.
+3. Require written SLA from the auth vendor before GO recommendation.
 
-## Next Steps
+## Verification
 
-- Operations stage kickoff scheduled for the following week.
-- Brand director to publish the customer-facing changelog excerpt.
+- Load test: `k6 run scripts/peak.js` — 87% hit ratio, p99 312ms.
+- Failover drill: chaos run id `chaos-2026-05-18-a`, 4.2s recovery.
+- Citation: `infra/envoy/rate-limit.yaml` lines 42–88 (commit `a1b2c3d`).
+
+## Citations
+
+- ADR-014, `docs/adr/014-rate-limit.md`
+- Load report, `reports/load/2026-05-18-peak.json`
+- Failover drill, `reports/chaos/2026-05-18-a.md`
