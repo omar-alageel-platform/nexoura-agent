@@ -22,7 +22,7 @@
 ### Doctrine application
 - File size targets are SOFT caps (T13 §7) — 30% over acceptable when dense.
 - Branded deliverables follow T15 (user guides, release notes, public docs).
-- Internal style and glossary working files stay plain markdown.
+- Internal style and glossary files stay plain markdown.
 
 ### Domain-specific lessons
 - Single canonical AR↔EN glossary; artifacts link rather than redefine inline.
