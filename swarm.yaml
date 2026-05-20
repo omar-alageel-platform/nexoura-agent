@@ -455,3 +455,164 @@ workers:
   maxConcurrentTasks: 1
   acceptsBroadcast: false
   alwaysLoaded: false
+
+
+- id: brand-strategist
+  name: Brand Strategist
+  role: NEXOURA Stage 3 — brand strategy and positioning worker
+  specialty: brand book authoring, positioning, competitive/category fit analysis
+  model: opus-4-7
+  mission: Lead Stage 3 brand work — author brand books, position products against incumbents (Odoo, SAP S/4HANA, Oracle SCM), maintain NEXOURA umbrella discipline.
+  profile: brand-strategist
+  reportsTo: brand-director
+  modes:
+  - execute
+  tools:
+  - file_read
+  - recall
+  - web_search
+  skills:
+  - nexoura-engagement-lifecycle
+  - nexoura-gate-protocol
+  - nexoura-artifact-conventions
+  - nexoura-branding-stage
+  - nexoura-platform-doctrine
+  - nexoura-memory-and-evolution
+  - nexoura-output-formatting
+  capabilities:
+  - brand-strategy
+  - positioning
+  - competitive-analysis
+  - brand-book-authoring
+  preferredTaskTypes:
+  - brand-book
+  - positioning
+  - competitive-analysis
+  - brand-narrative
+  greenlightRequiredFor:
+  - pr_merge
+  maxConcurrentTasks: 1
+  acceptsBroadcast: false
+  alwaysLoaded: false
+
+- id: visual-designer
+  name: Visual Designer
+  role: NEXOURA Stage 3 — visual identity and design tokens worker
+  specialty: design tokens, Tailwind config, component-level brand application, RTL design
+  model: opus-4-7
+  mission: Author design tokens and apply NEXOURA visual identity across product surfaces (buttons, cards, pills, headers) with accessibility-aware contrast and RTL-ready logical properties.
+  profile: visual-designer
+  reportsTo: design-director
+  coordinatesWith:
+  - brand-director
+  modes:
+  - execute
+  tools:
+  - file_read
+  - recall
+  - web_search
+  - image_search
+  skills:
+  - nexoura-engagement-lifecycle
+  - nexoura-gate-protocol
+  - nexoura-artifact-conventions
+  - nexoura-branding-stage
+  - nexoura-platform-doctrine
+  - nexoura-memory-and-evolution
+  - nexoura-output-formatting
+  capabilities:
+  - design-tokens
+  - tailwind-config
+  - component-application
+  - rtl-design
+  - contrast-verification
+  preferredTaskTypes:
+  - design-tokens
+  - component-spec
+  - tailwind-snippet
+  - visual-application
+  greenlightRequiredFor:
+  - pr_merge
+  maxConcurrentTasks: 1
+  acceptsBroadcast: false
+  alwaysLoaded: false
+
+- id: copywriter
+  name: Copywriter
+  role: NEXOURA Stage 3 — voice, tone, naming, and product messaging worker
+  specialty: B2B SaaS voice, tone modulation, naming, marketing copy, anti-AI-isms
+  model: opus-4-7
+  mission: Author voice/tone guides, naming shortlists (with trademark-researcher clearance), and product messaging in NEXOURA's confident-precise-calm register.
+  profile: copywriter
+  reportsTo: brand-director
+  coordinatesWith:
+  - trademark-researcher
+  modes:
+  - execute
+  tools:
+  - file_read
+  - recall
+  - web_search
+  skills:
+  - nexoura-engagement-lifecycle
+  - nexoura-gate-protocol
+  - nexoura-artifact-conventions
+  - nexoura-branding-stage
+  - nexoura-platform-doctrine
+  - nexoura-memory-and-evolution
+  - nexoura-output-formatting
+  capabilities:
+  - voice-tone
+  - naming
+  - marketing-copy
+  - product-messaging
+  - anti-ai-ism-policing
+  preferredTaskTypes:
+  - voice-tone
+  - naming-shortlist
+  - marketing-copy
+  - product-messaging
+  greenlightRequiredFor:
+  - pr_merge
+  maxConcurrentTasks: 1
+  acceptsBroadcast: false
+  alwaysLoaded: false
+
+- id: trademark-researcher
+  name: Trademark Researcher
+  role: NEXOURA Stage 3 — naming validation and trademark conflict research worker
+  specialty: USPTO/EUIPO/WIPO/SAIP search, phonetic + AR transliteration conflict detection
+  model: opus-4-7
+  mission: Validate naming candidates against trademark registries (USPTO, EUIPO, WIPO, KSA SAIP) and flag phonetic + AR transliteration conflicts as P0 blockers. Research-only — legal clearance requires external counsel.
+  profile: trademark-researcher
+  reportsTo: brand-director
+  coordinatesWith:
+  - copywriter
+  modes:
+  - execute
+  tools:
+  - file_read
+  - recall
+  - web_search
+  skills:
+  - nexoura-engagement-lifecycle
+  - nexoura-gate-protocol
+  - nexoura-artifact-conventions
+  - nexoura-branding-stage
+  - nexoura-platform-doctrine
+  - nexoura-memory-and-evolution
+  capabilities:
+  - trademark-search
+  - phonetic-similarity
+  - ar-transliteration-check
+  - ksa-saip-search
+  - conflict-flagging
+  preferredTaskTypes:
+  - trademark-search
+  - naming-clearance
+  - conflict-research
+  greenlightRequiredFor:
+  - pr_merge
+  maxConcurrentTasks: 1
+  acceptsBroadcast: false
+  alwaysLoaded: false
