@@ -1,140 +1,218 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Create your NEXOURA Forge account</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sign up — NEXOURA Studio</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --nx-purple: #7861FF; --nx-violet: #5B30FF; --nx-blue: #2563FF; --nx-cyan: #00E0FF;
-    --nx-navy: #0A0F16; --nx-white: #F5F7FA;
-    --slate-900: #101826; --slate-700: #475569; --slate-500: #94A3B8;
-    --bg: #F8F9FC; --ink: #0A0F16; --ink-soft: #475569;
-    --nx-gradient: linear-gradient(135deg, #7861FF 0%, #5B30FF 28%, #2563FF 68%, #00E0FF 100%);
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body { font-family: 'Sora', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif; -webkit-font-smoothing: antialiased; line-height: 1.5; color: var(--ink); background: var(--bg); min-height: 100vh; }
-  body { position: relative; overflow-x: hidden; }
-  body::before { content: ""; position: fixed; top: -300px; left: -200px; width: 700px; height: 700px; background: radial-gradient(circle, rgba(120,97,255,0.12) 0%, transparent 60%); pointer-events: none; }
-  body::after { content: ""; position: fixed; bottom: -300px; right: -200px; width: 700px; height: 700px; background: radial-gradient(circle, rgba(0,224,255,0.1) 0%, transparent 60%); pointer-events: none; }
-  a { color: var(--nx-violet); text-decoration: none; font-weight: 500; }
-  a:hover { text-decoration: underline; }
+:root{
+  --nx-purple:#7861FF;--nx-violet:#5B30FF;--nx-blue:#2563FF;--nx-cyan:#00E0FF;
+  --nx-gradient:linear-gradient(135deg,#7861FF 0%,#5B30FF 28%,#2563FF 68%,#00E0FF 100%);
+  --font-sora:'Sora',ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;min-height:100%}
+body{font-family:var(--font-sora);color:#0A0F16;background:#fff;font-size:15px;-webkit-font-smoothing:antialiased}
+a{color:inherit}
 
-  .wrap { min-height: 100vh; display: grid; place-items: center; padding: 2rem 1.25rem; position: relative; z-index: 1; }
+.split{display:grid;grid-template-columns:1fr 1fr;min-height:100vh}
 
-  .card { background: #FFFFFF; border: 1px solid rgba(15,23,42,0.08); border-radius: 1.25rem; padding: 3rem 2.5rem; width: 100%; max-width: 440px; box-shadow: 0 1px 2px rgba(15,23,42,0.04), 0 24px 48px -16px rgba(15,23,42,0.12); }
+/* Left brand panel (dark) */
+.brand{
+  background:#0A0F16;
+  color:#F5F7FA;
+  position:relative;
+  overflow:hidden;
+  padding:3rem;
+  display:flex;flex-direction:column;justify-content:space-between;
+}
+.brand::before{
+  content:"";position:absolute;inset:0;
+  background:radial-gradient(circle at 20% 15%,rgba(120,97,255,.35),transparent 55%),
+             radial-gradient(circle at 85% 75%,rgba(0,224,255,.22),transparent 55%),
+             radial-gradient(circle at 50% 110%,rgba(91,48,255,.25),transparent 60%);
+  pointer-events:none;
+}
+.brand > *{position:relative;z-index:1}
 
-  .brand { text-align: center; margin-bottom: 2rem; }
-  .nx-logo { display: inline-flex; align-items: center; font-weight: 700; letter-spacing: 0.12em; font-size: 1.15rem; color: var(--ink); }
-  .nx-oring { width: 1em; height: 1em; vertical-align: -0.15em; }
-  .tagline { display: block; font-size: 0.7rem; letter-spacing: 0.28em; color: var(--slate-500); font-weight: 600; margin-top: 0.6rem; }
+.nx-logo{font-weight:700;letter-spacing:.3em;font-size:1.05rem;display:inline-flex;align-items:center;gap:.05em}
+.nx-oring{width:1em;height:1em;vertical-align:-.15em}
 
-  h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.01em; margin-bottom: 0.4rem; text-align: center; }
-  .lede { color: var(--ink-soft); font-size: 0.92rem; text-align: center; margin-bottom: 2rem; }
+.brand-body{max-width:36ch}
+.brand-eyebrow{font-size:.7rem;letter-spacing:.25em;text-transform:uppercase;color:rgba(245,247,250,.65);margin-bottom:1.25rem}
+.brand-body h2{font-size:2rem;font-weight:700;line-height:1.15;margin:0 0 1rem;letter-spacing:-.01em}
+.grad-text{background:var(--nx-gradient);-webkit-background-clip:text;background-clip:text;color:transparent}
+.brand-body p{color:rgba(245,247,250,.75);font-size:.95rem;line-height:1.55;margin:0}
 
-  form { display: flex; flex-direction: column; gap: 1.1rem; }
-  .field { display: flex; flex-direction: column; gap: 0.4rem; }
-  .field label { font-size: 0.82rem; font-weight: 600; color: var(--ink); }
-  .field .hint { font-size: 0.78rem; color: var(--slate-500); font-weight: 400; }
-  .field input[type="email"], .field input[type="password"], .field input[type="text"] {
-    height: 44px; padding: 0 0.95rem; border: 1px solid rgba(15,23,42,0.14); border-radius: 0.6rem; font-family: inherit; font-size: 0.95rem; color: var(--ink); background: #FFFFFF; transition: border-color 0.15s, box-shadow 0.15s;
-  }
-  .field input::placeholder { color: var(--slate-500); }
-  .field input:focus { outline: none; border-color: var(--nx-purple); box-shadow: 0 0 0 3px rgba(120,97,255,0.18); }
+.brand-foot{font-size:.7rem;letter-spacing:.4em;color:rgba(245,247,250,.55);text-transform:uppercase}
 
-  .checkbox { display: flex; align-items: flex-start; gap: 0.65rem; font-size: 0.85rem; color: var(--ink-soft); line-height: 1.5; cursor: pointer; }
-  .checkbox input { width: 18px; height: 18px; accent-color: var(--nx-violet); margin-top: 0.1rem; flex-shrink: 0; }
+/* Right form panel (light) */
+.form-panel{
+  background:#fff;
+  display:flex;align-items:center;justify-content:center;
+  padding:3rem 2rem;
+}
+.form-wrap{width:100%;max-width:440px}
+.form-wrap h1{font-size:1.65rem;font-weight:700;margin:0 0 .4rem;letter-spacing:-.01em}
+.form-sub{color:#475569;font-size:.925rem;margin:0 0 2rem}
+.form-sub a{color:#5B30FF;text-decoration:none;font-weight:600}
+.form-sub a:hover{text-decoration:underline}
 
-  button.submit {
-    background: var(--nx-gradient); color: #fff; border: none; border-radius: 0.6rem; padding: 0.85rem 1rem; font-family: inherit; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: transform 0.1s, box-shadow 0.15s; box-shadow: 0 6px 16px -6px rgba(91,48,255,0.4);
-  }
-  button.submit:hover { transform: translateY(-1px); box-shadow: 0 10px 22px -6px rgba(91,48,255,0.5); }
-  button.submit:active { transform: translateY(0); }
+.field{margin-bottom:1.1rem}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:.85rem}
+label{display:block;font-size:.78rem;font-weight:600;margin-bottom:.4rem;color:#0A0F16}
+input,select{
+  width:100%;height:44px;padding:0 .85rem;border-radius:.55rem;
+  border:1px solid #CBD5E1;background:#fff;font-family:inherit;font-size:.925rem;color:#0A0F16;
+  transition:border-color .15s,box-shadow .15s;
+}
+input:focus,select:focus{outline:none;border-color:#7861FF;box-shadow:0 0 0 3px rgba(120,97,255,.18)}
+.helper{font-size:.75rem;color:#64748B;margin-top:.4rem;line-height:1.45}
+.helper b{font-weight:600;color:#0A0F16}
 
-  .divider { display: flex; align-items: center; gap: 0.75rem; margin: 0.25rem 0; color: var(--slate-500); font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; }
-  .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: rgba(15,23,42,0.08); }
+.rules{list-style:none;padding:0;margin:.5rem 0 0;font-size:.75rem;color:#64748B}
+.rules li{padding:.15rem 0;display:flex;gap:.45rem;align-items:center}
+.rules li::before{content:"○";color:#94A3B8;font-size:.7rem}
+.rules li.ok::before{content:"●";color:#10B981}
 
-  .sso { display: flex; flex-direction: column; gap: 0.6rem; }
-  .sso button { display: flex; align-items: center; justify-content: center; gap: 0.6rem; height: 44px; background: #FFFFFF; border: 1px solid rgba(15,23,42,0.14); border-radius: 0.6rem; color: var(--ink); font-family: inherit; font-size: 0.92rem; font-weight: 500; cursor: pointer; transition: border-color 0.15s, background 0.15s; }
-  .sso button:hover { border-color: var(--nx-purple); background: rgba(120,97,255,0.03); }
+.terms{display:flex;gap:.65rem;align-items:flex-start;font-size:.85rem;color:#475569;margin:1.25rem 0 1.5rem;line-height:1.45}
+.terms input{width:18px;height:18px;flex-shrink:0;margin-top:.15rem;accent-color:#5B30FF}
+.terms a{color:#5B30FF;font-weight:600;text-decoration:none}
+.terms a:hover{text-decoration:underline}
 
-  .footer-link { text-align: center; font-size: 0.9rem; color: var(--ink-soft); margin-top: 1.5rem; }
+.btn{
+  width:100%;height:48px;border:none;border-radius:.6rem;
+  font-family:inherit;font-size:.95rem;font-weight:600;
+  background:var(--nx-gradient);color:#fff;cursor:pointer;
+  letter-spacing:.01em;
+}
+.btn:hover{filter:brightness(1.05)}
 
-  .legal { text-align: center; font-size: 0.75rem; color: var(--slate-500); margin-top: 2rem; }
+.divider{display:flex;align-items:center;gap:.75rem;margin:1.5rem 0;color:#94A3B8;font-size:.75rem;letter-spacing:.15em;text-transform:uppercase}
+.divider::before,.divider::after{content:"";flex:1;height:1px;background:#E2E8F0}
 
-  @media (max-width: 768px) {
-    .wrap { padding: 1.25rem 1rem; }
-    .card { padding: 2.25rem 1.5rem; border-radius: 1rem; }
-    h1 { font-size: 1.35rem; }
-  }
+.sso{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+.sso button{
+  height:42px;border:1px solid #CBD5E1;background:#fff;border-radius:.5rem;
+  font-family:inherit;font-size:.85rem;font-weight:500;color:#0A0F16;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:.5rem;
+}
+.sso button:hover{border-color:#94A3B8;background:#F8FAFC}
+
+.foot-note{text-align:center;font-size:.85rem;color:#475569;margin-top:1.75rem}
+.foot-note a{color:#5B30FF;font-weight:600;text-decoration:none}
+.foot-note a:hover{text-decoration:underline}
+
+@media (max-width:1024px){
+  .brand{padding:2.5rem}
+  .form-panel{padding:2.5rem 1.5rem}
+}
+@media (max-width:768px){
+  .split{grid-template-columns:1fr}
+  .brand{min-height:auto;padding:2rem;text-align:left}
+  .brand-body h2{font-size:1.5rem}
+  .brand-foot{margin-top:1.5rem}
+}
+@media (max-width:640px){
+  .row2{grid-template-columns:1fr}
+  .form-panel{padding:2rem 1.25rem}
+}
 </style>
 </head>
 <body>
 
-<div class="wrap">
-  <div class="card">
+<div class="split">
 
-    <div class="brand">
-      <a href="/" class="nx-logo" aria-label="NEXOURA home">
-        NEX<svg class="nx-oring" viewBox="0 0 32 32" aria-hidden="true">
-          <defs><linearGradient id="og3" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#7861FF"/><stop offset="28%" stop-color="#5B30FF"/>
-            <stop offset="68%" stop-color="#2563FF"/><stop offset="100%" stop-color="#00E0FF"/>
-          </linearGradient></defs>
-          <circle cx="16" cy="16" r="12" fill="none" stroke="url(#og3)" stroke-width="4"/>
-        </svg>URA
-      </a>
-      <span class="tagline">WHERE AI BUILDS</span>
+  <aside class="brand">
+    <span class="nx-logo">NEX<svg class="nx-oring" viewBox="0 0 32 32" aria-label="O"><defs><linearGradient id="og" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#7861FF"/><stop offset="28%" stop-color="#5B30FF"/><stop offset="68%" stop-color="#2563FF"/><stop offset="100%" stop-color="#00E0FF"/></linearGradient></defs><circle cx="16" cy="16" r="12" fill="none" stroke="url(#og)" stroke-width="4"/></svg>URA</span>
+
+    <div class="brand-body">
+      <div class="brand-eyebrow">Studio access</div>
+      <h2>The platform your supply chain needs — <span class="grad-text">built by the system that hires the agents.</span></h2>
+      <p>Create an account to start a feasibility conversation with NEXOURA Studio. We review every signup within one business day before opening the engagement workspace.</p>
     </div>
 
-    <h1>Create your Forge account</h1>
-    <p class="lede">Start a 14-day trial. No credit card. Cancel anytime.</p>
+    <span class="brand-foot">WHERE AI BUILDS</span>
+  </aside>
 
-    <form onsubmit="event.preventDefault();">
-      <div class="field">
-        <label for="email">Work email</label>
-        <input id="email" name="email" type="email" placeholder="you@company.com" autocomplete="email" required>
-      </div>
+  <section class="form-panel">
+    <div class="form-wrap">
+      <h1>Create your studio account</h1>
+      <p class="form-sub">Already have one? <a href="#login">Sign in instead</a>.</p>
 
-      <div class="field">
-        <label for="password">Password <span class="hint">(min. 12 characters)</span></label>
-        <input id="password" name="password" type="password" placeholder="At least 12 characters" autocomplete="new-password" minlength="12" required>
-      </div>
+      <form onsubmit="event.preventDefault()">
 
-      <div class="field">
-        <label for="company">Company</label>
-        <input id="company" name="company" type="text" placeholder="Meridian Logistics" autocomplete="organization" required>
-      </div>
+        <div class="row2">
+          <div class="field">
+            <label for="first">First name</label>
+            <input id="first" type="text" placeholder="Priya" autocomplete="given-name" required>
+          </div>
+          <div class="field">
+            <label for="last">Last name</label>
+            <input id="last" type="text" placeholder="Anand" autocomplete="family-name" required>
+          </div>
+        </div>
 
-      <label class="checkbox">
-        <input type="checkbox" required>
-        <span>I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>, and to receive product updates from NEXOURA.</span>
-      </label>
+        <div class="field">
+          <label for="email">Work email</label>
+          <input id="email" type="email" placeholder="priya@meridianlogistics.com" autocomplete="email" required>
+          <div class="helper">We only accept verified company domains.</div>
+        </div>
 
-      <button type="submit" class="submit">Create account</button>
+        <div class="field">
+          <label for="pw">Password</label>
+          <input id="pw" type="password" placeholder="At least 12 characters" autocomplete="new-password" required>
+          <ul class="rules" aria-label="Password requirements">
+            <li>At least 12 characters</li>
+            <li>One uppercase letter</li>
+            <li>One number</li>
+            <li>One symbol (!@#$%&amp;…)</li>
+          </ul>
+        </div>
 
-      <div class="divider">or continue with</div>
+        <div class="row2">
+          <div class="field">
+            <label for="company">Company</label>
+            <input id="company" type="text" placeholder="Meridian Logistics" autocomplete="organization" required>
+          </div>
+          <div class="field">
+            <label for="role">Your role</label>
+            <select id="role" required>
+              <option value="">Select role…</option>
+              <option>VP / Director of Operations</option>
+              <option>VP / Director of Supply Chain</option>
+              <option>Head of Engineering</option>
+              <option>Chief Operating Officer</option>
+              <option>Founder / CEO</option>
+              <option>Other</option>
+            </select>
+          </div>
+        </div>
 
-      <div class="sso">
-        <button type="button">
-          <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-          Continue with Google
-        </button>
-        <button type="button">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M23 12c0-6.07-4.93-11-11-11S1 5.93 1 12c0 5.49 4.04 10.04 9.31 10.86V15.2H7.5v-3.2h2.81V9.55c0-2.78 1.66-4.32 4.19-4.32 1.21 0 2.48.22 2.48.22v2.73h-1.4c-1.38 0-1.81.86-1.81 1.74V12h3.08l-.49 3.2h-2.59v7.66C18.96 22.04 23 17.49 23 12z"/></svg>
-          Continue with Microsoft
-        </button>
-      </div>
-    </form>
+        <label class="terms">
+          <input type="checkbox" required>
+          <span>I agree to the <a href="#terms">Terms of Service</a> and have read the <a href="#privacy">Privacy Policy</a>. NEXOURA Studio may contact me about my engagement application.</span>
+        </label>
 
-    <p class="footer-link">Already have an account? <a href="#">Sign in</a></p>
-  </div>
+        <button class="btn" type="submit">Create account</button>
+
+        <div class="divider">or continue with</div>
+
+        <div class="sso">
+          <button type="button">Google Workspace</button>
+          <button type="button">Microsoft 365</button>
+        </div>
+
+        <p class="foot-note">Already have an account? <a href="#login">Sign in</a></p>
+
+      </form>
+    </div>
+  </section>
+
 </div>
-
-<p class="legal">© 2026 NEXOURA Studio · <a href="#" style="color: var(--slate-500);">Privacy</a> · <a href="#" style="color: var(--slate-500);">Terms</a> · <a href="#" style="color: var(--slate-500);">SOC 2</a></p>
 
 </body>
 </html>
