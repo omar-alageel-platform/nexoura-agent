@@ -1,0 +1,294 @@
+/* ============================================================
+   NEXOURA BRAND COMPONENTS — components.css
+   T16 brand-components skill. Inline this into any HTML output
+   for consistent NEXOURA presentation. Self-contained, no deps.
+   ============================================================ */
+
+/* ----- 1. Color tokens (dark default, light via [data-theme="light"]) */
+:root,
+:root[data-theme="dark"] {
+  /* brand accents (identical across themes) */
+  --nx-purple: #7861FF;
+  --nx-violet: #5B30FF;
+  --nx-blue:   #2563FF;
+  --nx-cyan:   #00E0FF;
+  --nx-navy:   #0A0F16;
+  --nx-white:  #F5F7FA;
+  --nx-slate-900: #101826;
+  --nx-slate-700: #475569;
+  --nx-slate-500: #94A3B8;
+  --nx-grad: linear-gradient(135deg, #7861FF 0%, #5B30FF 28%, #2563FF 68%, #00E0FF 100%);
+  --nx-glow: 0 0 18px rgba(120,97,255,0.35);
+
+  /* dark surface */
+  --bg-primary:    #0A0F16;
+  --bg-elevated:   #101826;
+  --bg-tint:       rgba(120,97,255,0.06);
+  --text-primary:  #F5F7FA;
+  --text-secondary:#94A3B8;
+  --border:        rgba(120,97,255,0.18);
+  --border-strong: rgba(120,97,255,0.35);
+  --shadow-elev:   0 6px 24px rgba(0,0,0,0.45);
+}
+
+:root[data-theme="light"] {
+  --bg-primary:    #FFFFFF;
+  --bg-elevated:   #F5F7FA;
+  --bg-tint:       rgba(120,97,255,0.05);
+  --text-primary:  #0A0F16;
+  --text-secondary:#475569;
+  --border:        rgba(10,15,22,0.10);
+  --border-strong: rgba(91,48,255,0.30);
+  --shadow-elev:   0 6px 20px rgba(10,15,22,0.08);
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) {
+    --bg-primary:    #FFFFFF;
+    --bg-elevated:   #F5F7FA;
+    --bg-tint:       rgba(120,97,255,0.05);
+    --text-primary:  #0A0F16;
+    --text-secondary:#475569;
+    --border:        rgba(10,15,22,0.10);
+    --border-strong: rgba(91,48,255,0.30);
+    --shadow-elev:   0 6px 20px rgba(10,15,22,0.08);
+  }
+}
+
+/* ----- 2. Typography
+   Sora via Google Fonts CDN (weights 400/500/700). Do NOT bundle WOFF files.
+   Add to <head> of any host page:
+     <link rel="preconnect" href="https://fonts.googleapis.com">
+     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+     <link rel="stylesheet"
+       href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;700&display=swap">
+   The @import below is a self-contained fallback if you can't edit <head>. */
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;700&display=swap');
+
+body, .nx-root {
+  font-family: 'Sora', 'Inter', 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-weight: 500;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, .nx-h1 { font-size: 32px; font-weight: 500; line-height: 1.2; letter-spacing: -0.01em; margin: 0 0 16px; }
+h2, .nx-h2 { font-size: 24px; font-weight: 500; line-height: 1.25; letter-spacing: -0.01em; margin: 32px 0 12px; }
+h3, .nx-h3 { font-size: 18px; font-weight: 500; line-height: 1.3;  letter-spacing: -0.005em; margin: 24px 0 8px; }
+p,  .nx-p  { font-size: 15px; line-height: 1.6; color: var(--text-primary); margin: 0 0 12px; }
+small, .nx-small { font-size: 12px; color: var(--text-secondary); letter-spacing: 0.02em; }
+
+/* ----- 3. Logo lockup (NEX [O-ring] URA) */
+.nx-logo {
+  display: inline-flex;
+  align-items: center;
+  font-family: 'Sora', sans-serif;
+  font-weight: 500;
+  letter-spacing: 0.3em;
+  color: var(--text-primary);
+  line-height: 1;
+  user-select: none;
+  white-space: nowrap;
+}
+.nx-logo .nx-wordmark-pre,
+.nx-logo .nx-wordmark-post {
+  display: inline-block;
+}
+/* Size variants — `height` of O-ring is 1em, scale via font-size */
+.nx-logo--xl { font-size: 80px; }
+.nx-logo--lg { font-size: 48px; }
+.nx-logo--md { font-size: 32px; }
+.nx-logo--sm { font-size: 20px; }
+
+/* O-ring as a span — gradient ring with transparent center */
+.nx-oring {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  border-radius: 50%;
+  background: var(--nx-grad);
+  /* mask cuts an inner hole so the ring is transparent inside,
+     letting the page background show through (true ring, not disc) */
+  -webkit-mask: radial-gradient(circle, transparent 0 calc(50% - 0.08em), #000 calc(50% - 0.08em) 100%);
+          mask: radial-gradient(circle, transparent 0 calc(50% - 0.08em), #000 calc(50% - 0.08em) 100%);
+  box-shadow: var(--nx-glow);
+  vertical-align: baseline;
+  /* visual centering against caps */
+  margin: 0 0.06em;
+  position: relative;
+  top: 0.04em;
+}
+
+/* O-ring mark alone (favicon / avatar / watermark) */
+.nx-mark {
+  display: inline-block;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--nx-grad);
+  -webkit-mask: radial-gradient(circle, transparent 0 calc(50% - 4px), #000 calc(50% - 4px) 100%);
+          mask: radial-gradient(circle, transparent 0 calc(50% - 4px), #000 calc(50% - 4px) 100%);
+  box-shadow: var(--nx-glow);
+}
+.nx-mark--16 { width:16px; height:16px;
+  -webkit-mask: radial-gradient(circle, transparent 0 calc(50% - 1.5px), #000 calc(50% - 1.5px) 100%);
+          mask: radial-gradient(circle, transparent 0 calc(50% - 1.5px), #000 calc(50% - 1.5px) 100%); }
+.nx-mark--24 { width:24px; height:24px;
+  -webkit-mask: radial-gradient(circle, transparent 0 calc(50% - 2px), #000 calc(50% - 2px) 100%);
+          mask: radial-gradient(circle, transparent 0 calc(50% - 2px), #000 calc(50% - 2px) 100%); }
+.nx-mark--32 { width:32px; height:32px;
+  -webkit-mask: radial-gradient(circle, transparent 0 calc(50% - 2.5px), #000 calc(50% - 2.5px) 100%);
+          mask: radial-gradient(circle, transparent 0 calc(50% - 2.5px), #000 calc(50% - 2.5px) 100%); }
+.nx-mark--48 { width:48px; height:48px; }
+.nx-mark--64 { width:64px; height:64px;
+  -webkit-mask: radial-gradient(circle, transparent 0 calc(50% - 5px), #000 calc(50% - 5px) 100%);
+          mask: radial-gradient(circle, transparent 0 calc(50% - 5px), #000 calc(50% - 5px) 100%); }
+
+/* Wordmark only — no O-ring; use for tight spaces, footer */
+.nx-wordmark {
+  font-family: 'Sora', sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  color: var(--text-primary);
+  text-transform: none;
+}
+
+/* ----- 4. Buttons */
+.nx-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Sora', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.02em;
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease, background 0.15s ease, color 0.15s ease;
+  text-decoration: none;
+  line-height: 1;
+}
+.nx-btn:focus-visible { outline: 2px solid var(--nx-cyan); outline-offset: 2px; }
+.nx-btn:disabled, .nx-btn[aria-disabled="true"] { opacity: 0.45; cursor: not-allowed; }
+
+.nx-btn--primary {
+  background: var(--nx-grad);
+  color: #FFFFFF;
+  box-shadow: var(--nx-glow);
+}
+.nx-btn--primary:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 0 22px rgba(120,97,255,0.55); }
+
+.nx-btn--secondary {
+  background: transparent;
+  color: var(--nx-purple);
+  border-color: var(--border-strong);
+}
+.nx-btn--secondary:hover:not(:disabled) { background: var(--bg-tint); border-color: var(--nx-purple); }
+
+.nx-btn--ghost {
+  background: transparent;
+  color: var(--text-secondary);
+}
+.nx-btn--ghost:hover:not(:disabled) { color: var(--nx-purple); background: var(--bg-tint); }
+
+/* ----- 5. Cards */
+.nx-card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 20px 22px;
+  box-shadow: var(--shadow-elev);
+}
+.nx-card--accent {
+  background: var(--bg-tint);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 20px 22px;
+  position: relative;
+  overflow: hidden;
+}
+.nx-card--accent::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--nx-grad);
+}
+.nx-card--flat {
+  background: var(--bg-tint);
+  border: none;
+  border-radius: 8px;
+  padding: 18px 20px;
+}
+.nx-card h3 { margin-top: 0; }
+
+/* ----- 6. Pills / badges (T15-aligned) */
+.pill {
+  display: inline-block;
+  font-family: 'Sora', 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 4px;
+  border: 1px solid;
+  vertical-align: middle;
+  line-height: 1.4;
+}
+.pill-verified { color: #34D399; background: rgba(52,211,153,0.10); border-color: rgba(52,211,153,0.35); }
+.pill-resolved { color: var(--nx-cyan); background: rgba(0,224,255,0.10); border-color: rgba(0,224,255,0.35); }
+.pill-warning  { color: #FBBF24; background: rgba(251,191,36,0.10); border-color: rgba(251,191,36,0.35); }
+.pill-blocked  { color: #F87171; background: rgba(248,113,113,0.12); border-color: rgba(248,113,113,0.40); }
+.pill-p0 { color: #FFFFFF; background: #DC2626; border-color: #DC2626; }
+.pill-p1 { color: #FFFFFF; background: #2563FF; border-color: #2563FF; }
+.pill-p2 { color: #0A0F16; background: #F59E0B; border-color: #F59E0B; }
+.pill-p3 { color: #FFFFFF; background: #6B7280; border-color: #6B7280; }
+.pill-p4 { color: #FFFFFF; background: #475569; border-color: #475569; }
+
+/* ----- 7. Footer pattern */
+.nx-footer {
+  margin-top: 64px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 16px;
+  align-items: center;
+  font-family: 'Sora', sans-serif;
+}
+.nx-footer::before {
+  content: "";
+  position: absolute;
+  top: -1px; left: 0; right: 0;
+  height: 2px;
+  background: var(--nx-grad);
+}
+.nx-footer .nx-tagline {
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.5em;
+  text-transform: uppercase;
+  background: var(--nx-grad);
+  -webkit-background-clip: text;
+          background-clip: text;
+  color: transparent;
+}
+.nx-footer .nx-meta {
+  font-size: 12px;
+  color: var(--text-secondary);
+  letter-spacing: 0.04em;
+}
+
+/* ----- 8. Theme switcher control */
+.nx-theme-toggle {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 1000;
+}
