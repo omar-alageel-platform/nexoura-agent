@@ -217,3 +217,241 @@ workers:
   maxConcurrentTasks: 1
   acceptsBroadcast: true
   alwaysLoaded: true
+
+# ── Stage 2 Requirements specialist WORKERS ─────────────────────────────────
+# Dispatched on demand (not alwaysLoaded). Reports to product-director by
+# default. Tools restricted to read/recall/web (no write/terminal/merge).
+# Each worker has a SOUL.md under profiles/<id>/.
+
+- id: business-analyst
+  name: Business Analyst
+  role: NEXOURA Stage 2 — requirements extraction worker
+  specialty: BRD parsing, requirement classification, conflict/contradiction detection
+  model: opus-4-7
+  mission: Extract structured requirements from raw business inputs (BRDs, transcripts, ops manuals) with full traceability and explicit contradiction flagging.
+  profile: business-analyst
+  reportsTo: product-director
+  modes:
+  - execute
+  tools:
+  - file_read
+  - recall
+  - web_search
+  skills:
+  - nexoura-engagement-lifecycle
+  - nexoura-gate-protocol
+  - nexoura-artifact-conventions
+  - nexoura-requirements-stage
+  - nexoura-platform-doctrine
+  - nexoura-memory-and-evolution
+  capabilities:
+  - requirement-extraction
+  - requirement-classification
+  - contradiction-detection
+  - traceability-mapping
+  preferredTaskTypes:
+  - brd-parsing
+  - requirement-extraction
+  - contradiction-audit
+  greenlightRequiredFor:
+  - pr_merge
+  maxConcurrentTasks: 1
+  acceptsBroadcast: false
+  alwaysLoaded: false
+
+- id: product-manager
+  name: Product Manager
+  role: NEXOURA Stage 2 — user-story author worker
+  specialty: Given/When/Then story authoring, acceptance criteria, traceability
+  model: opus-4-7
+  mission: Convert structured requirements into testable user stories with explicit traceability and observable acceptance criteria.
+  profile: product-manager
+  reportsTo: product-director
+  modes:
+  - execute
+  tools:
+  - file_read
+  - recall
+  - web_search
+  skills:
+  - nexoura-engagement-lifecycle
+  - nexoura-gate-protocol
+  - nexoura-artifact-conventions
+  - nexoura-requirements-stage
+  - nexoura-platform-doctrine
+  - nexoura-memory-and-evolution
+  capabilities:
+  - user-story-authoring
+  - acceptance-criteria
+  - story-sizing
+  - traceability-matrix
+  preferredTaskTypes:
+  - story-authoring
+  - ac-writing
+  - story-traceability
+  greenlightRequiredFor:
+  - pr_merge
+  maxConcurrentTasks: 1
+  acceptsBroadcast: false
+  alwaysLoaded: false
+
+- id: ux-researcher
+  name: UX Researcher
+  role: NEXOURA Stage 2 — wireframe spec & journey-map worker
+  specialty: low-fidelity wireframe SPECS (described, not drawn), user journeys, interaction patterns
+  model: opus-4-7
+  mission: Produce wireframe specifications and user journey maps, explicitly marking observed-vs-inferred moments and flagging RTL spatial-flip semantics for Arabic locales.
+  profile: ux-researcher
+  reportsTo: product-director
+  modes:
+  - execute
+  tools:
+  - file_read
+  - recall
+  - web_search
+  - image_search
+  skills:
+  - nexoura-engagement-lifecycle
+  - nexoura-gate-protocol
+  - nexoura-artifact-conventions
+  - nexoura-requirements-stage
+  - nexoura-platform-doctrine
+  - nexoura-memory-and-evolution
+  capabilities:
+  - wireframe-spec
+  - journey-mapping
+  - interaction-pattern
+  - rtl-spatial-semantics
+  preferredTaskTypes:
+  - wireframe-spec
+  - journey-map
+  - interaction-pattern-review
+  greenlightRequiredFor:
+  - pr_merge
+  maxConcurrentTasks: 1
+  acceptsBroadcast: false
+  alwaysLoaded: false
+
+- id: technical-writer-bilingual
+  name: Technical Writer (Bilingual)
+  role: NEXOURA Stage 2 — AR+EN content worker
+  specialty: KSA-formal Arabic (فصحى رسمية), technical-precise English, terminology alignment AR↔EN, RTL-aware structure
+  model: opus-4-7
+  mission: Author technical and customer-facing content in parallel AR + EN with glossary discipline, KSA-formal register, and RTL-aware document structure. Never mix AR + EN in one paragraph.
+  profile: technical-writer-bilingual
+  reportsTo: product-director
+  coordinatesWith:
+  - brand-director
+  - ux-researcher
+  modes:
+  - execute
+  tools:
+  - file_read
+  - recall
+  - web_search
+  skills:
+  - nexoura-engagement-lifecycle
+  - nexoura-gate-protocol
+  - nexoura-artifact-conventions
+  - nexoura-requirements-stage
+  - nexoura-platform-doctrine
+  - nexoura-memory-and-evolution
+  capabilities:
+  - bilingual-content-authoring
+  - ar-en-terminology-alignment
+  - rtl-document-structure
+  - ksa-formal-register
+  preferredTaskTypes:
+  - bilingual-authoring
+  - ar-translation-review
+  - terminology-alignment
+  - ui-string-localization
+  greenlightRequiredFor:
+  - pr_merge
+  maxConcurrentTasks: 1
+  acceptsBroadcast: false
+  alwaysLoaded: false
+
+- id: nfr-author
+  name: NFR Author
+  role: NEXOURA Stage 2 — non-functional requirements worker
+  specialty: measurable NFRs (P95 latencies, RPO/RTO, WCAG levels, SLO/SLI), KSA compliance lenses (PDPL/ZATCA/SAMA/NCA/SDAIA)
+  model: opus-4-7
+  mission: Author non-functional requirements that are measurable, sourced, and feasible — escalate infeasibility and compliance gaps to architecture-director and product-director.
+  profile: nfr-author
+  reportsTo: product-director
+  coordinatesWith:
+  - architecture-director
+  - accessibility-reviewer
+  modes:
+  - execute
+  tools:
+  - file_read
+  - recall
+  - web_search
+  skills:
+  - nexoura-engagement-lifecycle
+  - nexoura-gate-protocol
+  - nexoura-artifact-conventions
+  - nexoura-requirements-stage
+  - nexoura-tech-architecture-stage
+  - nexoura-platform-doctrine
+  - nexoura-memory-and-evolution
+  capabilities:
+  - nfr-authoring
+  - slo-sli-design
+  - compliance-mapping
+  - measurement-method-design
+  preferredTaskTypes:
+  - nfr-register
+  - slo-design
+  - compliance-audit
+  - ksa-regulatory-mapping
+  greenlightRequiredFor:
+  - pr_merge
+  maxConcurrentTasks: 1
+  acceptsBroadcast: false
+  alwaysLoaded: false
+
+- id: accessibility-reviewer
+  name: Accessibility Reviewer
+  role: NEXOURA Stage 2 — WCAG 2.1 AA + RTL a11y worker
+  specialty: WCAG SC mapping, ARIA review, keyboard nav, color contrast, screen-reader matrix, AR-RTL-specific a11y (NVDA/JAWS/VoiceOver Arabic)
+  model: opus-4-7
+  mission: Validate WCAG 2.1 AA conformance and AR-RTL accessibility parity, citing specific SC numbers and tested SR/locale combinations for every finding.
+  profile: accessibility-reviewer
+  reportsTo: product-director
+  coordinatesWith:
+  - design-director
+  - ux-researcher
+  - nfr-author
+  modes:
+  - execute
+  tools:
+  - file_read
+  - recall
+  - web_search
+  skills:
+  - nexoura-engagement-lifecycle
+  - nexoura-gate-protocol
+  - nexoura-artifact-conventions
+  - nexoura-requirements-stage
+  - nexoura-platform-doctrine
+  - nexoura-memory-and-evolution
+  capabilities:
+  - wcag-audit
+  - aria-review
+  - keyboard-nav-audit
+  - color-contrast-verification
+  - rtl-a11y-parity
+  - screen-reader-matrix
+  preferredTaskTypes:
+  - a11y-audit
+  - wcag-conformance
+  - rtl-parity-audit
+  - screen-reader-test
+  greenlightRequiredFor:
+  - pr_merge
+  maxConcurrentTasks: 1
+  acceptsBroadcast: false
+  alwaysLoaded: false
