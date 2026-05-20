@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en" data-theme="{{THEME}}">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{{TITLE}} — NEXOURA · STUDIO</title>
+<title>Architecture Review — Sample Engagement — NEXOURA · STUDIO</title>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   /* Offline fallback: Sora woff in ./assets/ (or sibling fonts/). Google Fonts above is preferred. */
@@ -166,31 +166,81 @@
 
   <header class="nx-header">
     <div>
-      <span class="nx-kicker">{{KICKER}}</span>
-      <h1 class="nx-title">{{TITLE}}</h1>
-      <p class="nx-subtitle">{{SUBTITLE}}</p>
+      <span class="nx-kicker">NEXOURA · STUDIO</span>
+      <h1 class="nx-title">Architecture Review — Sample Engagement</h1>
+      <p class="nx-subtitle">Tech-stack evaluation and gap analysis for the Phoenix migration</p>
     </div>
     <div>
       <div class="nx-oring" aria-label="NEXOURA O-ring mark"></div>
-      <div class="nx-date">{{DATE}}</div>
-      <div class="nx-author">{{AUTHOR_PROFILE}}</div>
+      <div class="nx-date">2026-05-20</div>
+      <div class="nx-author">T20 · solution-architect</div>
     </div>
   </header>
 
   <section class="nx-metrics">
-    {{METRICS_HTML}}
+    
   </section>
 
   <main class="nx-body">
-    {{BODY_HTML}}
+    <h1 id="architecture-review-sample-engagement">Architecture Review —
+Sample Engagement</h1>
+<h2 id="executive-summary">Executive Summary</h2>
+<p>The Phoenix migration is <strong>on track</strong> for stage
+transition. Three load-bearing risks were identified during the
+architecture review; two have mitigations landed, one remains <span
+class="pill pill-pending">PENDING</span> pending vendor
+confirmation.</p>
+<p>This document is a minimal sample demonstrating the NEXOURA branded
+report conventions. Replace the body with real findings before
+shipping.</p>
+<h2 id="findings">Findings</h2>
+<ul>
+<li><strong>F1.</strong> Edge cache hit ratio measured at 87% under
+simulated peak load. <span
+class="pill pill-verified">VERIFIED</span></li>
+<li><strong>F2.</strong> Read-replica failover completes in 4.2s, inside
+the 5s SLO. <span class="pill pill-verified">VERIFIED</span></li>
+<li><strong>F3.</strong> Per-tenant rate-limit isolation gap closed via
+Envoy filter rebuild. <span
+class="pill pill-resolved">RESOLVED</span></li>
+<li><strong>F4.</strong> Vendor SLA for the auth provider not yet
+confirmed in writing. <span
+class="pill pill-pending">PENDING</span></li>
+<li><strong>F5.</strong> Cross-region replication lag exceeds 2s during
+US-EU bursts. <span class="pill pill-blocked">BLOCKED</span></li>
+</ul>
+<h2 id="decisions">Decisions</h2>
+<ol type="1">
+<li>Adopt the Envoy-based rate-limit topology described in ADR-014.</li>
+<li>Defer cross-region replication redesign to the next engagement
+stage.</li>
+<li>Require written SLA from the auth vendor before GO
+recommendation.</li>
+</ol>
+<h2 id="verification">Verification</h2>
+<ul>
+<li>Load test: <code>k6 run scripts/peak.js</code> — 87% hit ratio, p99
+312ms.</li>
+<li>Failover drill: chaos run id <code>chaos-2026-05-18-a</code>, 4.2s
+recovery.</li>
+<li>Citation: <code>infra/envoy/rate-limit.yaml</code> lines 42–88
+(commit <code>a1b2c3d</code>).</li>
+</ul>
+<h2 id="citations">Citations</h2>
+<ul>
+<li>ADR-014, <code>docs/adr/014-rate-limit.md</code></li>
+<li>Load report, <code>reports/load/2026-05-18-peak.json</code></li>
+<li>Failover drill, <code>reports/chaos/2026-05-18-a.md</code></li>
+</ul>
+
   </main>
 
   <footer class="nx-footer">
     <div class="nx-wordmark">NEXOURA</div>
     <div class="nx-tagline-wrap">
-      <img class="nx-tagline-img" src="{{FOOTER_TAGLINE_PNG}}" alt="WHERE AI BUILDS" width="300" height="30">
+      <img class="nx-tagline-img" src="data:image/png;base64,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" alt="WHERE AI BUILDS" width="300" height="30">
     </div>
-    <div class="nx-ts">Generated {{TIMESTAMP}}</div>
+    <div class="nx-ts">Generated 2026-05-20 22:36 UTC</div>
   </footer>
 
 </div>

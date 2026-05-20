@@ -3,23 +3,35 @@
 
 Two outputs from one markdown source:
 
+    # Legacy positional form (still supported, backward compatible):
     python3 render.py <input.md> <output.html>
     python3 render.py <input.md> <output.docx>
 
+    # Theme-aware form:
+    python3 render.py <input.md> --theme=dark  --out-dir <dir>
+    python3 render.py <input.md> --theme=light --out-dir <dir>
+    python3 render.py <input.md> --theme=both  --out-dir <dir>
+
 Detected by the output extension. HTML uses nexoura-template.html + pandoc body
-fragment + placeholder substitution. DOCX uses pandoc --reference-doc=reference.docx,
-then a post-processing pass walks word/document.xml and replaces bracketed
-status markers ([VERIFIED] / [P0] / ...) with proper runs styled by the
-NEXOURAPill* character styles patched into the reference.
+fragment + placeholder substitution. The `{{THEME}}` placeholder controls the
+initial `data-theme` attribute (dark | light); a runtime switcher button lets
+readers toggle and persists the choice in localStorage. DOCX uses
+pandoc --reference-doc=reference.docx (theme-independent — DOCX styling is
+defined by reference.docx, not the HTML template), then a post-processing pass
+walks word/document.xml and replaces bracketed status markers ([VERIFIED] /
+[P0] / ...) with proper runs styled by the NEXOURAPill* character styles
+patched into the reference.
+
+`--theme=both` produces TWO files in --out-dir:
+    <stem>.dark.html  and  <stem>.light.html
 """
+import argparse
 import base64
 import datetime
 import pathlib
 import re
-import shutil
 import subprocess
 import sys
-import tempfile
 import zipfile
 
 HERE = pathlib.Path(__file__).parent
@@ -43,6 +55,8 @@ PILL_MAP = {
 
 PILL_REGEX = re.compile(r"\[(" + "|".join(re.escape(k) for k in PILL_MAP) + r")\]")
 
+VALID_THEMES = ("dark", "light")
+
 
 def parse_frontmatter(src: str):
     fm = {}
@@ -56,14 +70,14 @@ def parse_frontmatter(src: str):
     return fm, src[m.end():]
 
 
-def render_html(md_path: pathlib.Path, out_path: pathlib.Path) -> None:
+def _build_body_and_meta(md_path: pathlib.Path):
+    """Pandoc + frontmatter + pill substitution. Returns (fm, body_html, metrics_html, footer_data_url)."""
     src = md_path.read_text()
     fm, body_md = parse_frontmatter(src)
 
     # Drop first H1 (title is in front-matter)
     body_md = re.sub(r"^#\s+.*\n", "", body_md, count=1)
 
-    # Bracketed pill markers -> HTML span (pre-pandoc; safe because we use raw HTML)
     def html_pill(mt):
         marker = mt.group(1)
         cls, _ = PILL_MAP[marker]
@@ -77,15 +91,23 @@ def render_html(md_path: pathlib.Path, out_path: pathlib.Path) -> None:
 
     metrics_html = fm.get("metrics_html", "")
 
-    # Footer image as data URL for self-contained HTML
     footer_img_data_url = ""
     if FOOTER_PNG.exists():
         b64 = base64.b64encode(FOOTER_PNG.read_bytes()).decode("ascii")
         footer_img_data_url = f"data:image/png;base64,{b64}"
 
+    return fm, body_html, metrics_html, footer_img_data_url
+
+
+def render_html(md_path: pathlib.Path, out_path: pathlib.Path, theme: str = "dark") -> None:
+    if theme not in VALID_THEMES:
+        raise SystemExit(f"invalid theme {theme!r} (expected one of {VALID_THEMES})")
+    fm, body_html, metrics_html, footer_img_data_url = _build_body_and_meta(md_path)
+
     tpl = TEMPLATE.read_text()
     out = (
         tpl
+        .replace("{{THEME}}", theme)
         .replace("{{TITLE}}", fm.get("title", ""))
         .replace("{{KICKER}}", fm.get("kicker", "NEXOURA · STUDIO"))
         .replace("{{SUBTITLE}}", fm.get("subtitle", ""))
@@ -101,9 +123,6 @@ def render_html(md_path: pathlib.Path, out_path: pathlib.Path) -> None:
 
 # --- DOCX path -----------------------------------------------------------
 
-# Match a <w:r>...<w:t...>[MARKER]</w:t>...</w:r>  (single-run cases — covers
-# typical pandoc output). We allow optional surrounding whitespace and
-# additional run properties.
 DOCX_RUN_PILL_RE = re.compile(
     r'(<w:r\b[^>]*>)(.*?)<w:t(\s[^>]*)?>([^<]*?)\[(' + "|".join(re.escape(k) for k in PILL_MAP) + r')\]([^<]*?)</w:t>(.*?)</w:r>',
     re.DOTALL,
@@ -120,7 +139,6 @@ def _docx_pill_replace(m):
         pieces.append(
             f'{open_tag}{rpr_etc}<w:t xml:space="preserve">{before}</w:t>{tail}</w:r>'
         )
-    # Pill run with character style applied
     pieces.append(
         f'<w:r><w:rPr><w:rStyle w:val="{style_id}"/></w:rPr>'
         f'<w:t xml:space="preserve"> {marker} </w:t></w:r>'
@@ -133,8 +151,6 @@ def _docx_pill_replace(m):
 
 
 def post_process_docx_pills(docx_path: pathlib.Path) -> int:
-    """Walk word/document.xml, replace bracketed markers with styled pill runs.
-    Returns number of pills inserted."""
     with zipfile.ZipFile(docx_path, "r") as zf:
         members = {name: zf.read(name) for name in zf.namelist()}
     doc = members["word/document.xml"].decode("utf-8")
@@ -156,7 +172,7 @@ def post_process_docx_pills(docx_path: pathlib.Path) -> int:
 
 def render_docx(md_path: pathlib.Path, out_path: pathlib.Path) -> None:
     if not REFERENCE_DOCX.exists():
-        raise SystemExit(f"reference.docx missing — run patch_reference_docx.py first")
+        raise SystemExit("reference.docx missing — run patch_reference_docx.py first")
     subprocess.run(
         ["pandoc", str(md_path), "--reference-doc", str(REFERENCE_DOCX), "-o", str(out_path)],
         check=True,
@@ -168,16 +184,71 @@ def render_docx(md_path: pathlib.Path, out_path: pathlib.Path) -> None:
 # -------------------------------------------------------------------------
 
 
-def render(md_path: pathlib.Path, out_path: pathlib.Path) -> None:
+def render(md_path: pathlib.Path, out_path: pathlib.Path, theme: str = "dark") -> None:
     if out_path.suffix.lower() == ".docx":
+        # DOCX styling controlled by reference.docx — theme flag is a no-op here.
         render_docx(md_path, out_path)
     else:
-        render_html(md_path, out_path)
+        render_html(md_path, out_path, theme=theme)
+
+
+def _legacy_two_positional(argv):
+    """Returns (input_path, output_path) if argv looks like the old form, else None."""
+    if len(argv) == 2 and not argv[0].startswith("-") and not argv[1].startswith("-"):
+        return pathlib.Path(argv[0]), pathlib.Path(argv[1])
+    return None
+
+
+def main(argv):
+    legacy = _legacy_two_positional(argv)
+    if legacy is not None:
+        in_path, out_path = legacy
+        render(in_path, out_path, theme="dark")
+        print(f"rendered {out_path}")
+        return 0
+
+    p = argparse.ArgumentParser(
+        prog="render.py",
+        description="Render NEXOURA branded HTML/DOCX from Markdown.",
+    )
+    p.add_argument("input", type=pathlib.Path, help="source .md file")
+    p.add_argument("output", nargs="?", type=pathlib.Path,
+                   help="output path (.html or .docx). Omit when using --theme=both.")
+    p.add_argument("--theme", choices=("dark", "light", "both"), default="dark",
+                   help="HTML theme. 'both' writes <stem>.dark.html and <stem>.light.html into --out-dir.")
+    p.add_argument("--out-dir", type=pathlib.Path, default=None,
+                   help="Output directory (required for --theme=both; optional otherwise).")
+    args = p.parse_args(argv)
+
+    in_path: pathlib.Path = args.input
+
+    if args.theme == "both":
+        out_dir = args.out_dir or (args.output.parent if args.output else in_path.parent)
+        out_dir.mkdir(parents=True, exist_ok=True)
+        stem = in_path.stem
+        dark_path = out_dir / f"{stem}.dark.html"
+        light_path = out_dir / f"{stem}.light.html"
+        render_html(in_path, dark_path, theme="dark")
+        render_html(in_path, light_path, theme="light")
+        print(f"rendered {dark_path}")
+        print(f"rendered {light_path}")
+        return 0
+
+    # Single-theme path
+    if args.output is None:
+        out_dir = args.out_dir or in_path.parent
+        out_dir.mkdir(parents=True, exist_ok=True)
+        out_path = out_dir / f"{in_path.stem}.{args.theme}.html"
+    else:
+        out_path = args.output
+        if args.out_dir is not None:
+            out_path = args.out_dir / out_path.name
+            args.out_dir.mkdir(parents=True, exist_ok=True)
+
+    render(in_path, out_path, theme=args.theme)
+    print(f"rendered {out_path}")
+    return 0
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3:
-        print(__doc__)
-        sys.exit(2)
-    render(pathlib.Path(sys.argv[1]), pathlib.Path(sys.argv[2]))
-    print(f"rendered {sys.argv[2]}")
+    sys.exit(main(sys.argv[1:]))
