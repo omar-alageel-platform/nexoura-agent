@@ -6,6 +6,19 @@
 <title>{{TITLE}} — NEXOURA · STUDIO</title>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
+  /* Offline fallback: Sora woff in ./assets/ (or sibling fonts/). Google Fonts above is preferred. */
+  @font-face {
+    font-family: 'Sora';
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+    src: local('Sora'),
+         url('./assets/sora-regular.woff') format('woff'),
+         url('../assets/sora-regular.woff') format('woff'),
+         url('fonts/Sora-Regular.woff2') format('woff2');
+  }
+</style>
+<style>
   :root {
     --nx-purple: #7861FF;
     --nx-violet: #5B30FF;
@@ -74,11 +87,17 @@
   .pill-resolved { color: var(--nx-cyan); background: rgba(0,224,255,0.10); border-color: rgba(0,224,255,0.35); }
   .pill-pending  { color: #fbbf24; background: rgba(251,191,36,0.10); border-color: rgba(251,191,36,0.35); }
   .pill-blocked  { color: #f87171; background: rgba(248,113,113,0.12); border-color: rgba(248,113,113,0.40); }
+  .pill-p0 { color: #ffffff; background: #DC2626; border-color: #DC2626; }
+  .pill-p1 { color: #ffffff; background: #2563FF; border-color: #2563FF; }
+  .pill-p2 { color: #0A0F16; background: #F59E0B; border-color: #F59E0B; }
+  .pill-p3 { color: #ffffff; background: #6B7280; border-color: #6B7280; }
+  .pill-p4 { color: #ffffff; background: #6B7280; border-color: #6B7280; }
 
   /* Footer */
   .nx-footer { margin-top: 72px; padding-top: 24px; border-top: 1px solid var(--nx-border); display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 16px; font-family: 'Inter', sans-serif; font-size: 0.8rem; color: var(--nx-slate-400); }
   .nx-wordmark { font-family: 'Sora', sans-serif; font-weight: 700; letter-spacing: 0.16em; color: var(--nx-white); }
-  .nx-tagline { font-family: 'Sora', sans-serif; font-weight: 700; letter-spacing: 0.22em; font-size: 0.85rem; text-align: center; background: var(--nx-grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .nx-tagline-wrap { text-align: center; }
+  .nx-tagline-img { display: inline-block; max-width: 100%; height: auto; border-radius: 4px; opacity: 0.95; }
   .nx-ts { text-align: right; }
 
   @media (max-width: 640px) {
@@ -117,7 +136,9 @@
 
   <footer class="nx-footer">
     <div class="nx-wordmark">NEXOURA</div>
-    <div class="nx-tagline">WHERE AI BUILDS</div>
+    <div class="nx-tagline-wrap">
+      <img class="nx-tagline-img" src="{{FOOTER_TAGLINE_PNG}}" alt="WHERE AI BUILDS" width="300" height="30">
+    </div>
     <div class="nx-ts">Generated {{TIMESTAMP}}</div>
   </footer>
 

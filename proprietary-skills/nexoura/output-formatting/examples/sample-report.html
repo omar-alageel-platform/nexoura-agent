@@ -6,6 +6,19 @@
 <title>Architecture Review — Sample Engagement — NEXOURA · STUDIO</title>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
+  /* Offline fallback: Sora woff in ./assets/ (or sibling fonts/). Google Fonts above is preferred. */
+  @font-face {
+    font-family: 'Sora';
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+    src: local('Sora'),
+         url('./assets/sora-regular.woff') format('woff'),
+         url('../assets/sora-regular.woff') format('woff'),
+         url('fonts/Sora-Regular.woff2') format('woff2');
+  }
+</style>
+<style>
   :root {
     --nx-purple: #7861FF;
     --nx-violet: #5B30FF;
@@ -74,11 +87,17 @@
   .pill-resolved { color: var(--nx-cyan); background: rgba(0,224,255,0.10); border-color: rgba(0,224,255,0.35); }
   .pill-pending  { color: #fbbf24; background: rgba(251,191,36,0.10); border-color: rgba(251,191,36,0.35); }
   .pill-blocked  { color: #f87171; background: rgba(248,113,113,0.12); border-color: rgba(248,113,113,0.40); }
+  .pill-p0 { color: #ffffff; background: #DC2626; border-color: #DC2626; }
+  .pill-p1 { color: #ffffff; background: #2563FF; border-color: #2563FF; }
+  .pill-p2 { color: #0A0F16; background: #F59E0B; border-color: #F59E0B; }
+  .pill-p3 { color: #ffffff; background: #6B7280; border-color: #6B7280; }
+  .pill-p4 { color: #ffffff; background: #6B7280; border-color: #6B7280; }
 
   /* Footer */
   .nx-footer { margin-top: 72px; padding-top: 24px; border-top: 1px solid var(--nx-border); display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 16px; font-family: 'Inter', sans-serif; font-size: 0.8rem; color: var(--nx-slate-400); }
   .nx-wordmark { font-family: 'Sora', sans-serif; font-weight: 700; letter-spacing: 0.16em; color: var(--nx-white); }
-  .nx-tagline { font-family: 'Sora', sans-serif; font-weight: 700; letter-spacing: 0.22em; font-size: 0.85rem; text-align: center; background: var(--nx-grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .nx-tagline-wrap { text-align: center; }
+  .nx-tagline-img { display: inline-block; max-width: 100%; height: auto; border-radius: 4px; opacity: 0.95; }
   .nx-ts { text-align: right; }
 
   @media (max-width: 640px) {
@@ -167,8 +186,10 @@ recovery.</li>
 
   <footer class="nx-footer">
     <div class="nx-wordmark">NEXOURA</div>
-    <div class="nx-tagline">WHERE AI BUILDS</div>
-    <div class="nx-ts">Generated 2026-05-20 18:58 UTC</div>
+    <div class="nx-tagline-wrap">
+      <img class="nx-tagline-img" src="data:image/png;base64,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" alt="WHERE AI BUILDS" width="300" height="30">
+    </div>
+    <div class="nx-ts">Generated 2026-05-20 19:56 UTC</div>
   </footer>
 
 </div>

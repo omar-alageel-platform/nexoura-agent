@@ -126,15 +126,15 @@ python3 patch_reference_docx.py
 
 `patch_reference_docx.py` (bundled) opens the `.docx` as a zip, edits `word/styles.xml`, and writes `<w:color w:val="…">` entries onto the `Heading1`/`Heading2`/`Heading3`/`Heading4`/`Title`/`Subtitle` blocks. No `python-docx` dependency — stdlib only.
 
-### Customization status — HONESTY
+### Customization status — HONESTY (polish landed)
 
-The committed `reference.docx` **has been patched**: heading colours map to the palette (H1 violet-600, H2 purple-500, H3 blue-500, H4 slate-700, Title violet-600, Subtitle purple-500). Verified by regenerating sample DOCX against it.
+The committed `reference.docx` is **fully patched**: heading colours map to the palette (H1 violet-600, H2 purple-500, H3 blue-500, H4 slate-700, Title violet-600, Subtitle purple-500), Sora is embedded, the gradient footer tagline is wired in, and 9 status-pill character styles are defined. Verified by regenerating sample DOCX against it (`unzip -l` confirms `word/fonts/sora.ttf`, `word/footer1.xml`, `word/media/footer-tagline.png`, and 9 `NEXOURAPill*` styles in `word/styles.xml`).
 
-What is **not** yet customized (TODO, low priority):
+What landed in the polish PR:
 
-- Default Latin font (still pandoc's Calibri-equivalent, not Sora). Embedding Sora requires shipping the font into the docx package and editing `word/fontTable.xml` — fragile across Word versions.
-- Footer/header gradient tagline. Word does not render CSS gradients; would need a pre-rendered image in `word/media/`.
-- Status pills. DOCX has no inline-span equivalent; the bracketed `[VERIFIED]` marker is left as plain text — readers see the marker, not a styled pill.
+- **Sora font embedding.** Real Sora Regular 400 TTF (32,040 B) ships at `assets/sora-regular.ttf` and `assets/sora-regular.woff` (real WOFF, 18,540 B). `patch_reference_docx.py` packs the TTF into `word/fonts/sora.ttf`, registers it in `word/fontTable.xml` via `<w:font w:name="Sora"><w:embedRegular r:id="rIdSora"/>`, creates `word/_rels/fontTable.xml.rels`, adds a TTF default in `[Content_Types].xml`, and sets `w:rFonts="Sora"` on Normal/Heading*/Title/Subtitle styles. **Caveat:** TTF stored un-obfuscated (no `w:fontKey`); some Word builds show an embedding-permission warning on open. Acceptable for internal/client review; flag if a stakeholder reports it.
+- **Gradient footer tagline.** 600×60 PNG with the full 4-stop NEXOURA gradient (#7861FF→#5B30FF→#2563FF→#00E0FF) and white "WHERE AI BUILDS" centred. Generated deterministically via `examples/generation-script.py` (stdlib zlib+struct, no PIL — env lacked Pillow; documented in script header). Committed at `assets/footer-tagline.png` (1,761 B). HTML template embeds it as a base64 data URL (self-contained, no external dep). DOCX wires it via `word/footer1.xml` + `word/_rels/footer1.xml.rels` + a `<w:footerReference w:type="default">` in `sectPr`.
+- **Status pills.** 9 character styles defined in `word/styles.xml`: `NEXOURAPillVerified` (#00E0FF), `NEXOURAPillResolved` (#2563FF), `NEXOURAPillBlocked` (#7861FF), `NEXOURAPillWarning` (#F59E0B), `NEXOURAPillP0` (#DC2626), `NEXOURAPillP1` (#2563FF), `NEXOURAPillP2` (#F59E0B), `NEXOURAPillP3` (#6B7280), `NEXOURAPillP4` (#6B7280). Each: Sora bold 11pt, white text, `w:shd` cFill with the per-pill colour. `render.py` post-processes `word/document.xml` after pandoc to wrap `[VERIFIED]` / `[RESOLVED]` / `[BLOCKED]` / `[WARNING]` / `[P0]`–`[P4]` markers in styled runs. **Caveat:** `w:shd` has no native rounded-corner support in Word — pills render as flat coloured rectangles in DOCX. HTML retains 4px rounded corners via CSS.
 
 Reproduce the patch from scratch:
 
