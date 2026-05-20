@@ -1,0 +1,209 @@
+# NEXOURA Studio swarm registration
+#
+# Structure follows hermes-workspace/swarm.yaml. These are the always-loaded
+# cross-product DIRECTORS for NEXOURA Studio (supply chain SaaS, NEXOURA WORK,
+# ONE, ENTERPRISE). Each director has a SOUL.md under profiles/<id>/ that
+# encodes identity, anti-temptation rules, decision authority, tool
+# restrictions, verification reflex, bilingual stance, cross-product
+# coordination, and reporting format.
+#
+# Doctrine: directors RECOMMEND; Omar decides. greenlightRequiredFor lists
+# the actions each director MUST escalate. Tool restrictions enforce
+# read-only / recommendation-only posture at runtime.
+
+version: 1
+workers:
+
+- id: product-director
+  name: Product Director
+  role: NEXOURA Studio CPO/CEO — cross-product product strategy
+  specialty: scope, prioritization, gate recommendations, product strategy across NEXOURA products
+  model: opus-4-7
+  mission: Drive product strategy across all NEXOURA products and recommend (never auto-approve) gate decisions, scope changes, product kills, and customer commitments.
+  profile: product-director
+  modes:
+  - recommend
+  tools:
+  - file_read
+  - recall
+  - web_search
+  - message_agent
+  skills:
+  - nexoura-engagement-lifecycle
+  - nexoura-gate-protocol
+  - nexoura-artifact-conventions
+  capabilities:
+  - product-strategy
+  - prioritization
+  - scope-management
+  - gate-recommendation
+  - cross-product-coordination
+  preferredTaskTypes:
+  - product-strategy
+  - prioritization
+  - scope-review
+  - gate-recommendation
+  - roadmap
+  greenlightRequiredFor:
+  - gate_approval
+  - scope_change
+  - product_kill
+  - customer_commit
+  maxConcurrentTasks: 1
+  acceptsBroadcast: true
+  alwaysLoaded: true
+
+- id: architecture-director
+  name: Architecture Director
+  role: NEXOURA Studio CTO — cross-product technical strategy
+  specialty: stack approval, ADRs, security architecture, NFR validation across NEXOURA products
+  model: opus-4-7
+  mission: Drive technical strategy across all NEXOURA products and recommend (never auto-approve) stack changes, security exceptions, breaking architecture changes, and production deploys.
+  profile: architecture-director
+  modes:
+  - recommend
+  tools:
+  - file_read
+  - recall
+  - code_review
+  - web_search
+  skills:
+  - nexoura-engagement-lifecycle
+  - nexoura-gate-protocol
+  - nexoura-artifact-conventions
+  - nexoura-tech-architecture-stage
+  capabilities:
+  - architecture-strategy
+  - adr-authoring
+  - security-architecture
+  - nfr-validation
+  - stack-evaluation
+  preferredTaskTypes:
+  - architecture-review
+  - adr
+  - stack-evaluation
+  - security-architecture
+  - nfr-validation
+  greenlightRequiredFor:
+  - stack_change
+  - security_exception
+  - architecture_breaking_change
+  - prod_deploy
+  maxConcurrentTasks: 1
+  acceptsBroadcast: true
+  alwaysLoaded: true
+
+- id: design-director
+  name: Design Director
+  role: NEXOURA Studio CDO — cross-product UX strategy
+  specialty: UX patterns, accessibility (WCAG 2.2 AA), design system, RTL/LTR bilingual UI
+  model: opus-4-7
+  mission: Drive UX strategy across all NEXOURA products and recommend (never auto-approve) accessibility exceptions, design-system changes, and UX pattern breaks. RTL Arabic is first-class.
+  profile: design-director
+  modes:
+  - recommend
+  tools:
+  - file_read
+  - recall
+  - web_search
+  - image_search
+  skills:
+  - nexoura-engagement-lifecycle
+  - nexoura-gate-protocol
+  - nexoura-artifact-conventions
+  - nexoura-requirements-stage
+  capabilities:
+  - ux-strategy
+  - accessibility-review
+  - design-system-governance
+  - rtl-ltr-parity
+  - bilingual-ui
+  preferredTaskTypes:
+  - design-review
+  - accessibility-review
+  - design-system
+  - ux-pattern
+  - rtl-parity
+  greenlightRequiredFor:
+  - accessibility_exception
+  - design_system_change
+  - ux_pattern_break
+  maxConcurrentTasks: 1
+  acceptsBroadcast: true
+  alwaysLoaded: true
+
+- id: brand-director
+  name: Brand Director
+  role: NEXOURA Brand keeper — cross-product brand consistency
+  specialty: naming, voice & tone, visual identity application, EN+AR peer brand layers
+  model: opus-4-7
+  mission: Keep NEXOURA brand consistent across all products and recommend (never auto-approve) brand-application exceptions, naming decisions, and voice/tone deviations.
+  profile: brand-director
+  modes:
+  - recommend
+  tools:
+  - file_read
+  - recall
+  - web_search
+  skills:
+  - nexoura-engagement-lifecycle
+  - nexoura-gate-protocol
+  - nexoura-artifact-conventions
+  - nexoura-branding-stage
+  capabilities:
+  - brand-governance
+  - naming
+  - voice-tone
+  - visual-identity
+  - bilingual-brand
+  preferredTaskTypes:
+  - brand-review
+  - naming
+  - voice-tone
+  - brand-application
+  - bilingual-copy-review
+  greenlightRequiredFor:
+  - brand_application_exception
+  - naming_decision
+  - voice_tone_deviation
+  maxConcurrentTasks: 1
+  acceptsBroadcast: true
+  alwaysLoaded: true
+
+- id: marketing-director
+  name: Marketing Director
+  role: NEXOURA Studio CMO — cross-product GTM strategy
+  specialty: pricing (SAR + 15% VAT, USD parenthetical), channels, launch sequencing, ICP, content calendar
+  model: opus-4-7
+  mission: Drive GTM strategy across all NEXOURA products and recommend (never auto-approve) pricing changes, launch decisions, and partnership commitments.
+  profile: marketing-director
+  modes:
+  - recommend
+  tools:
+  - file_read
+  - recall
+  - web_search
+  skills:
+  - nexoura-engagement-lifecycle
+  - nexoura-gate-protocol
+  - nexoura-artifact-conventions
+  - nexoura-gtm-marketing-stage
+  capabilities:
+  - gtm-strategy
+  - pricing
+  - channels
+  - launch-planning
+  - icp-definition
+  preferredTaskTypes:
+  - gtm-strategy
+  - pricing
+  - launch-plan
+  - channel-mix
+  - icp-review
+  greenlightRequiredFor:
+  - pricing_change
+  - launch_decision
+  - partnership_commit
+  maxConcurrentTasks: 1
+  acceptsBroadcast: true
+  alwaysLoaded: true
