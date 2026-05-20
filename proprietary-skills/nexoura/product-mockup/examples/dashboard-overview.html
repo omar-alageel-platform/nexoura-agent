@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEXOURA Forge — Operations Overview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --nx-purple: #7861FF; --nx-violet: #5B30FF; --nx-blue: #2563FF; --nx-cyan: #00E0FF;
+    --nx-navy: #0A0F16; --nx-white: #F5F7FA;
+    --slate-900: #101826; --slate-800: #1a2332; --slate-700: #475569; --slate-500: #94A3B8;
+    --nx-gradient: linear-gradient(135deg, #7861FF 0%, #5B30FF 28%, #2563FF 68%, #00E0FF 100%);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--nx-navy); color: var(--nx-white); font-family: 'Sora', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif; -webkit-font-smoothing: antialiased; line-height: 1.5; min-height: 100vh; }
+  a { color: inherit; text-decoration: none; }
+  button { font-family: inherit; cursor: pointer; }
+
+  .app { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+
+  /* ===== Sidebar ===== */
+  .sidebar { background: var(--slate-900); border-right: 1px solid rgba(255,255,255,0.06); padding: 1.5rem 0; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+  .sb-logo { padding: 0 1.5rem 2rem; }
+  .nx-logo { display: inline-flex; align-items: center; font-weight: 700; letter-spacing: 0.12em; font-size: 1.05rem; }
+  .nx-oring { width: 1em; height: 1em; vertical-align: -0.15em; }
+  .sb-section { padding: 0 0.75rem; margin-bottom: 1.5rem; }
+  .sb-section h5 { color: var(--slate-500); font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; padding: 0 0.75rem 0.75rem; font-weight: 600; }
+  .sb-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.65rem 0.85rem; border-radius: 0.5rem; color: var(--slate-500); font-size: 0.92rem; font-weight: 500; margin-bottom: 0.2rem; transition: all 0.15s; position: relative; }
+  .sb-item:hover { background: rgba(255,255,255,0.03); color: var(--nx-white); }
+  .sb-item.active { background: rgba(120,97,255,0.1); color: var(--nx-white); }
+  .sb-item.active::before { content: ""; position: absolute; left: -0.75rem; top: 0.5rem; bottom: 0.5rem; width: 2px; background: var(--nx-gradient); border-radius: 999px; }
+  .sb-item svg { width: 18px; height: 18px; flex-shrink: 0; }
+  .sb-item .pill-mini { margin-left: auto; background: rgba(239,68,68,0.15); color: #fca5a5; font-size: 0.7rem; font-weight: 600; padding: 0.1rem 0.5rem; border-radius: 999px; }
+
+  /* ===== Header ===== */
+  .header { display: grid; grid-template-columns: 1fr 2fr 1fr; align-items: center; gap: 2rem; padding: 1rem 2rem; border-bottom: 1px solid rgba(255,255,255,0.06); background: rgba(10,15,22,0.7); backdrop-filter: blur(8px); position: sticky; top: 0; z-index: 20; }
+  .breadcrumbs { color: var(--slate-500); font-size: 0.9rem; }
+  .breadcrumbs strong { color: var(--nx-white); font-weight: 600; }
+  .search { position: relative; max-width: 520px; width: 100%; justify-self: center; }
+  .search input { width: 100%; background: var(--slate-900); border: 1px solid rgba(255,255,255,0.08); color: var(--nx-white); padding: 0.65rem 1rem 0.65rem 2.5rem; border-radius: 0.5rem; font-family: inherit; font-size: 0.9rem; }
+  .search input::placeholder { color: var(--slate-500); }
+  .search input:focus { outline: none; border-color: var(--nx-purple); }
+  .search svg { position: absolute; left: 0.85rem; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--slate-500); }
+  .search kbd { position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%); color: var(--slate-500); font-size: 0.7rem; background: rgba(255,255,255,0.05); padding: 0.15rem 0.4rem; border-radius: 0.25rem; font-family: inherit; }
+  .header-right { display: flex; align-items: center; gap: 1rem; justify-self: end; }
+  .icon-btn { width: 36px; height: 36px; border-radius: 0.5rem; background: transparent; border: 1px solid rgba(255,255,255,0.08); color: var(--slate-500); display: grid; place-items: center; position: relative; }
+  .icon-btn:hover { color: var(--nx-white); border-color: rgba(255,255,255,0.2); }
+  .icon-btn .dot { position: absolute; top: 6px; right: 6px; width: 8px; height: 8px; background: var(--nx-cyan); border-radius: 50%; border: 2px solid var(--nx-navy); }
+  .user-menu { display: flex; align-items: center; gap: 0.6rem; padding: 0.35rem 0.75rem 0.35rem 0.35rem; border-radius: 0.5rem; border: 1px solid rgba(255,255,255,0.08); cursor: pointer; }
+  .user-menu:hover { background: rgba(255,255,255,0.03); }
+  .avatar-sm { width: 28px; height: 28px; border-radius: 50%; background: var(--nx-gradient); flex-shrink: 0; }
+  .user-menu .name { font-size: 0.85rem; font-weight: 500; }
+  .user-menu .caret { color: var(--slate-500); font-size: 0.7rem; }
+
+  /* ===== Main content ===== */
+  main { padding: 2rem; }
+  .page-head { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
+  .page-head h1 { font-size: 1.75rem; font-weight: 700; letter-spacing: -0.01em; margin-bottom: 0.35rem; }
+  .page-head p { color: var(--slate-500); font-size: 0.95rem; }
+  .head-actions { display: flex; gap: 0.75rem; }
+  .btn-primary { background: var(--nx-gradient); color: #fff; padding: 0.6rem 1.25rem; border-radius: 0.5rem; font-weight: 600; font-size: 0.9rem; border: none; }
+  .btn-ghost { color: var(--nx-white); border: 1px solid rgba(245,247,250,0.18); padding: 0.6rem 1.25rem; border-radius: 0.5rem; font-weight: 500; font-size: 0.9rem; background: transparent; }
+  .btn-ghost:hover { border-color: rgba(245,247,250,0.4); }
+
+  /* ===== Stat cards ===== */
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem; }
+  .stat { background: var(--slate-900); border: 1px solid rgba(255,255,255,0.06); border-radius: 0.85rem; padding: 1.5rem; position: relative; overflow: hidden; }
+  .stat .label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--slate-500); font-weight: 600; margin-bottom: 0.75rem; }
+  .stat .value { font-size: 2rem; font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; }
+  .stat .delta { margin-top: 0.5rem; font-size: 0.85rem; font-weight: 500; display: inline-flex; align-items: center; gap: 0.35rem; }
+  .delta.up { color: #67e8f9; }
+  .delta.down { color: #fcd34d; }
+  .delta.warn { color: #fca5a5; }
+  .spark { margin-top: 1rem; height: 32px; }
+  .spark svg { width: 100%; height: 100%; }
+
+  /* ===== Filters bar ===== */
+  .filters { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap; }
+  .filters .search { max-width: 300px; }
+  .filter-chip { background: var(--slate-900); border: 1px solid rgba(255,255,255,0.08); color: var(--nx-white); padding: 0.55rem 0.9rem; border-radius: 0.5rem; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 0.5rem; cursor: pointer; }
+  .filter-chip:hover { border-color: rgba(255,255,255,0.2); }
+  .filter-chip .caret { color: var(--slate-500); font-size: 0.7rem; }
+  .filter-spacer { flex: 1; }
+  .export-btn { background: transparent; color: var(--nx-white); border: 1px solid rgba(255,255,255,0.08); padding: 0.55rem 0.9rem; border-radius: 0.5rem; font-size: 0.85rem; font-weight: 500; display: inline-flex; align-items: center; gap: 0.5rem; }
+  .export-btn:hover { border-color: var(--nx-purple); }
+
+  /* ===== Table ===== */
+  .table-wrap { background: var(--slate-900); border: 1px solid rgba(255,255,255,0.06); border-radius: 0.85rem; overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+  thead th { background: rgba(255,255,255,0.02); color: var(--slate-500); font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; padding: 0.85rem 1rem; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.06); white-space: nowrap; }
+  thead th.sortable { cursor: pointer; }
+  thead th.sortable:hover { color: var(--nx-white); }
+  thead th .sort-caret { display: inline-block; margin-left: 0.3rem; opacity: 0.6; }
+  thead th.sorted .sort-caret { opacity: 1; color: var(--nx-purple); }
+  tbody td { padding: 0.95rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.04); }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: rgba(120,97,255,0.04); }
+  td.sku { font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 0.85rem; color: var(--nx-white); }
+  td.numeric { font-variant-numeric: tabular-nums; }
+  td.muted { color: var(--slate-500); }
+
+  /* ===== Status pills ===== */
+  .pill { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 999px; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.06em; white-space: nowrap; }
+  .pill.p0 { background: rgba(239,68,68,0.15); color: #fca5a5; }
+  .pill.p1 { background: rgba(245,158,11,0.15); color: #fcd34d; }
+  .pill.verified { background: rgba(0,224,255,0.12); color: #67e8f9; }
+  .pill.resolved { background: rgba(34,197,94,0.15); color: #86efac; }
+  .pill.investigating { background: rgba(148,163,184,0.15); color: var(--slate-500); }
+
+  /* ===== Pagination ===== */
+  .pagination { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.25rem; border-top: 1px solid rgba(255,255,255,0.06); font-size: 0.85rem; color: var(--slate-500); }
+  .pagination .pages { display: flex; gap: 0.35rem; }
+  .pagination .pages button { background: transparent; border: 1px solid rgba(255,255,255,0.08); color: var(--nx-white); width: 32px; height: 32px; border-radius: 0.4rem; font-size: 0.85rem; }
+  .pagination .pages button.active { background: var(--nx-gradient); border-color: transparent; }
+  .pagination .pages button:hover:not(.active) { border-color: var(--nx-purple); }
+
+  /* ===== Responsive ===== */
+  @media (max-width: 1280px) {
+    .stats { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 1024px) {
+    .app { grid-template-columns: 72px 1fr; }
+    .sb-item span.label, .sb-section h5, .sb-logo .word { display: none; }
+    .sb-item { justify-content: center; padding: 0.65rem; }
+    .header { grid-template-columns: 1fr 1fr auto; }
+  }
+  @media (max-width: 768px) {
+    .app { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .header { grid-template-columns: 1fr auto; gap: 1rem; padding: 0.75rem 1rem; }
+    .search { display: none; }
+    main { padding: 1.25rem; }
+    .stats { grid-template-columns: 1fr; }
+    .table-wrap { overflow-x: auto; }
+    table { min-width: 720px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ===== Sidebar ===== -->
+  <aside class="sidebar">
+    <div class="sb-logo">
+      <a href="#" class="nx-logo">
+        <span class="word">NEX</span><svg class="nx-oring" viewBox="0 0 32 32" aria-hidden="true">
+          <defs><linearGradient id="og2" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#7861FF"/><stop offset="28%" stop-color="#5B30FF"/>
+            <stop offset="68%" stop-color="#2563FF"/><stop offset="100%" stop-color="#00E0FF"/>
+          </linearGradient></defs>
+          <circle cx="16" cy="16" r="12" fill="none" stroke="url(#og2)" stroke-width="4"/>
+        </svg><span class="word">URA</span>
+      </a>
+    </div>
+
+    <div class="sb-section">
+      <h5>Operations</h5>
+      <a href="#" class="sb-item active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+        <span class="label">Overview</span>
+      </a>
+      <a href="#" class="sb-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.7l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.7l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+        <span class="label">SKUs</span>
+      </a>
+      <a href="#" class="sb-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="7" r="4"/><circle cx="17" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/></svg>
+        <span class="label">Suppliers</span>
+      </a>
+      <a href="#" class="sb-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+        <span class="label">Shipments</span>
+      </a>
+      <a href="#" class="sb-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><circle cx="12" cy="17" r="0.5"/></svg>
+        <span class="label">Exceptions</span>
+        <span class="pill-mini">3</span>
+      </a>
+    </div>
+
+    <div class="sb-section">
+      <h5>Intelligence</h5>
+      <a href="#" class="sb-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-5"/></svg>
+        <span class="label">Forecasts</span>
+      </a>
+      <a href="#" class="sb-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+        <span class="label">Scenarios</span>
+      </a>
+      <a href="#" class="sb-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l3-9 4 18 3-9h4"/></svg>
+        <span class="label">Reports</span>
+      </a>
+    </div>
+
+    <div class="sb-section">
+      <h5>Workspace</h5>
+      <a href="#" class="sb-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <span class="label">Settings</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- ===== Main pane ===== -->
+  <div>
+    <!-- Header -->
+    <div class="header">
+      <div class="breadcrumbs">Forge <span style="opacity:0.4;">›</span> <strong>Operations Overview</strong></div>
+      <div class="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" placeholder="Search SKUs, suppliers, shipments…" aria-label="Search">
+        <kbd>⌘ K</kbd>
+      </div>
+      <div class="header-right">
+        <button class="icon-btn" aria-label="Notifications">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="dot"></span>
+        </button>
+        <button class="icon-btn" aria-label="Help">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5"/></svg>
+        </button>
+        <div class="user-menu">
+          <div class="avatar-sm"></div>
+          <span class="name">P. Raghavan</span>
+          <span class="caret">▾</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <main>
+      <div class="page-head">
+        <div>
+          <h1>Operations Overview</h1>
+          <p>Live across 14 distribution centers · Last sync 38 seconds ago</p>
+        </div>
+        <div class="head-actions">
+          <button class="btn-ghost">Run scenario</button>
+          <button class="btn-primary">+ New review</button>
+        </div>
+      </div>
+
+      <!-- Stat cards -->
+      <div class="stats">
+        <div class="stat">
+          <div class="label">Active SKUs</div>
+          <div class="value">42,871</div>
+          <div class="delta up">▲ +312 vs last week</div>
+          <div class="spark"><svg viewBox="0 0 100 32" preserveAspectRatio="none"><polyline points="0,24 12,22 24,20 36,18 48,15 60,12 72,11 84,8 100,6" fill="none" stroke="url(#og2)" stroke-width="2"/></svg></div>
+        </div>
+        <div class="stat">
+          <div class="label">Open exceptions</div>
+          <div class="value">27</div>
+          <div class="delta warn">▲ +6 vs last week</div>
+          <div class="spark"><svg viewBox="0 0 100 32" preserveAspectRatio="none"><polyline points="0,20 12,22 24,18 36,16 48,18 60,14 72,16 84,12 100,10" fill="none" stroke="#fcd34d" stroke-width="2" opacity="0.8"/></svg></div>
+        </div>
+        <div class="stat">
+          <div class="label">OTIF (rolling 30d)</div>
+          <div class="value">96.4%</div>
+          <div class="delta up">▲ +1.2 pts</div>
+          <div class="spark"><svg viewBox="0 0 100 32" preserveAspectRatio="none"><polyline points="0,18 12,16 24,17 36,14 48,12 60,11 72,10 84,9 100,7" fill="none" stroke="#67e8f9" stroke-width="2"/></svg></div>
+        </div>
+        <div class="stat">
+          <div class="label">Inventory at risk</div>
+          <div class="value">$2.41M</div>
+          <div class="delta down">▼ −$184K vs last week</div>
+          <div class="spark"><svg viewBox="0 0 100 32" preserveAspectRatio="none"><polyline points="0,8 12,10 24,12 36,14 48,15 60,18 72,20 84,22 100,24" fill="none" stroke="#86efac" stroke-width="2"/></svg></div>
+        </div>
+      </div>
+
+      <!-- Filters -->
+      <div class="filters">
+        <div class="search" style="max-width: 280px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" placeholder="Filter exceptions…" aria-label="Filter">
+        </div>
+        <button class="filter-chip">Severity: All <span class="caret">▾</span></button>
+        <button class="filter-chip">Region: Global <span class="caret">▾</span></button>
+        <button class="filter-chip">Owner: Anyone <span class="caret">▾</span></button>
+        <button class="filter-chip">Last 7 days <span class="caret">▾</span></button>
+        <div class="filter-spacer"></div>
+        <button class="export-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export CSV
+        </button>
+      </div>
+
+      <!-- Table -->
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th class="sortable sorted">ID <span class="sort-caret">▼</span></th>
+              <th class="sortable">SKU <span class="sort-caret">⇅</span></th>
+              <th>Description</th>
+              <th class="sortable">Supplier <span class="sort-caret">⇅</span></th>
+              <th class="sortable">Severity <span class="sort-caret">⇅</span></th>
+              <th>Status</th>
+              <th class="sortable">Owner <span class="sort-caret">⇅</span></th>
+              <th class="sortable">Detected <span class="sort-caret">⇅</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="muted">EXC-10428</td>
+              <td class="sku">SKU-44219-B</td>
+              <td>Polymer hinge — 38mm, black</td>
+              <td>Halcyon Logistics</td>
+              <td><span class="pill p0">P0</span></td>
+              <td><span class="pill investigating">INVESTIGATING</span></td>
+              <td>P. Raghavan</td>
+              <td class="muted">12 min ago</td>
+            </tr>
+            <tr>
+              <td class="muted">EXC-10427</td>
+              <td class="sku">SKU-09812-A</td>
+              <td>Aluminum bracket assembly v3</td>
+              <td>Atlas Parts</td>
+              <td><span class="pill p0">P0</span></td>
+              <td><span class="pill verified">VERIFIED</span></td>
+              <td>M. Holloway</td>
+              <td class="muted">47 min ago</td>
+            </tr>
+            <tr>
+              <td class="muted">EXC-10426</td>
+              <td class="sku">SKU-77104-C</td>
+              <td>Insulated container, 12L</td>
+              <td>Northwind Industrial</td>
+              <td><span class="pill p1">P1</span></td>
+              <td><span class="pill verified">VERIFIED</span></td>
+              <td>E. Vasquez</td>
+              <td class="muted">2 hours ago</td>
+            </tr>
+            <tr>
+              <td class="muted">EXC-10425</td>
+              <td class="sku">SKU-21044-D</td>
+              <td>Cable harness, 6-pin auto grade</td>
+              <td>Meridian Logistics</td>
+              <td><span class="pill p1">P1</span></td>
+              <td><span class="pill resolved">RESOLVED</span></td>
+              <td>P. Raghavan</td>
+              <td class="muted">5 hours ago</td>
+            </tr>
+            <tr>
+              <td class="muted">EXC-10424</td>
+              <td class="sku">SKU-30551-F</td>
+              <td>Stainless steel fastener pack (×100)</td>
+              <td>Cirrus Foods Supply</td>
+              <td><span class="pill p1">P1</span></td>
+              <td><span class="pill investigating">INVESTIGATING</span></td>
+              <td>A. Okafor</td>
+              <td class="muted">8 hours ago</td>
+            </tr>
+            <tr>
+              <td class="muted">EXC-10423</td>
+              <td class="sku">SKU-66218-A</td>
+              <td>Thermal sensor module rev. 2</td>
+              <td>Halcyon Logistics</td>
+              <td><span class="pill p1">P1</span></td>
+              <td><span class="pill resolved">RESOLVED</span></td>
+              <td>M. Holloway</td>
+              <td class="muted">Yesterday</td>
+            </tr>
+            <tr>
+              <td class="muted">EXC-10422</td>
+              <td class="sku">SKU-15009-E</td>
+              <td>Display bezel, matte (LCM-15)</td>
+              <td>Atlas Parts</td>
+              <td><span class="pill p1">P1</span></td>
+              <td><span class="pill resolved">RESOLVED</span></td>
+              <td>E. Vasquez</td>
+              <td class="muted">Yesterday</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="pagination">
+          <span>Showing 1–7 of 27 exceptions</span>
+          <div class="pages">
+            <button>‹</button>
+            <button class="active">1</button>
+            <button>2</button>
+            <button>3</button>
+            <button>4</button>
+            <button>›</button>
+          </div>
+        </div>
+      </div>
+
+      <p style="margin-top: 3rem; text-align: center; color: var(--slate-500); font-size: 0.75rem; letter-spacing: 0.2em;">WHERE AI BUILDS</p>
+    </main>
+  </div>
+</div>
+
+</body>
+</html>
