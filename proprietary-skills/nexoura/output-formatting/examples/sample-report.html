@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Verification Report — Multi-Tenant Workspace Isolation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --nx-purple-500: #7861FF;
+    --nx-violet-600: #5B30FF;
+    --nx-blue-500:   #2563FF;
+    --nx-cyan-400:   #00E0FF;
+    --nx-navy-950:   #0A0F16;
+    --nx-white-50:   #F5F7FA;
+    --nx-slate-900:  #101826;
+    --nx-slate-700:  #475569;
+    --nx-gradient: linear-gradient(135deg, #7861FF 0%, #5B30FF 28%, #2563FF 68%, #00E0FF 100%);
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--nx-navy-950);
+    color: var(--nx-white-50);
+    font-family: 'Sora', 'Inter', 'Geist', system-ui, -apple-system, sans-serif;
+    font-weight: 400;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  .nx-shell {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 64px 48px 96px;
+  }
+  /* Header */
+  .nx-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 24px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    margin-bottom: 48px;
+  }
+  .nx-header-text { flex: 1; min-width: 0; }
+  .nx-kicker {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--nx-slate-700);
+    margin-bottom: 14px;
+  }
+  .nx-kicker .nx-kicker-accent {
+    background: var(--nx-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  h1.nx-title {
+    font-family: 'Sora', system-ui, sans-serif;
+    font-size: 38px;
+    font-weight: 600;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin: 0 0 16px;
+    color: var(--nx-white-50);
+  }
+  .nx-meta {
+    font-size: 13px;
+    color: var(--nx-slate-700);
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+  }
+  .nx-meta span strong { color: var(--nx-white-50); font-weight: 500; }
+  /* O-ring logo mark — CSS only */
+  .nx-oring {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--nx-gradient);
+    flex-shrink: 0;
+    position: relative;
+  }
+  .nx-oring::after {
+    content: "";
+    position: absolute;
+    inset: 4px;
+    border-radius: 50%;
+    background: var(--nx-navy-950);
+  }
+  /* Body typography */
+  h2 {
+    font-family: 'Sora', system-ui, sans-serif;
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--nx-white-50);
+    margin: 48px 0 18px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  h3 {
+    font-family: 'Sora', system-ui, sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--nx-white-50);
+    margin: 28px 0 10px;
+  }
+  p { margin: 0 0 16px; color: rgba(245,247,250,0.86); }
+  a { color: var(--nx-cyan-400); text-decoration: none; border-bottom: 1px solid rgba(0,224,255,0.3); }
+  a:hover { border-bottom-color: var(--nx-cyan-400); }
+  ul, ol { padding-left: 22px; color: rgba(245,247,250,0.86); }
+  li { margin: 6px 0; }
+  strong { color: var(--nx-white-50); font-weight: 600; }
+  code {
+    font-family: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+    font-size: 0.88em;
+    background: rgba(255,255,255,0.06);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--nx-cyan-400);
+  }
+  pre {
+    background: var(--nx-slate-900);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-left: 3px solid var(--nx-purple-500);
+    padding: 16px 20px;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-size: 13px;
+    line-height: 1.55;
+  }
+  pre code { background: transparent; padding: 0; color: rgba(245,247,250,0.92); }
+  blockquote {
+    margin: 20px 0;
+    padding: 4px 0 4px 20px;
+    border-left: 3px solid var(--nx-purple-500);
+    color: rgba(245,247,250,0.78);
+    font-style: normal;
+  }
+  hr { border: 0; border-top: 1px solid rgba(255,255,255,0.08); margin: 40px 0; }
+  /* Cards (use .nx-card div in markdown via raw HTML if desired) */
+  .nx-card {
+    background: var(--nx-slate-900);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-left: 3px solid var(--nx-cyan-400);
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin: 20px 0;
+  }
+  .nx-metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 14px;
+    margin: 24px 0;
+  }
+  .nx-metric {
+    background: var(--nx-slate-900);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px;
+    padding: 18px 20px;
+  }
+  .nx-metric-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--nx-slate-700);
+    margin-bottom: 6px;
+  }
+  .nx-metric-value {
+    font-family: 'Sora', system-ui, sans-serif;
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--nx-white-50);
+  }
+  /* Status pills — also auto-applied to literal markers via JS-free strong */
+  .nx-pill,
+  .pill-verified, .pill-resolved, .pill-pending {
+    display: inline-block;
+    font-family: 'Sora', system-ui, sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 999px;
+    border: 1px solid currentColor;
+    margin-right: 6px;
+    vertical-align: 1px;
+  }
+  .pill-verified { color: var(--nx-cyan-400); background: rgba(0,224,255,0.08); }
+  .pill-resolved { color: var(--nx-purple-500); background: rgba(120,97,255,0.08); }
+  .pill-pending  { color: var(--nx-slate-700); background: rgba(71,85,105,0.12); }
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 14px;
+  }
+  th, td {
+    text-align: left;
+    padding: 10px 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  th {
+    color: var(--nx-slate-700);
+    font-weight: 600;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  /* Footer */
+  .nx-footer {
+    margin-top: 80px;
+    padding-top: 28px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--nx-slate-700);
+  }
+  .nx-footer .nx-tagline {
+    background: var(--nx-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-weight: 600;
+  }
+  @media (max-width: 600px) {
+    .nx-shell { padding: 36px 22px 64px; }
+    h1.nx-title { font-size: 28px; }
+  }
+</style>
+</head>
+<body>
+<div class="nx-shell">
+  <header class="nx-header">
+    <div class="nx-header-text">
+      <div class="nx-kicker"><span class="nx-kicker-accent">NEXOURA ·
+STUDIO · VERIFICATION REPORT</span></div>
+      <h1 class="nx-title">Verification Report — Multi-Tenant Workspace
+Isolation</h1>
+      <div class="nx-meta">
+        <span>Date <strong>2026-05-20</strong></span>
+        <span>Author <strong>product-director</strong></span>
+        <span>Status <strong>Issued</strong></span>
+      </div>
+    </div>
+    <div class="nx-oring" aria-hidden="true"></div>
+  </header>
+
+  <main class="nx-body">
+<h2 id="executive-summary">Executive Summary</h2>
+<p>This report verifies the workspace-isolation work completed in sprint
+24. Two findings were tracked; both are now closed. The platform meets
+the contractual tenant-isolation criteria defined in the engagement
+brief and is cleared for the next gate.</p>
+<div class="nx-metrics">
+<div class="nx-metric">
+<div class="nx-metric-label">
+Findings
+</div>
+<div class="nx-metric-value">
+2
+</div>
+</div>
+<div class="nx-metric">
+<div class="nx-metric-label">
+Verified
+</div>
+<div class="nx-metric-value">
+1
+</div>
+</div>
+<div class="nx-metric">
+<div class="nx-metric-label">
+Resolved
+</div>
+<div class="nx-metric-value">
+1
+</div>
+</div>
+<div class="nx-metric">
+<div class="nx-metric-label">
+Gate
+</div>
+<div class="nx-metric-value">
+PASS
+</div>
+</div>
+</div>
+<h2 id="findings">Findings</h2>
+<h3 id="f-01-row-level-security-policy-coverage">F-01 — Row-level
+security policy coverage</h3>
+<p><span class="pill-verified">VERIFIED</span> Every tenant-scoped table
+now carries an explicit RLS policy. Coverage was checked against the
+schema manifest and the 14 in-scope tables matched 1:1. Cross-tenant
+read attempts return zero rows under the integration-test harness.</p>
+<p>Evidence: <code>tests/isolation/rls_matrix.py</code> (commit
+<code>9c2a1e4</code>), 142/142 assertions green.</p>
+<h3 id="f-02-cache-key-tenant-prefix">F-02 — Cache key tenant
+prefix</h3>
+<p><span class="pill-resolved">RESOLVED</span> The Redis adapter
+previously omitted the tenant prefix on bulk-invalidate calls. Patched
+in <code>cache/redis_adapter.py</code> and re-verified against the
+cross-tenant fuzz suite. No leaks observed across 10k randomized
+operations.</p>
+<h2 id="decisions">Decisions</h2>
+<ul>
+<li>Proceed to the next engagement gate (operations stage).</li>
+<li>Adopt the RLS matrix harness as a standing pre-release check.</li>
+<li>Defer the optional per-tenant cache namespace migration; revisit
+once tenant count exceeds 50.</li>
+</ul>
+<h2 id="next-steps">Next Steps</h2>
+<ul>
+<li>Operations stage kickoff scheduled for the following week.</li>
+<li>Brand director to publish the customer-facing changelog
+excerpt.</li>
+</ul>
+  </main>
+
+  <footer class="nx-footer">
+    <span class="nx-tagline">WHERE AI BUILDS</span>
+    <span>2026-05-20</span>
+  </footer>
+</div>
+</body>
+</html>
