@@ -63,7 +63,7 @@
     <span class="nx-mark nx-mark--64"></span>
   </div>
 
-  <h2 style="margin-top:48px">SVG O-ring (favicon-ready)</h2>
+  <h2 style="margin-top:48px">SVG O-ring (favicon-ready, canonical mark)</h2>
   <svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-label="NEXOURA mark">
     <defs>
       <linearGradient id="nxg" x1="0" y1="0" x2="1" y2="1">
@@ -73,7 +73,30 @@
         <stop offset="100%" stop-color="#00E0FF"/>
       </linearGradient>
     </defs>
-    <circle cx="32" cy="32" r="26" fill="none" stroke="url(#nxg)" stroke-width="5"/>
+    <circle cx="32" cy="32" r="26" fill="none" stroke="url(#nxg)" stroke-width="5"
+            filter="drop-shadow(0 0 6px rgba(120,97,255,0.35))"/>
   </svg>
+
+  <h2 style="margin-top:48px">SVG-canonical lockup (NEX · O-ring SVG · URA)</h2>
+  <p>Inline SVG version — preferred for static export, email, and PDF render.
+     The CSS conic/mask version above is the runtime fallback.</p>
+  <div class="row">
+    <span style="font-family:'Sora',sans-serif; font-weight:500; font-size:48px; letter-spacing:0.3em; color:var(--text-primary); line-height:1; white-space:nowrap; display:inline-flex; align-items:center;">
+      <span>NEX</span>
+      <svg width="48" height="48" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-label="O" style="margin:0 0.06em; position:relative; top:0.04em;">
+        <defs>
+          <linearGradient id="nxg-lockup" x1="0" y1="0" x2="1" y2="1" gradientTransform="rotate(135 0.5 0.5)">
+            <stop offset="0%"  stop-color="#7861FF"/>
+            <stop offset="28%" stop-color="#5B30FF"/>
+            <stop offset="68%" stop-color="#2563FF"/>
+            <stop offset="100%" stop-color="#00E0FF"/>
+          </linearGradient>
+        </defs>
+        <circle cx="32" cy="32" r="26" fill="none" stroke="url(#nxg-lockup)" stroke-width="5"
+                filter="drop-shadow(0 0 6px rgba(120,97,255,0.35))"/>
+      </svg>
+      <span>URA</span>
+    </span>
+  </div>
 </body>
 </html>

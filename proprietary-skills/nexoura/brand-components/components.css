@@ -56,13 +56,22 @@
 }
 
 /* ----- 2. Typography
-   Sora via Google Fonts CDN (weights 400/500/700). Do NOT bundle WOFF files.
-   Add to <head> of any host page:
-     <link rel="preconnect" href="https://fonts.googleapis.com">
-     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-     <link rel="stylesheet"
-       href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;700&display=swap">
-   The @import below is a self-contained fallback if you can't edit <head>. */
+   PRIMARY: Sora 400 from T15 output-formatting assets (offline, air-gap safe).
+   Path is relative to this CSS file when inlined alongside the skill. If you
+   inline components.css into a host HTML, either (a) copy sora-regular.woff
+   next to that HTML or (b) drop the @font-face and rely on the Google Fonts
+   @import fallback below.
+   WEIGHT NOTE: only Regular 400 ships in T15 assets. The 500/700 weights
+   used by headings degrade to synthetic bold from the CDN @import; if the
+   CDN is blocked, browsers will synthesize-bold the 400 face (acceptable). */
+@font-face {
+  font-family: 'Sora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../output-formatting/assets/sora-regular.woff') format('woff'),
+       url('../output-formatting/assets/sora-regular.ttf')  format('truetype');
+}
 @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;700&display=swap');
 
 body, .nx-root {

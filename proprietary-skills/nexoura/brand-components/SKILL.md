@@ -1,21 +1,31 @@
-# NEXOURA Brand Components
+# nexoura-brand-components
 
-**Skill ID:** `nexoura/brand-components`
-**Reports to:** `brand-director`, `design-director`
-**Refs:** T13 (doctrine), T15 (output-formatting)
-**Status:** v1.0
+Reusable NEXOURA brand component library — logo lockup, O-ring mark, wordmark, color tokens (dark + light), Sora typography, buttons, cards, status pills, footer, and theme switcher. Inline this skill into any single-page HTML output so every artifact looks unmistakably NEXOURA. T15 (`nexoura-output-formatting`) handles document-shaped artifacts; this skill handles the visual primitives those documents — and any standalone HTML — share.
 
-This skill ships a self-contained, copy-pasteable brand component library for any HTML output produced under the NEXOURA Studio identity. It defines the logo lockup (including the signature O-ring), color tokens for both dark and light modes, typography scale, buttons, cards, status pills, footer pattern, and a working theme switcher.
+This file documents the primitives. Companion files in this folder are the working source of truth:
 
-Use this skill whenever you generate a standalone HTML deliverable, dashboard, report cover, briefing, or landing snippet. For full-document report rendering (long-form, multi-section, print-capable), defer to `nexoura/output-formatting` (T15) — this skill is the *primitive* layer; T15 is the *composition* layer.
+- `components.css` — the entire stylesheet (paste inline into `<style>` for portable artifacts, or `<link rel="stylesheet">` for local previews).
+- `components.html` — snippet library; every primitive is wrapped in `<!-- name --> ... <!-- /name -->` markers so a downstream agent can extract a specific component cleanly.
+- `nexoura-logo.html` — all 4 logo size variants (XL/LG/MD/SM) plus the standalone O-ring mark and the SVG-canonical lockup.
+- `sample-page.html` — a full demo (logo + buttons + cards + pills + footer + working theme switcher with `localStorage` persistence).
+
+The output-formatting SKILL.md does not use YAML frontmatter; this file mirrors that convention (`# title` + description paragraph). Flag if downstream tooling expects YAML.
 
 ---
 
-## §1. Logo lockup — `N E X (O-ring) U R A`
+## §1 Logo lockup
 
-The signature mark. The letter `O` is **replaced** by a gradient ring; it is never spelled out as a regular `O`. Wide tracking (`letter-spacing: 0.3em`) on the wordmark, Sora medium 500.
+The lockup is the wordmark `NEX [O-ring] URA` rendered in **Sora 500** at letter-spacing `0.3em`. Four canonical sizes:
 
-### HTML
+| Variant | Class           | font-size | Use                                            |
+|---------|-----------------|-----------|------------------------------------------------|
+| XL      | `.nx-logo--xl`  | 80px      | Cover pages, hero, splash                      |
+| LG      | `.nx-logo--lg`  | 48px      | Report headers, deck title slides              |
+| MD      | `.nx-logo--md`  | 32px      | Page top, email signature                      |
+| SM      | `.nx-logo--sm`  | 20px      | Inline references, compact reports             |
+
+Markup (carry verbatim — see `components.html` block `<!-- logo-lockup -->`):
+
 ```html
 <span class="nx-logo nx-logo--lg">
   <span class="nx-wordmark-pre">NEX</span>
@@ -24,323 +34,262 @@ The signature mark. The letter `O` is **replaced** by a gradient ring; it is nev
 </span>
 ```
 
-### CSS (canonical — included in `components.css`)
-```css
-.nx-logo {
-  display: inline-flex; align-items: center;
-  font-family: 'Sora', sans-serif; font-weight: 500;
-  letter-spacing: 0.3em; line-height: 1; white-space: nowrap;
-  color: var(--text-primary); user-select: none;
-}
-.nx-logo--xl { font-size: 80px; }
-.nx-logo--lg { font-size: 48px; }
-.nx-logo--md { font-size: 32px; }
-.nx-logo--sm { font-size: 20px; }
+The `.nx-oring` element is a CSS true ring (radial-gradient mask cuts an inner transparent hole — not a flat disc). The O-ring sits on the baseline with `top: 0.04em` micro-nudge for optical centering against the caps.
 
-.nx-oring {
-  display: inline-block; width: 1em; height: 1em; border-radius: 50%;
-  background: linear-gradient(135deg,#7861FF 0%,#5B30FF 28%,#2563FF 68%,#00E0FF 100%);
-  -webkit-mask: radial-gradient(circle, transparent 0 calc(50% - 0.08em),
-                                #000 calc(50% - 0.08em) 100%);
-          mask: radial-gradient(circle, transparent 0 calc(50% - 0.08em),
-                                #000 calc(50% - 0.08em) 100%);
-  box-shadow: 0 0 18px rgba(120,97,255,0.35);
-  margin: 0 0.06em; position: relative; top: 0.04em;
-}
-```
-
-**Size variants:**
-- `--xl` (80px) — hero / cover pages
-- `--lg` (48px) — page headers
-- `--md` (32px) — section headers, email signatures
-- `--sm` (20px) — inline / dense reports
-
-**Honesty note (T13 §2):** The O-ring is implemented as a radial-gradient mask cutting an inner hole through a conic-style linear gradient disc. This is a CSS approximation of an SVG `<circle stroke="url(#grad)">`. It renders as a true gradient ring in all modern browsers (Chrome, Firefox, Safari, Edge 2019+). For print/PDF/email contexts where `mask` is unreliable, use the SVG variant in §2.
+`nexoura-logo.html` also includes the **SVG-canonical** lockup variant. Prefer that for static exports (email, PDF, deck export) where CSS mask support is unreliable.
 
 ---
 
-## §2. O-ring mark alone (no wordmark)
+## §2 O-ring mark alone
 
-For favicons, avatars, watermarks, loading spinners.
+For favicons, avatars, watermarks. Standalone (no wordmark):
 
-### CSS variant
 ```html
+<!-- CSS variant -->
 <span class="nx-mark nx-mark--32"></span>
-```
-Sizes shipped: `--16`, `--24`, `--32`, `--48`, `--64`.
 
-### SVG variant (preferred for favicon / email / PDF)
-```html
-<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+<!-- SVG canonical (favicon-ready, embeds the gradient) -->
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-label="NEXOURA mark">
   <defs>
     <linearGradient id="nxg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%"   stop-color="#7861FF"/>
-      <stop offset="28%"  stop-color="#5B30FF"/>
-      <stop offset="68%"  stop-color="#2563FF"/>
+      <stop offset="0%"  stop-color="#7861FF"/>
+      <stop offset="28%" stop-color="#5B30FF"/>
+      <stop offset="68%" stop-color="#2563FF"/>
       <stop offset="100%" stop-color="#00E0FF"/>
     </linearGradient>
   </defs>
-  <circle cx="32" cy="32" r="26" fill="none" stroke="url(#nxg)" stroke-width="5"/>
+  <circle cx="32" cy="32" r="26" fill="none" stroke="url(#nxg)" stroke-width="5"
+          filter="drop-shadow(0 0 6px rgba(120,97,255,0.35))"/>
 </svg>
 ```
 
-The SVG is the most portable variant — embed it as `favicon.svg`, in `<img>`, or inline.
+Geometry rules (locked):
+
+- Outer diameter `1em` (or fixed-pixel via `.nx-mark--16/24/32/48/64`).
+- Stroke thickness `~0.08em` (5px on the 64px SVG).
+- `fill="none"` / transparent center — the page background must show through.
+- Gradient 135° from `#7861FF → #5B30FF → #2563FF → #00E0FF`.
+- Optional `drop-shadow(0 0 6px rgba(120,97,255,0.35))` for glow on dark surfaces.
+
+Stakeholder rejected flat-circle attempts (filled disc) and substitute-O attempts (typographic O). The mark **must** be a true ring with a transparent interior.
 
 ---
 
-## §3. Wordmark only (no O-ring)
+## §3 Wordmark only
 
-When the O-ring would compete with surrounding UI (very tight headers, single-line footer chrome). The wordmark is *bolder* (700) to compensate for the missing visual anchor.
+When the O-ring won't render reliably (plain-text channels, screen readers reading raw text, monospace contexts), fall back to the plain Sora wordmark with the same `0.3em` tracking. The letters stay flat — **never** apply the gradient to the letterforms themselves.
 
 ```html
 <span class="nx-wordmark">NEXOURA</span>
 ```
-```css
-.nx-wordmark {
-  font-family: 'Sora', sans-serif; font-weight: 700;
-  letter-spacing: 0.3em; color: var(--text-primary);
-}
-```
-
-Never gradient-fill the wordmark letters (see §12).
 
 ---
 
-## §4. Color tokens — CSS variables
+## §4 Color tokens
 
-All tokens are CSS custom properties scoped to `:root`. Theme is selected by `data-theme="dark"` (default) or `data-theme="light"` on `<html>`. Brand accents are identical across themes — only surface and text shift.
+Defined as CSS custom properties on `:root`. Brand accents are theme-invariant; surface colors flip between dark (default) and light (via `[data-theme="light"]`).
 
-### Dark mode (default)
-| Token | Value | Use |
-|---|---|---|
-| `--bg-primary` | `#0A0F16` (nx-navy) | page background |
-| `--bg-elevated` | `#101826` (slate-900) | cards, surfaces |
-| `--bg-tint` | `rgba(120,97,255,0.06)` | accent fills |
-| `--text-primary` | `#F5F7FA` (nx-white) | body text |
-| `--text-secondary` | `#94A3B8` (slate-500) | meta, labels |
-| `--border` | `rgba(120,97,255,0.18)` | hairline rules |
+### Brand accents (locked, both themes)
 
-### Light mode (`data-theme="light"`)
-| Token | Value | Use |
-|---|---|---|
-| `--bg-primary` | `#FFFFFF` | page background |
-| `--bg-elevated` | `#F5F7FA` | cards |
-| `--text-primary` | `#0A0F16` | body |
-| `--text-secondary` | `#475569` (slate-700) | meta |
-| `--border` | `rgba(10,15,22,0.10)` | hairline |
+| Token         | Hex       | Role                                           |
+|---------------|-----------|------------------------------------------------|
+| `--nx-purple` | `#7861FF` | Primary accent, gradient start                 |
+| `--nx-violet` | `#5B30FF` | Gradient mid-stop                              |
+| `--nx-blue`   | `#2563FF` | Gradient mid-stop                              |
+| `--nx-cyan`   | `#00E0FF` | Gradient end, links, RESOLVED pill             |
+| `--nx-grad`   | (see CSS) | 135° gradient through all 4 accents            |
+| `--nx-glow`   | `0 0 18px rgba(120,97,255,0.35)` | Primary glow shadow      |
 
-### Brand accents (both modes)
-| Token | Value |
-|---|---|
-| `--nx-purple` | `#7861FF` |
-| `--nx-violet` | `#5B30FF` |
-| `--nx-blue` | `#2563FF` |
-| `--nx-cyan` | `#00E0FF` |
-| `--nx-navy` | `#0A0F16` |
-| `--nx-white` | `#F5F7FA` |
-| `--nx-grad` | `linear-gradient(135deg, #7861FF 0%, #5B30FF 28%, #2563FF 68%, #00E0FF 100%)` |
+### Dark surface (default)
 
----
+| Token              | Hex/Value | Role             |
+|--------------------|-----------|------------------|
+| `--bg-primary`     | `#0A0F16` | Page background  |
+| `--bg-elevated`    | `#101826` | Cards            |
+| `--text-primary`   | `#F5F7FA` | Body text        |
+| `--text-secondary` | `#94A3B8` | Muted text       |
 
-## §5. Typography
+### Light surface (`[data-theme="light"]`)
 
-**Primary:** Sora, medium 500 default. **Fallback stack:** Inter → Geist → system.
+| Token              | Hex/Value | Role             |
+|--------------------|-----------|------------------|
+| `--bg-primary`     | `#FFFFFF` | Page background  |
+| `--bg-elevated`    | `#F5F7FA` | Cards            |
+| `--text-primary`   | `#0A0F16` | Body text        |
+| `--text-secondary` | `#475569` | Muted text       |
 
-Sora is shipped as a local asset by T15 (`proprietary-skills/nexoura/output-formatting/assets/sora-regular.{woff,ttf}`). `components.css` references it with a relative URL. If you embed this skill into a different directory tree, update the `@font-face` `src` paths or duplicate the asset.
-
-```css
-@font-face {
-  font-family: 'Sora';
-  src: local('Sora'),
-       url('../output-formatting/assets/sora-regular.woff') format('woff'),
-       url('../output-formatting/assets/sora-regular.ttf') format('truetype');
-  font-weight: 400 700; font-display: swap;
-}
-```
-
-### Scale
-| Token | Size | Weight | Line height | Letter-spacing |
-|---|---|---|---|---|
-| h1 | 32px | 500 | 1.2 | -0.01em |
-| h2 | 24px | 500 | 1.25 | -0.01em |
-| h3 | 18px | 500 | 1.3 | -0.005em |
-| body | 15px | 500 | 1.6 | 0 |
-| small | 12px | 500 | 1.5 | 0.02em |
-
-Default body weight is **500** (not 400) — this is deliberate, gives the NEXOURA voice its quiet confidence. Use 600 for `<strong>` and button labels, 700 only for the wordmark.
-
-### Tagline
-`WHERE AI BUILDS` — always uppercase, `letter-spacing: 0.5em`, often gradient-clipped (see footer §9).
+`prefers-color-scheme: light` auto-applies the light surface when the user has not pinned a theme.
 
 ---
 
-## §6. Buttons
+## §5 Typography — Sora via Google Fonts
 
-Three variants. All use 8px radius, 10/18 padding, Sora 600 / 14px.
+Sora is loaded from the Google Fonts CDN (weights 400 / 500 / 700). **Do not bundle WOFF files** — keep the skill cdn-only so artifacts stay small and the cache is shared with every other Sora-using page.
+
+Host-page integration (preferred — `<head>`):
 
 ```html
-<button class="nx-btn nx-btn--primary">Launch</button>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;700&display=swap">
+```
+
+`components.css` also contains an `@import url(...)` fallback at the top for cases where you cannot edit `<head>`. The font stack falls back to Inter → Geist → system sans-serif if the CDN is blocked.
+
+Weight usage: 400 body small/muted, 500 body & headings, 700 wordmark and pills.
+
+---
+
+## §6 Buttons
+
+Three primitives. All use Sora 600 / 14px / 0.02em tracking / 8px radius / `transition` on transform + box-shadow.
+
+| Class                | Visual                                    |
+|----------------------|-------------------------------------------|
+| `.nx-btn--primary`   | Gradient fill (`--nx-grad`), glow shadow  |
+| `.nx-btn--secondary` | Outline, purple text on `--border-strong` |
+| `.nx-btn--ghost`     | Transparent, muted text → purple on hover |
+
+States (all variants):
+
+- `:hover:not(:disabled)` — primary lifts `translateY(-1px)` and intensifies glow; secondary and ghost gain `--bg-tint` background.
+- `:focus-visible` — `2px` cyan outline at `2px` offset (accessibility — ring must remain visible).
+- `:disabled` / `[aria-disabled="true"]` — `opacity: 0.45` and `cursor: not-allowed`.
+
+```html
+<button class="nx-btn nx-btn--primary">Launch project</button>
 <button class="nx-btn nx-btn--secondary">View brief</button>
 <button class="nx-btn nx-btn--ghost">Skip</button>
 ```
 
-- **Primary** — filled with `--nx-grad`, white text, soft purple glow. Lifts 1px on hover.
-- **Secondary** — transparent background, purple text, brand-tinted border. Tint fill on hover.
-- **Ghost** — transparent, secondary-text color, lifts to purple on hover.
+---
 
-All variants support `:focus-visible` (cyan outline), `:disabled` (45% opacity, no-drop cursor).
+## §7 Cards
+
+Three variants. All share `8px` radius and `20px 22px` padding.
+
+| Class             | Treatment                                                       |
+|-------------------|-----------------------------------------------------------------|
+| `.nx-card`        | Elevated: `--bg-elevated` + 1px brand border + soft shadow      |
+| `.nx-card--accent`| Brand-tint background + 2px gradient top edge (`::before` bar)  |
+| `.nx-card--flat`  | Brand-tint background only, no border, no shadow                |
+
+Use `--accent` to draw the eye to a key decision; `--flat` for dense grids where elevation noise gets in the way.
 
 ---
 
-## §7. Cards
+## §8 Pills (status & priority)
 
-Three card types — pick by *purpose*, not aesthetic preference.
+Carried from T15 `nexoura-output-formatting` §3 so the same status vocabulary works inside and outside generated documents. All pills are uppercase, Sora 700 / 11px / 0.10em tracking.
 
-- `.nx-card` — **elevated.** Default. 1px border + 8px radius + soft shadow. Use for primary content blocks.
-- `.nx-card--accent` — **accent.** Thin gradient top border + brand-tinted background. Use for the *one* card you want to draw the eye to per section.
-- `.nx-card--flat` — **flat.** Background tint only, no border. Use for grids of peer items where elevation would create visual noise.
+| Class            | Use                                       |
+|------------------|-------------------------------------------|
+| `.pill-verified` | Stakeholder-confirmed item (green)        |
+| `.pill-resolved` | Closed/decided item (cyan)                |
+| `.pill-warning`  | Attention needed, non-blocking (amber)    |
+| `.pill-blocked`  | Hard block (red)                          |
+| `.pill-p0`       | Severity 0 — drop everything              |
+| `.pill-p1`       | Severity 1 — fix this sprint              |
+| `.pill-p2`       | Severity 2 — fix soon                     |
+| `.pill-p3`       | Severity 3 — scheduled                    |
+| `.pill-p4`       | Severity 4 — backlog                      |
 
 ```html
-<div class="nx-card"><h3>Title</h3><p>Body.</p></div>
-<div class="nx-card--accent"><h3>Title</h3><p>Body.</p></div>
-<div class="nx-card--flat"><h3>Title</h3><p>Body.</p></div>
+<h3>Requirements <span class="pill pill-verified">Verified</span></h3>
 ```
 
 ---
 
-## §8. Pills / badges
+## §9 Footer
 
-Status and priority indicators. Colors carry forward from T15 for cross-skill consistency. 11px Sora bold, 4px radius, 10% letter-spacing, uppercase.
-
-| Class | Use | Color |
-|---|---|---|
-| `pill-verified` | Confirmed, passed review | Green `#34D399` |
-| `pill-resolved` | Closed issue | Cyan `#00E0FF` |
-| `pill-warning` | Attention needed | Amber `#FBBF24` |
-| `pill-blocked` | Blocker present | Red `#F87171` |
-| `pill-p0` | Critical | Solid red `#DC2626` |
-| `pill-p1` | High | Solid blue `#2563FF` |
-| `pill-p2` | Medium | Solid amber `#F59E0B` (dark text) |
-| `pill-p3` | Low | Gray `#6B7280` |
-| `pill-p4` | Backlog | Slate `#475569` |
-
-```html
-<span class="pill pill-verified">Verified</span>
-<span class="pill pill-p0">P0</span>
-```
-
----
-
-## §9. Footer pattern
-
-Gradient hairline + tagline left + metadata right.
+Two-column grid: tagline left, meta right. A 2px gradient bar (`--nx-grad`) anchors the top edge. The tagline text is **WHERE AI BUILDS** (literal uppercase, `0.5em` tracking, gradient text-fill).
 
 ```html
 <footer class="nx-footer">
-  <div class="nx-tagline">Where AI Builds</div>
+  <div class="nx-tagline">WHERE AI BUILDS</div>
   <div class="nx-meta">NEXOURA Studio · 2026 · v1.0</div>
 </footer>
 ```
 
-The tagline uses `background-clip: text` to receive the brand gradient as fill. The 2px gradient bar sits above the footer as a `::before` overlay on a `border-top` rule.
-
 ---
 
-## §10. Theme switcher
+## §10 Theme switcher JS
 
-JavaScript controller in three parts: (a) pre-paint bootstrap, (b) toggle button, (c) OS-preference listener.
+The bootstrap script runs in `<head>` *before paint* to avoid a flash of incorrect theme. The controller script (placed at end of `<body>`) wires a button to toggle `document.documentElement.dataset.theme` and persists to `localStorage` under the key `nx-theme`.
 
-### Pre-paint bootstrap (in `<head>`, before stylesheet)
 ```html
+<!-- in <head>, before any rendered content -->
 <script>
-(function() {
-  try {
-    var stored = localStorage.getItem('nx-theme');
-    var prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
-    var theme = stored || (prefersLight ? 'light' : 'dark');
-    document.documentElement.setAttribute('data-theme', theme);
-  } catch (e) {
-    document.documentElement.setAttribute('data-theme', 'dark');
-  }
-})();
+  (function() {
+    try {
+      var stored = localStorage.getItem('nx-theme');
+      var prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+      document.documentElement.setAttribute(
+        'data-theme', stored || (prefersLight ? 'light' : 'dark'));
+    } catch (e) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+  })();
+</script>
+
+<!-- toggle button anywhere in the page -->
+<div class="nx-theme-toggle">
+  <button id="themeToggle" class="nx-btn nx-btn--secondary">Theme</button>
+</div>
+
+<!-- at end of <body> -->
+<script>
+  document.getElementById('themeToggle').addEventListener('click', function () {
+    var current = document.documentElement.getAttribute('data-theme') || 'dark';
+    var next = current === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    try { localStorage.setItem('nx-theme', next); } catch (e) {}
+  });
 </script>
 ```
 
-### Toggle controller (end of `<body>`)
-```html
-<script>
-document.getElementById('themeToggle').addEventListener('click', function() {
-  var cur = document.documentElement.getAttribute('data-theme') || 'dark';
-  var next = cur === 'dark' ? 'light' : 'dark';
-  document.documentElement.setAttribute('data-theme', next);
-  localStorage.setItem('nx-theme', next);
-});
-</script>
-```
-
-Honors `prefers-color-scheme` only when the user has not explicitly chosen. Once they click the toggle, their choice persists.
-
-See `sample-page.html` for the full working pattern with icon + label updates and OS-change listener.
+A full working version with iconography, label updates, and `prefers-color-scheme` change listener lives in `sample-page.html`.
 
 ---
 
-## §11. Usage guide
+## §11 Usage guide
 
-To brand a new HTML output:
+Two integration patterns:
 
-1. **Inline `components.css`** into a `<style>` tag (or link it with a relative path). Inlining is the default — most outputs ship as single self-contained `.html` files.
-2. **Add the theme bootstrap script** to `<head>` (§10).
-3. **Open with the logo lockup** (`--lg` or `--xl` in headers; `--md`/`--sm` inline).
-4. **Compose with cards + pills** — one accent card per section maximum.
-5. **Close with the footer** carrying the gradient bar + `WHERE AI BUILDS`.
+**Pattern A — single-file portable artifact (preferred for client deliverables).** Paste the entire contents of `components.css` into a `<style>` block in `<head>`. The artifact is then self-contained: one HTML file with no external CSS dependency, only the Google Fonts CDN call. Use this for any HTML that will be emailed, attached, or rendered offline.
 
-### Minimal example
+**Pattern B — local preview / multi-page site.** `<link rel="stylesheet" href="components.css">` and serve the folder. Use this for `sample-page.html`-style demos and the component library while iterating.
+
+Bare minimum boilerplate for a new branded HTML output:
+
 ```html
 <!DOCTYPE html>
-<html data-theme="dark">
+<html lang="en">
 <head>
-  <meta charset="UTF-8"><title>Briefing</title>
-  <style>/* paste components.css here */</style>
+  <meta charset="UTF-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;700&display=swap">
+  <style>/* paste components.css here for Pattern A */</style>
+  <script>/* theme bootstrap from §10 */</script>
 </head>
-<body style="padding:48px;max-width:900px;margin:0 auto;">
-  <span class="nx-logo nx-logo--md">
-    <span>NEX</span><span class="nx-oring"></span><span>URA</span>
-  </span>
-  <h1>Briefing title</h1>
-  <div class="nx-card--accent">
-    <h3>Headline finding <span class="pill pill-verified">Verified</span></h3>
-    <p>Body…</p>
-  </div>
-  <button class="nx-btn nx-btn--primary">Next step</button>
-  <footer class="nx-footer">
-    <div class="nx-tagline">Where AI Builds</div>
-    <div class="nx-meta">2026</div>
-  </footer>
-</body></html>
+<body>
+  <!-- logo, content, footer -->
+</body>
+</html>
 ```
 
-For longer documents (multi-section reports, deliverables with TOC, print layouts) defer to `nexoura/output-formatting` which composes these primitives into a full page chrome.
+When in doubt, copy `sample-page.html` and edit the body.
 
 ---
 
-## §12. What NOT to do
+## §12 What NOT to do
 
-- ❌ **Don't** use plain `NEXOURA` text where the logo lockup should appear (cover pages, headers, footers). Use the lockup *or* the wordmark variant from §3 — never raw text.
-- ❌ **Don't** substitute the O-ring with a regular letter `O`. The ring is the brand mark; the letter is not.
-- ❌ **Don't** gradient-fill the wordmark letters (`NEX...URA`). Only the O-ring and the footer tagline carry the gradient. Letter wordmarks stay in `--text-primary`.
-- ❌ **Don't** introduce gaming, cyberpunk, neon-grid, glitch, or scan-line effects. NEXOURA reads premium, futuristic, **calm**. Heavy glow, animated gradients on letters, holographic chrome — all off-brand.
-- ❌ **Don't** swap brand accents between themes. Surface and text re-tone for light/dark; purple/violet/blue/cyan stay constant.
-- ❌ **Don't** mix the gradient direction. Always `135deg` with the four stops at `0/28/68/100%`. Reversing or rotating breaks recognition.
-- ❌ **Don't** ship a NEXOURA HTML output without a footer. The gradient bar + tagline is the closing brand beat.
-
----
-
-## Files in this skill
-
-| File | Purpose |
-|---|---|
-| `SKILL.md` | this document |
-| `components.css` | all CSS tokens + classes — inline into outputs |
-| `components.html` | copy-paste primitive library |
-| `nexoura-logo.html` | 4 logo sizes + mark + SVG variants |
-| `sample-page.html` | full integration demo with working theme switcher |
+- **No plain `NEXOURA` text** in places that need the logo. The lockup is the brand. If the O-ring won't render, fall back to §3 wordmark — never substitute a bare word.
+- **No substitute O** (typographic capital O, ⭕ emoji, ◯ unicode). The O slot is the gradient ring or nothing.
+- **No gradient fill on wordmark letters.** The letters stay flat in `--text-primary`. The only gradient text in the system is the footer tagline.
+- **No gaming / cyberpunk treatments.** No neon glows beyond the spec'd `--nx-glow`, no chrome bevels, no scanlines, no animated rainbow gradients, no Orbitron / Audiowide / Eurostile font substitutions. NEXOURA reads as premium operator, not arcade.
+- **No bundled WOFF files.** Sora ships via Google Fonts CDN only (§5). Bundling fonts bloats artifacts and fragments cache.
+- **No theme-color hardcoding.** Always reference `var(--text-primary)` / `var(--bg-primary)` etc. so the light/dark flip works automatically.
+- **No re-rolling the palette.** The four brand hex codes (`#7861FF`, `#5B30FF`, `#2563FF`, `#00E0FF`) are locked. Add semantic tokens that *reference* them; never introduce a fifth accent.
