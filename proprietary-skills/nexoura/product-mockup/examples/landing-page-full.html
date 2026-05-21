@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NEXOURA Forge — Supply chains that predict themselves</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* --- NEXOURA brand tokens (T15) --- */
+  :root{
+    --nx-purple:#7861FF; --nx-violet:#5B30FF; --nx-blue:#2563FF; --nx-cyan:#00E0FF;
+    --nx-navy:#0A0F16; --nx-white:#F5F7FA;
+    --slate-900:#101826; --slate-700:#475569; --slate-500:#94A3B8;
+    --nx-gradient: linear-gradient(135deg,#7861FF 0%,#5B30FF 28%,#2563FF 68%,#00E0FF 100%);
+    --font-sora: 'Sora', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--font-sora);background:var(--nx-navy);color:var(--nx-white);line-height:1.5;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+  /* --- T16 component stubs (use real T16 .btn-primary etc when available) --- */
+  .btn-primary{display:inline-block;background:var(--nx-gradient);color:#fff;padding:.85rem 1.6rem;border-radius:.7rem;font-weight:600;font-family:inherit;border:0;cursor:pointer}
+  .btn-ghost{display:inline-block;color:var(--nx-white);border:1px solid rgba(245,247,250,.22);padding:.85rem 1.6rem;border-radius:.7rem;font-weight:500;background:transparent;cursor:pointer}
+  .card-elevated{background:var(--slate-900);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:1.75rem}
+  .nx-logo{font-weight:700;letter-spacing:.12em;font-size:1.15rem;display:inline-flex;align-items:center;gap:.05em}
+  .nx-oring{width:1em;height:1em;vertical-align:-.15em}
+  .pill{display:inline-block;padding:.18rem .55rem;border-radius:999px;font-size:.68rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+  .pill.verified{background:rgba(0,224,255,.12);color:#67e8f9}
+  /* --- layout --- */
+  .container{max-width:1200px;margin:0 auto;padding:0 1.5rem}
+  /* nav */
+  .nav{display:flex;align-items:center;justify-content:space-between;padding:1.5rem 0}
+  .nav-links{display:flex;gap:2rem;font-size:.92rem;color:var(--slate-500)}
+  .nav-links a:hover{color:var(--nx-white)}
+  /* hero */
+  .hero{padding:5rem 0 6rem;text-align:center;position:relative;background:radial-gradient(circle at 1px 1px,rgba(120,97,255,.16) 1px,transparent 0) 0 0/28px 28px}
+  .hero .eyebrow{display:inline-block;padding:.3rem .8rem;border-radius:999px;background:rgba(120,97,255,.12);color:#c7bcff;font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;margin-bottom:1.5rem;border:1px solid rgba(120,97,255,.25)}
+  .hero h1{font-size:clamp(2.4rem,5.6vw,4.2rem);font-weight:700;line-height:1.05;max-width:18ch;margin:0 auto 1.5rem;letter-spacing:-.02em}
+  .grad-text{background:var(--nx-gradient);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .hero p.sub{color:var(--slate-500);max-width:54ch;margin:0 auto 2.25rem;font-size:1.1rem}
+  .cta-row{display:flex;gap:.9rem;justify-content:center;flex-wrap:wrap}
+  /* logos strip */
+  .logos{padding:3rem 0;border-bottom:1px solid rgba(255,255,255,.05)}
+  .logos h4{text-align:center;color:var(--slate-500);font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;font-weight:500;margin-bottom:1.5rem}
+  .logos-row{display:flex;justify-content:space-around;align-items:center;flex-wrap:wrap;gap:2rem;opacity:.7}
+  .logos-row span{font-weight:600;letter-spacing:.06em;color:var(--slate-500);font-size:1.05rem}
+  /* section heads */
+  .section{padding:5rem 0}
+  .section-head{text-align:center;margin-bottom:3rem}
+  .section-head h2{font-size:clamp(1.8rem,3.6vw,2.6rem);font-weight:700;letter-spacing:-.01em;margin-bottom:.75rem}
+  .section-head p{color:var(--slate-500);max-width:52ch;margin:0 auto}
+  /* features */
+  .features{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.25rem}
+  .feature .icon{width:44px;height:44px;border-radius:10px;background:var(--nx-gradient);display:grid;place-items:center;color:#fff;margin-bottom:1.1rem;font-weight:700}
+  .feature h3{font-size:1.1rem;font-weight:600;margin-bottom:.5rem}
+  .feature p{color:var(--slate-500);font-size:.95rem;line-height:1.55}
+  /* comparison teaser */
+  .compare{background:var(--slate-900);border:1px solid rgba(255,255,255,.06);border-radius:16px;overflow:hidden}
+  .compare table{width:100%;border-collapse:collapse;font-size:.95rem}
+  .compare th,.compare td{padding:1rem 1.25rem;text-align:left;border-bottom:1px solid rgba(255,255,255,.05)}
+  .compare thead{background:rgba(120,97,255,.06)}
+  .compare th{color:var(--slate-500);font-weight:500;font-size:.82rem;letter-spacing:.06em;text-transform:uppercase}
+  .compare .yes{color:#86efac}
+  .compare .no{color:var(--slate-500);opacity:.55}
+  /* pricing */
+  .pricing{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem}
+  .tier{background:var(--slate-900);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:2rem;display:flex;flex-direction:column}
+  .tier.featured{position:relative;background:var(--nx-gradient);padding:1.5px}
+  .tier.featured > .inner{background:var(--slate-900);border-radius:13px;padding:1.85rem;height:100%;display:flex;flex-direction:column}
+  .tier h3{font-size:1rem;font-weight:600;color:var(--slate-500);letter-spacing:.06em;text-transform:uppercase;margin-bottom:.75rem}
+  .price{font-size:2.6rem;font-weight:700;margin-bottom:.25rem}
+  .price small{font-size:.95rem;color:var(--slate-500);font-weight:400}
+  .tier ul{list-style:none;margin:1.25rem 0 1.75rem;flex:1}
+  .tier ul li{padding:.4rem 0;color:var(--slate-500);font-size:.93rem;display:flex;gap:.55rem}
+  .tier ul li::before{content:"✓";color:var(--nx-cyan);font-weight:700}
+  .badge-popular{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--nx-gradient);color:#fff;padding:.25rem .85rem;border-radius:999px;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;font-weight:600;z-index:1}
+  /* testimonials */
+  .testis{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem}
+  .testi{background:var(--slate-900);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:1.75rem}
+  .testi blockquote{color:var(--nx-white);font-size:1.02rem;line-height:1.6;margin-bottom:1.25rem}
+  .testi .who{display:flex;align-items:center;gap:.85rem}
+  .avatar{width:42px;height:42px;border-radius:50%;background:var(--nx-gradient)}
+  .who .name{font-weight:600;font-size:.92rem}
+  .who .title{color:var(--slate-500);font-size:.82rem}
+  /* final cta */
+  .final-cta{text-align:center;padding:5rem 0;border-top:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06);margin-top:3rem}
+  .final-cta h2{font-size:clamp(2rem,4vw,3rem);font-weight:700;margin-bottom:1rem;max-width:22ch;margin-left:auto;margin-right:auto}
+  /* footer */
+  footer{padding:3.5rem 0 2rem}
+  .foot-grid{display:grid;grid-template-columns:1.4fr repeat(4,1fr);gap:2rem;margin-bottom:3rem}
+  .foot-grid h5{font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--slate-500);margin-bottom:1rem;font-weight:500}
+  .foot-grid ul{list-style:none}
+  .foot-grid ul li{padding:.3rem 0;font-size:.92rem;color:var(--slate-500)}
+  .foot-grid ul li a:hover{color:var(--nx-white)}
+  .newsletter input{background:var(--slate-900);border:1px solid rgba(255,255,255,.1);color:var(--nx-white);padding:.65rem .85rem;border-radius:.5rem;font-family:inherit;width:100%;margin-top:.5rem;margin-bottom:.5rem}
+  .newsletter button{width:100%}
+  .foot-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:1.75rem;border-top:1px solid rgba(255,255,255,.06);flex-wrap:wrap;gap:1rem}
+  .tagline{background:var(--nx-gradient);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:700;letter-spacing:.16em;font-size:.85rem}
+  .foot-bottom .copy{color:var(--slate-500);font-size:.82rem}
+  /* responsive */
+  @media (max-width: 1024px){
+    .pricing{grid-template-columns:1fr;max-width:480px;margin:0 auto}
+    .testis{grid-template-columns:1fr 1fr}
+    .foot-grid{grid-template-columns:1fr 1fr 1fr}
+  }
+  @media (max-width: 768px){
+    .nav-links{display:none}
+    .hero{padding:3rem 0 4rem}
+    .testis{grid-template-columns:1fr}
+    .foot-grid{grid-template-columns:1fr 1fr;gap:1.5rem}
+    .compare th,.compare td{padding:.7rem .8rem;font-size:.85rem}
+  }
+</style>
+</head>
+<body>
+
+<header class="container nav">
+  <span class="nx-logo">NEXO<svg viewBox="0 0 32 32" class="nx-oring" aria-label="O"><defs><linearGradient id="og1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#7861FF"/><stop offset="28%" stop-color="#5B30FF"/><stop offset="68%" stop-color="#2563FF"/><stop offset="100%" stop-color="#00E0FF"/></linearGradient></defs><circle cx="16" cy="16" r="12" fill="none" stroke="url(#og1)" stroke-width="4"/></svg>URA · FORGE</span>
+  <nav class="nav-links">
+    <a href="#features">Platform</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#customers">Customers</a>
+    <a href="#docs">Docs</a>
+  </nav>
+  <a class="btn-primary" href="#demo">Book a demo</a>
+</header>
+
+<section class="hero">
+  <div class="container">
+    <span class="eyebrow">Forge · Supply Intelligence Platform</span>
+    <h1>Supply chains that <span class="grad-text">predict themselves.</span></h1>
+    <p class="sub">Forge gives ops leaders a live, AI-reasoned view of every SKU, supplier, and shipment — surfacing exceptions hours before they become escalations.</p>
+    <div class="cta-row">
+      <a class="btn-primary" href="#demo">Book a 30-min demo</a>
+      <a class="btn-ghost" href="#video">See it in action →</a>
+    </div>
+  </div>
+</section>
+
+<section class="logos container">
+  <h4>Trusted by operations teams at</h4>
+  <div class="logos-row">
+    <span>MERIDIAN LOGISTICS</span>
+    <span>HARBORLINE</span>
+    <span>NORTHRIDGE FOODS</span>
+    <span>AXIOM PARTS</span>
+    <span>KAYA TEXTILES</span>
+  </div>
+</section>
+
+<section id="features" class="section container">
+  <div class="section-head">
+    <h2>The control tower your spreadsheets never were</h2>
+    <p>Six surfaces, one platform. No more switching between WMS, ERP, supplier portals, and email threads to ship one purchase order.</p>
+  </div>
+  <div class="features">
+    <div class="card-elevated feature">
+      <div class="icon">◇</div>
+      <h3>Live SKU intelligence</h3>
+      <p>Every SKU's velocity, days-of-cover, and lead-time variance — refreshed every 90 seconds from your WMS and ERP.</p>
+    </div>
+    <div class="card-elevated feature">
+      <div class="icon">◈</div>
+      <h3>Supplier scorecards</h3>
+      <p>On-time-in-full, quality defect rate, and price drift tracked per supplier with auto-flagged regressions.</p>
+    </div>
+    <div class="card-elevated feature">
+      <div class="icon">◉</div>
+      <h3>Exception copilot</h3>
+      <p>An AI agent reads incoming shipment events and routes the 3% that need human attention — with a one-paragraph rationale.</p>
+    </div>
+    <div class="card-elevated feature">
+      <div class="icon">◎</div>
+      <h3>Demand sensing</h3>
+      <p>Forecasts that blend POS, weather, and promotional calendar — so reorder points adjust before stockouts.</p>
+    </div>
+    <div class="card-elevated feature">
+      <div class="icon">◐</div>
+      <h3>Multi-echelon planning</h3>
+      <p>Optimise inventory across DCs, stores, and 3PLs without an OR PhD on staff. Re-plan in under 90 seconds.</p>
+    </div>
+    <div class="card-elevated feature">
+      <div class="icon">◑</div>
+      <h3>Audit-ready trail</h3>
+      <p>Every decision the copilot makes is logged with inputs, prompt, and human override — built for ISO and SOC reviewers.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section container">
+  <div class="section-head">
+    <h2>How Forge compares</h2>
+    <p>Side-by-side with the spreadsheet stack you're running today, and with legacy supply-chain suites.</p>
+  </div>
+  <div class="compare">
+    <table>
+      <thead><tr><th>Capability</th><th>Spreadsheets + Email</th><th>Legacy SCP suites</th><th style="color:var(--nx-cyan)">NEXOURA Forge</th></tr></thead>
+      <tbody>
+        <tr><td>Live SKU velocity</td><td class="no">Manual refresh</td><td class="no">Nightly batch</td><td class="yes">~90s refresh</td></tr>
+        <tr><td>AI-routed exceptions</td><td class="no">—</td><td class="no">Rule-based only</td><td class="yes">LLM-reasoned</td></tr>
+        <tr><td>Multi-echelon re-plan</td><td class="no">—</td><td class="yes">Hours</td><td class="yes">&lt; 90s</td></tr>
+        <tr><td>Time to first value</td><td class="no">N/A</td><td class="no">9–18 months</td><td class="yes">3 weeks</td></tr>
+        <tr><td>Audit-ready decision log</td><td class="no">—</td><td class="no">Partial</td><td class="yes">Full, exportable</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="pricing" class="section container">
+  <div class="section-head">
+    <h2>Pricing that scales with throughput, not seats</h2>
+    <p>Per-SKU-per-month, no per-user surcharge, no integration tax. 14-day pilot on your real data.</p>
+  </div>
+  <div class="pricing">
+    <div class="tier">
+      <h3>Starter</h3>
+      <div class="price">$2,400<small> /mo</small></div>
+      <p style="color:var(--slate-500);font-size:.9rem">Up to 5,000 SKUs · 2 sites · email support</p>
+      <ul>
+        <li>Live SKU intelligence</li>
+        <li>Supplier scorecards (10 suppliers)</li>
+        <li>Weekly forecast refresh</li>
+        <li>CSV exports</li>
+      </ul>
+      <a class="btn-ghost" href="#start" style="text-align:center">Start a pilot</a>
+    </div>
+    <div class="tier featured">
+      <div class="inner">
+        <span class="badge-popular">Most chosen</span>
+        <h3>Studio</h3>
+        <div class="price">$7,800<small> /mo</small></div>
+        <p style="color:var(--slate-500);font-size:.9rem">Up to 40,000 SKUs · unlimited sites · priority support</p>
+        <ul>
+          <li>Everything in Starter</li>
+          <li>Exception copilot (1k events/day)</li>
+          <li>Multi-echelon planning</li>
+          <li>Slack &amp; Teams alerts</li>
+          <li>SOC 2 audit log</li>
+        </ul>
+        <a class="btn-primary" href="#studio" style="text-align:center">Book a demo</a>
+      </div>
+    </div>
+    <div class="tier">
+      <h3>Forge Enterprise</h3>
+      <div class="price">Custom</div>
+      <p style="color:var(--slate-500);font-size:.9rem">Unlimited SKUs · dedicated TAM · SSO + VPC</p>
+      <ul>
+        <li>Everything in Studio</li>
+        <li>Custom data connectors</li>
+        <li>Dedicated VPC deployment</li>
+        <li>Quarterly business review</li>
+        <li>99.95% SLA</li>
+      </ul>
+      <a class="btn-ghost" href="#enterprise" style="text-align:center">Talk to sales</a>
+    </div>
+  </div>
+</section>
+
+<section id="customers" class="section container">
+  <div class="section-head">
+    <h2>What ops leaders say after 90 days</h2>
+  </div>
+  <div class="testis">
+    <div class="testi">
+      <blockquote>"We caught a six-week port delay on our Vietnam line two weeks before our old dashboards would have flagged it. Forge paid for itself in one PO."</blockquote>
+      <div class="who"><div class="avatar"></div><div><div class="name">Lina Park</div><div class="title">VP Supply Chain, Meridian Logistics</div></div></div>
+    </div>
+    <div class="testi">
+      <blockquote>"The exception copilot routes the 3% of events that actually need a human. My team stopped drowning in 'shipment scanned' emails."</blockquote>
+      <div class="who"><div class="avatar"></div><div><div class="name">Daniyar Omarov</div><div class="title">Director of Ops, Harborline</div></div></div>
+    </div>
+    <div class="testi">
+      <blockquote>"Our finance team finally trusts the inventory number. The audit trail alone was worth the switch — SOC reviewers signed off without follow-up."</blockquote>
+      <div class="who"><div class="avatar"></div><div><div class="name">Priya Suresh</div><div class="title">CFO, Northridge Foods</div></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="final-cta">
+  <div class="container">
+    <h2>See your own data on a Forge dashboard in 3 weeks.</h2>
+    <p style="color:var(--slate-500);margin-bottom:2rem">Bring one site, two integrations, and a real exception backlog. We'll build the pilot.</p>
+    <div class="cta-row">
+      <a class="btn-primary" href="#demo">Book a demo</a>
+      <a class="btn-ghost" href="#pricing">See pricing</a>
+    </div>
+  </div>
+</section>
+
+<footer class="container">
+  <div class="foot-grid">
+    <div>
+      <span class="nx-logo">NEXO<svg viewBox="0 0 32 32" class="nx-oring"><circle cx="16" cy="16" r="12" fill="none" stroke="url(#og1)" stroke-width="4"/></svg>URA</span>
+      <p style="color:var(--slate-500);font-size:.9rem;margin-top:1rem;max-width:32ch">Supply intelligence for operations leaders who refuse to live in spreadsheets.</p>
+    </div>
+    <div>
+      <h5>Product</h5>
+      <ul><li><a href="#">Platform</a></li><li><a href="#">Integrations</a></li><li><a href="#">Security</a></li><li><a href="#">Changelog</a></li></ul>
+    </div>
+    <div>
+      <h5>Company</h5>
+      <ul><li><a href="#">About</a></li><li><a href="#">Careers</a></li><li><a href="#">Press</a></li><li><a href="#">Contact</a></li></ul>
+    </div>
+    <div>
+      <h5>Resources</h5>
+      <ul><li><a href="#">Docs</a></li><li><a href="#">Case studies</a></li><li><a href="#">Blog</a></li><li><a href="#">Status</a></li></ul>
+    </div>
+    <div class="newsletter">
+      <h5>Get the monthly brief</h5>
+      <p style="color:var(--slate-500);font-size:.85rem">Operations writing, no fluff. Once a month.</p>
+      <input type="email" placeholder="you@company.com" aria-label="Email">
+      <button class="btn-primary">Subscribe</button>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <span class="copy">© 2026 NEXOURA Studio · All rights reserved.</span>
+    <span class="tagline">WHERE AI BUILDS</span>
+    <span class="copy"><a href="#">Privacy</a> · <a href="#">Terms</a> · <a href="#">DPA</a></span>
+  </div>
+</footer>
+
+</body>
+</html>

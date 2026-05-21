@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sign up — NEXOURA Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --nx-purple:#7861FF;--nx-violet:#5B30FF;--nx-blue:#2563FF;--nx-cyan:#00E0FF;
+  --nx-gradient:linear-gradient(135deg,#7861FF 0%,#5B30FF 28%,#2563FF 68%,#00E0FF 100%);
+  --font-sora:'Sora',ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;min-height:100%}
+body{font-family:var(--font-sora);color:#0A0F16;background:#fff;font-size:15px;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+
+.split{display:grid;grid-template-columns:1fr 1fr;min-height:100vh}
+
+/* Left brand panel (dark) */
+.brand{
+  background:#0A0F16;
+  color:#F5F7FA;
+  position:relative;
+  overflow:hidden;
+  padding:3rem;
+  display:flex;flex-direction:column;justify-content:space-between;
+}
+.brand::before{
+  content:"";position:absolute;inset:0;
+  background:radial-gradient(circle at 20% 15%,rgba(120,97,255,.35),transparent 55%),
+             radial-gradient(circle at 85% 75%,rgba(0,224,255,.22),transparent 55%),
+             radial-gradient(circle at 50% 110%,rgba(91,48,255,.25),transparent 60%);
+  pointer-events:none;
+}
+.brand > *{position:relative;z-index:1}
+
+.nx-logo{font-weight:700;letter-spacing:.3em;font-size:1.05rem;display:inline-flex;align-items:center;gap:.05em}
+.nx-oring{width:1em;height:1em;vertical-align:-.15em}
+
+.brand-body{max-width:36ch}
+.brand-eyebrow{font-size:.7rem;letter-spacing:.25em;text-transform:uppercase;color:rgba(245,247,250,.65);margin-bottom:1.25rem}
+.brand-body h2{font-size:2rem;font-weight:700;line-height:1.15;margin:0 0 1rem;letter-spacing:-.01em}
+.grad-text{background:var(--nx-gradient);-webkit-background-clip:text;background-clip:text;color:transparent}
+.brand-body p{color:rgba(245,247,250,.75);font-size:.95rem;line-height:1.55;margin:0}
+
+.brand-foot{font-size:.7rem;letter-spacing:.4em;color:rgba(245,247,250,.55);text-transform:uppercase}
+
+/* Right form panel (light) */
+.form-panel{
+  background:#fff;
+  display:flex;align-items:center;justify-content:center;
+  padding:3rem 2rem;
+}
+.form-wrap{width:100%;max-width:440px}
+.form-wrap h1{font-size:1.65rem;font-weight:700;margin:0 0 .4rem;letter-spacing:-.01em}
+.form-sub{color:#475569;font-size:.925rem;margin:0 0 2rem}
+.form-sub a{color:#5B30FF;text-decoration:none;font-weight:600}
+.form-sub a:hover{text-decoration:underline}
+
+.field{margin-bottom:1.1rem}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:.85rem}
+label{display:block;font-size:.78rem;font-weight:600;margin-bottom:.4rem;color:#0A0F16}
+input,select{
+  width:100%;height:44px;padding:0 .85rem;border-radius:.55rem;
+  border:1px solid #CBD5E1;background:#fff;font-family:inherit;font-size:.925rem;color:#0A0F16;
+  transition:border-color .15s,box-shadow .15s;
+}
+input:focus,select:focus{outline:none;border-color:#7861FF;box-shadow:0 0 0 3px rgba(120,97,255,.18)}
+.helper{font-size:.75rem;color:#64748B;margin-top:.4rem;line-height:1.45}
+.helper b{font-weight:600;color:#0A0F16}
+
+.rules{list-style:none;padding:0;margin:.5rem 0 0;font-size:.75rem;color:#64748B}
+.rules li{padding:.15rem 0;display:flex;gap:.45rem;align-items:center}
+.rules li::before{content:"○";color:#94A3B8;font-size:.7rem}
+.rules li.ok::before{content:"●";color:#10B981}
+
+.terms{display:flex;gap:.65rem;align-items:flex-start;font-size:.85rem;color:#475569;margin:1.25rem 0 1.5rem;line-height:1.45}
+.terms input{width:18px;height:18px;flex-shrink:0;margin-top:.15rem;accent-color:#5B30FF}
+.terms a{color:#5B30FF;font-weight:600;text-decoration:none}
+.terms a:hover{text-decoration:underline}
+
+.btn{
+  width:100%;height:48px;border:none;border-radius:.6rem;
+  font-family:inherit;font-size:.95rem;font-weight:600;
+  background:var(--nx-gradient);color:#fff;cursor:pointer;
+  letter-spacing:.01em;
+}
+.btn:hover{filter:brightness(1.05)}
+
+.divider{display:flex;align-items:center;gap:.75rem;margin:1.5rem 0;color:#94A3B8;font-size:.75rem;letter-spacing:.15em;text-transform:uppercase}
+.divider::before,.divider::after{content:"";flex:1;height:1px;background:#E2E8F0}
+
+.sso{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+.sso button{
+  height:42px;border:1px solid #CBD5E1;background:#fff;border-radius:.5rem;
+  font-family:inherit;font-size:.85rem;font-weight:500;color:#0A0F16;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:.5rem;
+}
+.sso button:hover{border-color:#94A3B8;background:#F8FAFC}
+
+.foot-note{text-align:center;font-size:.85rem;color:#475569;margin-top:1.75rem}
+.foot-note a{color:#5B30FF;font-weight:600;text-decoration:none}
+.foot-note a:hover{text-decoration:underline}
+
+@media (max-width:1024px){
+  .brand{padding:2.5rem}
+  .form-panel{padding:2.5rem 1.5rem}
+}
+@media (max-width:768px){
+  .split{grid-template-columns:1fr}
+  .brand{min-height:auto;padding:2rem;text-align:left}
+  .brand-body h2{font-size:1.5rem}
+  .brand-foot{margin-top:1.5rem}
+}
+@media (max-width:640px){
+  .row2{grid-template-columns:1fr}
+  .form-panel{padding:2rem 1.25rem}
+}
+</style>
+</head>
+<body>
+
+<div class="split">
+
+  <aside class="brand">
+    <span class="nx-logo">NEX<svg class="nx-oring" viewBox="0 0 32 32" aria-label="O"><defs><linearGradient id="og" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#7861FF"/><stop offset="28%" stop-color="#5B30FF"/><stop offset="68%" stop-color="#2563FF"/><stop offset="100%" stop-color="#00E0FF"/></linearGradient></defs><circle cx="16" cy="16" r="12" fill="none" stroke="url(#og)" stroke-width="4"/></svg>URA</span>
+
+    <div class="brand-body">
+      <div class="brand-eyebrow">Studio access</div>
+      <h2>The platform your supply chain needs — <span class="grad-text">built by the system that hires the agents.</span></h2>
+      <p>Create an account to start a feasibility conversation with NEXOURA Studio. We review every signup within one business day before opening the engagement workspace.</p>
+    </div>
+
+    <span class="brand-foot">WHERE AI BUILDS</span>
+  </aside>
+
+  <section class="form-panel">
+    <div class="form-wrap">
+      <h1>Create your studio account</h1>
+      <p class="form-sub">Already have one? <a href="#login">Sign in instead</a>.</p>
+
+      <form onsubmit="event.preventDefault()">
+
+        <div class="row2">
+          <div class="field">
+            <label for="first">First name</label>
+            <input id="first" type="text" placeholder="Priya" autocomplete="given-name" required>
+          </div>
+          <div class="field">
+            <label for="last">Last name</label>
+            <input id="last" type="text" placeholder="Anand" autocomplete="family-name" required>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="email">Work email</label>
+          <input id="email" type="email" placeholder="priya@meridianlogistics.com" autocomplete="email" required>
+          <div class="helper">We only accept verified company domains.</div>
+        </div>
+
+        <div class="field">
+          <label for="pw">Password</label>
+          <input id="pw" type="password" placeholder="At least 12 characters" autocomplete="new-password" required>
+          <ul class="rules" aria-label="Password requirements">
+            <li>At least 12 characters</li>
+            <li>One uppercase letter</li>
+            <li>One number</li>
+            <li>One symbol (!@#$%&amp;…)</li>
+          </ul>
+        </div>
+
+        <div class="row2">
+          <div class="field">
+            <label for="company">Company</label>
+            <input id="company" type="text" placeholder="Meridian Logistics" autocomplete="organization" required>
+          </div>
+          <div class="field">
+            <label for="role">Your role</label>
+            <select id="role" required>
+              <option value="">Select role…</option>
+              <option>VP / Director of Operations</option>
+              <option>VP / Director of Supply Chain</option>
+              <option>Head of Engineering</option>
+              <option>Chief Operating Officer</option>
+              <option>Founder / CEO</option>
+              <option>Other</option>
+            </select>
+          </div>
+        </div>
+
+        <label class="terms">
+          <input type="checkbox" required>
+          <span>I agree to the <a href="#terms">Terms of Service</a> and have read the <a href="#privacy">Privacy Policy</a>. NEXOURA Studio may contact me about my engagement application.</span>
+        </label>
+
+        <button class="btn" type="submit">Create account</button>
+
+        <div class="divider">or continue with</div>
+
+        <div class="sso">
+          <button type="button">Google Workspace</button>
+          <button type="button">Microsoft 365</button>
+        </div>
+
+        <p class="foot-note">Already have an account? <a href="#login">Sign in</a></p>
+
+      </form>
+    </div>
+  </section>
+
+</div>
+
+</body>
+</html>
