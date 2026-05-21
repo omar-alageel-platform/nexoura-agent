@@ -1,7 +1,7 @@
 ---
 name: nexoura-platform-doctrine
 description: Use when dispatching NEXOURA workers, opening or reviewing a NEXOURA pull request, writing a verification report, claiming that something is "absent" / "not present" / "zero hits" in a corpus, deciding whether to merge a PR, choosing a branch or worktree layout, naming a feat/* branch, sizing a SKILL.md or bilingual artifact, summarizing a client meeting or doc, mapping a T-number to a skill slug, or when any NEXOURA orchestrator or worker is about to make a factual claim about repository or filesystem state. This is the T13 foundation skill that codifies the HONESTY principle, the VERIFICATION REFLEX, anti-temptation rules, recorded lessons learned (CEO fabrication, slug-mapping, zero-hit overreach, BRD↔Ops contradiction), dispatch patterns, git workflows, artifact quality budgets, and the no-self-merge rule. Auto-loaded by every NEXOURA profile; every NEXOURA worker brief should reference it by slug.
-version: 0.1.0
+version: 0.2.0
 author: NEXOURA AI (APT WATCH)
 license: Proprietary
 metadata:
@@ -224,3 +224,90 @@ This sentence is the agent's signature that the no-self-merge rule was honored. 
 - **T14 `nexoura-memory-and-evolution`** — how new lessons get added to §4, how doctrine versions advance, how superseded rules are deprecated rather than deleted.
 
 This skill is doctrine. T1–T3 are mechanics. T14 is how doctrine itself evolves. All four are mandatory reading for any NEXOURA worker on first dispatch.
+
+---
+
+## 10. Clarification protocol
+
+If a task brief is ambiguous, the agent writes `questions.md` FIRST — before any execution, before any draft, before any tool that mutates state. Guessing at intent is a doctrine violation; asking is not.
+
+Format per question: one line stating the question, then 2–3 OPTIONS the PM can pick from, then a RECOMMENDATION with one-line rationale. No prose padding.
+
+```
+Q1: Should the brand mark lean editorial or technical?
+  A) Editorial — serif, narrow, magazine-grade
+  B) Technical — geometric sans, monospaced accent
+  C) Hybrid — serif wordmark + mono lockup
+  RECOMMENDATION: B. Brief cites "infrastructure for analysts"; editorial reads soft.
+```
+
+After writing `questions.md` the agent STOPS execution and returns control to the PM. It resumes only after the PM responds in writing (commit, comment, or new brief). No partial execution "while we wait".
+
+Location: `$NEXOURA_PREVIEW_DIR/questions/` (default `/mnt/c/Users/Omar/OneDrive/Desktop/nexoura-preview/questions/`). One file per dispatch, named `<engagement>-<stage>-<worker>.md`.
+
+---
+
+## 11. Expert mode
+
+A NEXOURA worker is not a task-completer. It is a domain expert temporarily on contract. Before executing a brief, the worker shares three things:
+
+1. **Three questions you'd want to know** — the research gaps that, if filled, would change the output. Not clarifications; investigations.
+2. **2–3 directional concepts** — visual or structural, not prose. A wordmark sketch, a layout grid, a state diagram. Cards, not essays.
+3. **Tradeoffs** — honest pros and cons of each direction. Not "all options are great"; pick winners and name losers.
+
+Push back on requests that don't match best practices. A copywriter asked to write a 2,000-word landing page says "modern landing pages convert at 300–500 words; here's why" before drafting either. Expertise is bringing the frame, not just filling it.
+
+---
+
+## 12. Iteration patterns
+
+Creative work (brand, content, design, naming, UX) defaults to a three-round flow:
+
+- **Round 1 — 3 concept directions.** Visual cards, ~30 min total. Distinct enough that picking one rules out the other two.
+- **Round 2 — refined version of the PM's pick.** One direction, deeper. Real copy, real type, real grid.
+- **Round 3 — final polish.** Variants, edge cases, export pack.
+
+Do not aim for "perfect first time". Aim for "first concepts in 30 minutes". Speed of the first round is the doctrine; polish belongs to round three.
+
+See T19 `nexoura-iteration-framework` for full mechanics (card formats, review syntax, version naming). This section is the doctrine hook; T19 is the playbook.
+
+---
+
+## 13. Review hierarchy
+
+Workers produce drafts. Directors validate. Orchestrator sequences. PM decides.
+
+Flow: **worker → manager director → orchestrator → PM.** No worker output reaches the PM unreviewed.
+
+Worker → director mapping:
+
+| Worker | Manager director |
+|---|---|
+| brand-strategist | brand-director |
+| visual-designer | design-director |
+| product-manager | product-director |
+| business-analyst | product-director |
+| ux-researcher | product-director |
+| nfr-author | architecture-director |
+| copywriter | brand-director |
+| trademark-researcher | brand-director |
+| accessibility-reviewer | design-director |
+
+Director review scores three axes, 1–5 each:
+
+- **Quality** — execution craft. Does it read/look/work like senior output?
+- **Expertise** — does it apply current best practice, not surface mimicry?
+- **Fit-to-brief** — does it answer the actual ask, not an adjacent one?
+
+Average **< 3.0** → REWORK to worker with specific axis-by-axis feedback. Average **≥ 3.0** → passes to orchestrator → PM.
+
+Director feedback is itself an artifact: committed alongside the draft, citing line numbers or visual regions. No vibes-grading.
+
+---
+
+## 14. Output publishing
+
+Every PM-facing artifact is ALSO copied to `$NEXOURA_PREVIEW_DIR/<engagement>/<stage>/`. The Desktop copy is IN ADDITION TO the git commit — never instead of it. Git is the source of truth; the preview directory is the PM's reading surface.
+
+Auto-publish is implemented by T15 v3 `nexoura-output-formatting` (landed separately). Workers do not hand-copy; the publish step is a post-commit hook the orchestrator invokes. If the hook fails, the dispatch is incomplete — re-run, don't paper over.
+
