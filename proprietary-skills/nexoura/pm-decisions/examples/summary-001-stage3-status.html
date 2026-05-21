@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Summary 001 — Stage 3 weekly status</title>
+<style>
+  :root { --nx-purple:#7861FF; --nx-violet:#5B30FF; --nx-blue:#2563FF; --nx-cyan:#00E0FF; --nx-dark:#0A0F16; --nx-light:#F5F7FA; --nx-gradient: linear-gradient(135deg, #7861FF 0%, #5B30FF 28%, #2563FF 68%, #00E0FF 100%); }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--nx-light);color:#0A0F16;padding:24px;line-height:1.5}
+  .card{max-width:720px;margin:0 auto;background:white;border-radius:14px;padding:28px;border:1px solid rgba(10,15,22,.12);box-shadow:0 6px 22px rgba(10,15,22,.08)}
+  .label{text-transform:uppercase;letter-spacing:1.4px;font-size:11px;font-weight:700;color:var(--nx-blue);margin-bottom:8px}
+  h1{margin:0 0 18px;font-size:22px;font-weight:700;color:#0A0F16}
+  .body{font-size:14px;margin-bottom:22px}
+  .body ul{margin:8px 0 0;padding-left:20px}
+  .body li{margin-bottom:4px}
+  .metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:22px}
+  .metric{background:rgba(120,97,255,.06);border-radius:10px;padding:12px;text-align:center}
+  .metric .value{font-size:22px;font-weight:800;background:var(--nx-gradient);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .metric .name{font-size:11px;color:#555;text-transform:uppercase;letter-spacing:.8px;margin-top:4px}
+  .next{border-top:1px dashed rgba(10,15,22,.15);padding-top:14px;font-size:13.5px;color:var(--nx-violet)}
+  .next strong{color:var(--nx-violet)}
+  @media (prefers-color-scheme: dark){
+    body{background:var(--nx-dark);color:var(--nx-light)}
+    .card{background:#131927;border-color:rgba(255,255,255,.08);box-shadow:0 6px 22px rgba(0,0,0,.5)}
+    h1{color:var(--nx-light)}
+    .metric{background:rgba(120,97,255,.14)}
+    .metric .name{color:#c9d1e0}
+    .next{border-top-color:rgba(255,255,255,.12);color:var(--nx-cyan)}
+    .next strong{color:var(--nx-cyan)}
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="label">NEXOURA Brief · 001</div>
+  <h1>Stage 3 weekly status — Week of May 18</h1>
+  <div class="body">
+    Stage 3 (Research-First) shipped the Exa primary integration on Tue. Throughput up 38% vs last week. One incident: 12 m outage Wed AM (rate-limit) — fix landed same day.
+    <ul>
+      <li>Exa primary live, Firecrawl on fallback path</li>
+      <li>Worker p95 latency 18s → 11s</li>
+      <li>One open decision queued (research budget caps)</li>
+    </ul>
+  </div>
+
+  <div class="metrics">
+    <div class="metric"><div class="value">12</div><div class="name">PRs merged</div></div>
+    <div class="metric"><div class="value">38%</div><div class="name">Throughput</div></div>
+    <div class="metric"><div class="value">3</div><div class="name">Open decisions</div></div>
+    <div class="metric"><div class="value">11s</div><div class="name">P95 latency</div></div>
+  </div>
+
+  <div class="next"><strong>Next:</strong> Resolve research-budget-cap decision (queued as Decision 004). Begin Stage 3 → Stage 4 handoff doc.</div>
+</div>
+</body>
+</html>

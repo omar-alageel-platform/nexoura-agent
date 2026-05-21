@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Decision 002 — Pick primary research tool for Stage 3</title>
+<style>
+  :root { --nx-purple:#7861FF; --nx-violet:#5B30FF; --nx-blue:#2563FF; --nx-cyan:#00E0FF; --nx-dark:#0A0F16; --nx-light:#F5F7FA; --nx-gradient: linear-gradient(135deg, #7861FF 0%, #5B30FF 28%, #2563FF 68%, #00E0FF 100%); }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--nx-light);color:#0A0F16;padding:24px;line-height:1.5}
+  .card{max-width:880px;margin:0 auto;background:white;border-radius:16px;padding:32px;box-shadow:0 10px 40px rgba(10,15,22,.12);position:relative;border:2px solid transparent;background-clip:padding-box}
+  .card::before{content:"";position:absolute;inset:-2px;border-radius:16px;background:var(--nx-gradient);z-index:-1}
+  .label{text-transform:uppercase;letter-spacing:1.4px;font-size:11px;font-weight:700;color:var(--nx-violet);margin-bottom:8px}
+  h1{margin:0 0 16px;font-size:24px;font-weight:700;background:var(--nx-gradient);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .context{background:rgba(120,97,255,.06);border-left:3px solid var(--nx-purple);padding:12px 16px;margin:20px 0 28px;border-radius:6px;font-size:14px}
+  .options{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin:0 0 28px}
+  .option{border:1px solid rgba(10,15,22,.12);border-radius:12px;padding:18px;background:white}
+  .option h3{margin:0 0 8px;font-size:16px;color:var(--nx-violet)}
+  .option p{margin:0 0 12px;font-size:13px;color:#334}
+  .option ul{margin:0 0 10px;padding-left:18px;font-size:12.5px}
+  .pros li{color:#15803d;margin-bottom:4px}
+  .cons li{color:#b91c1c;margin-bottom:4px}
+  .recommendation{background:var(--nx-gradient);color:white;padding:18px 22px;border-radius:12px;margin:0 0 24px;font-size:15px}
+  .recommendation strong{font-weight:800}
+  .actions{display:flex;gap:12px;flex-wrap:wrap}
+  .btn{padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none;border:none;display:inline-block}
+  .btn-primary{background:var(--nx-gradient);color:white}
+  .btn-secondary{background:white;color:var(--nx-violet);border:1.5px solid var(--nx-violet)}
+  .btn-tertiary{background:transparent;color:#555;border:1px solid #ccc}
+  @media (prefers-color-scheme: dark){
+    body{background:var(--nx-dark);color:var(--nx-light)}
+    .card{background:#131927;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+    .context{background:rgba(120,97,255,.12)}
+    .option{background:#1a2235;border-color:rgba(255,255,255,.1)}
+    .option p{color:#c9d1e0}
+    .btn-secondary{background:#1a2235;color:var(--nx-cyan);border-color:var(--nx-cyan)}
+    .btn-tertiary{background:transparent;color:#aaa;border-color:#444}
+  }
+  @media (max-width:720px){.options{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="label">NEXOURA Decision · 002</div>
+  <h1>Pick primary research tool for Stage 3 (Research-First)</h1>
+  <div class="context"><strong>Context:</strong> Stage 3 currently uses three research providers ad-hoc, costing both budget and worker switching overhead. We need one primary and a documented fallback before we scale Stage 3 across tenants.</div>
+
+  <div class="options">
+    <div class="option">
+      <h3>Exa</h3>
+      <p>Neural search-as-API, strong for vague semantic queries. Strong "find me companies like X" use cases.</p>
+      <ul class="pros"><li>Best semantic recall on B2B queries</li><li>Cleanest API ergonomics</li><li>Predictable pricing</li></ul>
+      <ul class="cons"><li>Weaker on dynamic-JS pages</li><li>No built-in scraping</li></ul>
+    </div>
+    <div class="option">
+      <h3>Firecrawl</h3>
+      <p>Scrape + crawl-first tool, returns markdown-clean pages. Strongest when we already know the URL.</p>
+      <ul class="pros"><li>Handles JS-rendered sites</li><li>Clean markdown output</li><li>Good for known-URL workflows</li></ul>
+      <ul class="cons"><li>Weak at discovery / "find me"</li><li>Higher per-call cost</li></ul>
+    </div>
+    <div class="option">
+      <h3>Parallel</h3>
+      <p>Multi-agent research orchestrator that fans out across sources. Designed for deep dossiers.</p>
+      <ul class="pros"><li>Highest depth per query</li><li>Returns structured citations</li><li>Good for one-off deep work</li></ul>
+      <ul class="cons"><li>Expensive at Stage 3 volumes</li><li>Slower (30–90s per query)</li></ul>
+    </div>
+  </div>
+
+  <div class="recommendation"><strong>Recommendation: Exa</strong> — Stage 3 is dominated by discovery queries where semantic recall matters; keep Firecrawl as fallback for known-URL scraping, drop Parallel until we hit a deep-dossier workflow.</div>
+
+  <div class="actions">
+    <a class="btn btn-primary" href="#approve">Approve Exa primary</a>
+    <a class="btn btn-secondary" href="#alternative">Pick Firecrawl or Parallel</a>
+    <a class="btn btn-tertiary" href="#more-info">Need more info</a>
+  </div>
+</div>
+</body>
+</html>

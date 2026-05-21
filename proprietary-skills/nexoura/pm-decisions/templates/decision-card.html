@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{DECISION_TITLE}} — NEXOURA Decision</title>
+<style>
+  :root {
+    --nx-purple: #7861FF;
+    --nx-violet: #5B30FF;
+    --nx-blue:   #2563FF;
+    --nx-cyan:   #00E0FF;
+    --nx-dark:   #0A0F16;
+    --nx-light:  #F5F7FA;
+    --nx-gradient: linear-gradient(135deg, #7861FF 0%, #5B30FF 28%, #2563FF 68%, #00E0FF 100%);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--nx-light);
+    color: #0A0F16;
+    padding: 24px;
+    line-height: 1.5;
+  }
+  .card {
+    max-width: 880px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 16px;
+    padding: 32px;
+    box-shadow: 0 10px 40px rgba(10, 15, 22, 0.12);
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    position: relative;
+  }
+  .card::before {
+    content: "";
+    position: absolute; inset: -2px;
+    border-radius: 16px;
+    background: var(--nx-gradient);
+    z-index: -1;
+  }
+  .label {
+    text-transform: uppercase;
+    letter-spacing: 1.4px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--nx-violet);
+    margin-bottom: 8px;
+  }
+  h1 {
+    margin: 0 0 16px;
+    font-size: 24px;
+    font-weight: 700;
+    background: var(--nx-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .context {
+    background: rgba(120, 97, 255, 0.06);
+    border-left: 3px solid var(--nx-purple);
+    padding: 12px 16px;
+    margin: 20px 0 28px;
+    border-radius: 6px;
+    font-size: 14px;
+  }
+  .options { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin: 0 0 28px; }
+  .option {
+    border: 1px solid rgba(10, 15, 22, 0.12);
+    border-radius: 12px;
+    padding: 18px;
+    background: white;
+  }
+  .option h3 { margin: 0 0 8px; font-size: 16px; color: var(--nx-violet); }
+  .option p { margin: 0 0 12px; font-size: 13px; color: #334; }
+  .option ul { margin: 0; padding-left: 18px; font-size: 12.5px; }
+  .option .pros li { color: #15803d; margin-bottom: 4px; }
+  .option .cons li { color: #b91c1c; margin-bottom: 4px; }
+  .recommendation {
+    background: var(--nx-gradient);
+    color: white;
+    padding: 18px 22px;
+    border-radius: 12px;
+    margin: 0 0 24px;
+    font-size: 15px;
+    font-weight: 500;
+  }
+  .recommendation strong { font-weight: 800; }
+  .actions { display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    display: inline-block;
+  }
+  .btn-primary { background: var(--nx-gradient); color: white; }
+  .btn-secondary { background: white; color: var(--nx-violet); border: 1.5px solid var(--nx-violet); }
+  .btn-tertiary { background: transparent; color: #555; border: 1px solid #ccc; }
+  @media (prefers-color-scheme: dark) {
+    body { background: var(--nx-dark); color: var(--nx-light); }
+    .card { background: #131927; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5); }
+    .context { background: rgba(120, 97, 255, 0.12); }
+    .option { background: #1a2235; border-color: rgba(255,255,255,0.1); }
+    .option p { color: #c9d1e0; }
+    .btn-secondary { background: #1a2235; color: var(--nx-cyan); border-color: var(--nx-cyan); }
+    .btn-tertiary { background: transparent; color: #aaa; border-color: #444; }
+  }
+  @media (max-width: 720px) { .options { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="label">NEXOURA Decision · {{DECISION_NUMBER}}</div>
+  <h1>{{DECISION_TITLE}}</h1>
+  <div class="context"><strong>Context:</strong> {{CONTEXT_TWO_SENTENCES}}</div>
+
+  <div class="options">
+    <div class="option">
+      <h3>{{OPTION_1_NAME}}</h3>
+      <p>{{OPTION_1_DESCRIPTION}}</p>
+      <ul class="pros"><li>{{O1_PRO_1}}</li><li>{{O1_PRO_2}}</li></ul>
+      <ul class="cons"><li>{{O1_CON_1}}</li><li>{{O1_CON_2}}</li></ul>
+    </div>
+    <div class="option">
+      <h3>{{OPTION_2_NAME}}</h3>
+      <p>{{OPTION_2_DESCRIPTION}}</p>
+      <ul class="pros"><li>{{O2_PRO_1}}</li><li>{{O2_PRO_2}}</li></ul>
+      <ul class="cons"><li>{{O2_CON_1}}</li><li>{{O2_CON_2}}</li></ul>
+    </div>
+    <div class="option">
+      <h3>{{OPTION_3_NAME}}</h3>
+      <p>{{OPTION_3_DESCRIPTION}}</p>
+      <ul class="pros"><li>{{O3_PRO_1}}</li><li>{{O3_PRO_2}}</li></ul>
+      <ul class="cons"><li>{{O3_CON_1}}</li><li>{{O3_CON_2}}</li></ul>
+    </div>
+  </div>
+
+  <div class="recommendation">
+    <strong>Recommendation:</strong> {{RECOMMENDATION_WHICH_AND_WHY}}
+  </div>
+
+  <div class="actions">
+    <a class="btn btn-primary" href="#approve">Approve recommendation</a>
+    <a class="btn btn-secondary" href="#alternative">Pick alternative</a>
+    <a class="btn btn-tertiary" href="#more-info">Need more info</a>
+  </div>
+</div>
+</body>
+</html>
