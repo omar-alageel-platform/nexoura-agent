@@ -920,7 +920,7 @@
 .agents-zone--idle {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
   opacity: 0.6;
 }
 
@@ -1019,10 +1019,16 @@
   height: 100px;
 }
 
-/* Zone 3: small cards */
+/* Zone 3: small cards — horizontal row layout so full slug names are readable */
 .agents-card--idle {
-  width: 100px;
-  height: 60px;
+  width: auto;
+  min-width: 160px;
+  height: auto;
+  flex-direction: row;
+  justify-content: flex-start;
+  gap: 0;
+  padding: 6px 10px;
+  text-align: left;
 }
 
 /* Avatar circle */
@@ -1050,6 +1056,8 @@
   width: 24px;
   height: 24px;
   font-size: 9px;
+  margin-right: 8px;
+  flex-shrink: 0;
 }
 
 .agents-card__name {
@@ -1069,6 +1077,9 @@
 
 .agents-card--idle .agents-card__name {
   font-size: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .agents-card__role {
@@ -1559,10 +1570,11 @@
 
 .activity-row {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 10px;
-  padding: 9px 12px;
+  padding: 10px 12px;
   border-radius: 7px;
+  border-bottom: 1px solid rgba(120, 97, 255, 0.08);
   cursor: pointer;
   transition: background 0.10s;
   text-decoration: none;
@@ -1606,21 +1618,27 @@
   padding: 2px 6px;
   border-radius: 3px;
   flex-shrink: 0;
+  min-width: 52px;
+  text-align: center;
+  border: 1px solid transparent;
 }
 
 .activity-row__badge--pr {
   color: #7861FF;
   background: rgba(120, 97, 255, 0.12);
+  border-color: rgba(120, 97, 255, 0.30);
 }
 
 .activity-row__badge--decision {
   color: var(--nx-studio);
   background: rgba(0, 224, 255, 0.10);
+  border-color: rgba(0, 224, 255, 0.28);
 }
 
 .activity-row__badge--dispatch {
   color: #2563FF;
   background: rgba(37, 99, 255, 0.12);
+  border-color: rgba(37, 99, 255, 0.30);
 }
 
 @media (max-width: 768px) {

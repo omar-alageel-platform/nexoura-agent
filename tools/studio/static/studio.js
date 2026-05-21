@@ -111,7 +111,7 @@
     var eng   = engs[0] || null;
     var prsOpen = prs.filter(function (p) { return p.state === 'open'; }).length;
 
-    var directors = ['Product Director','Design Director','Brand Director','Tech Director','Strategy Director'];
+    var directors = ['Product Director','Design Director','Brand Director','Architecture Director','Marketing Director'];
 
     // Activity feed: up to 10 items from PRs + commits
     var activity = [];
