@@ -616,3 +616,40 @@ workers:
   maxConcurrentTasks: 1
   acceptsBroadcast: false
   alwaysLoaded: false
+
+- id: validator
+  name: Cross-LLM Validator
+  role: NEXOURA Studio — cross-LLM second-opinion review (OpenAI gpt-5.5 via OpenRouter)
+  specialty: cross-LLM validation of brand, content, strategy, and customer-facing artifacts
+  model: openai/gpt-5.5
+  modelProvider: openrouter
+  mission: Provide an independent non-Anthropic perspective on critical NEXOURA outputs before Omar's gate. Score on 4 axes (accuracy/completeness/brand-fit/expert-quality) and surface bias the Anthropic-based directors may have missed.
+  profile: validator
+  modes:
+  - review
+  tools:
+  - file_read
+  - web_search
+  - recall
+  - message_agent
+  skills:
+  - nexoura-engagement-lifecycle
+  - nexoura-gate-protocol
+  - nexoura-artifact-conventions
+  - nexoura-platform-doctrine
+  - nexoura-memory-and-evolution
+  - nexoura-research-first
+  - nexoura-pm-decisions
+  capabilities:
+  - cross-llm-validation
+  - bias-detection
+  - independent-review
+  preferredTaskTypes:
+  - validation
+  - cross-llm-review
+  - bias-check
+  greenlightRequiredFor:
+  - artifact_block
+  maxConcurrentTasks: 1
+  acceptsBroadcast: false
+  alwaysLoaded: false
