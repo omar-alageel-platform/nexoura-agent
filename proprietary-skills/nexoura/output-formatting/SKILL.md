@@ -312,7 +312,43 @@ When in doubt, default to **plain**. Re-rendering is one command away; over-appl
 
 ---
 
-## §7 Examples
+## §7 Auto-publish to Desktop preview
+
+Every successful `render.py` invocation also copies the produced artifact
+to `$NEXOURA_PREVIEW_DIR/<engagement>/<category>/<filename>` (default
+`/mnt/c/Users/Omar/OneDrive/Desktop/nexoura-preview/`). IN ADDITION TO the
+git-committed artifact; never replaces it. Consumer: Omar's PM Console and
+quick manual review — the file on the Desktop is the "did the agent
+actually do something" signal.
+
+### Path derivation
+
+- `$NEXOURA_PREVIEW_DIR` — env var, defaults to the path above.
+- `<engagement>` — cwd-derived. Under
+  `/home/omar/dev/nexoura-engagements/<slug>/`, slug wins; else cwd basename.
+- `<category>` — parent dir of the source markdown (e.g. `03-branding`,
+  `04-tech`, `prototype`). Outside any stage dir → `loose`.
+- `<filename>` — same name as the rendered output.
+
+### Audit trail
+
+Every copy appends one line to `$NEXOURA_PREVIEW_DIR/published.log`:
+
+```
+<ISO8601-timestamp> <source-abspath> -> <desktop-abspath>
+```
+
+The log proves what was on Omar's Desktop at what time.
+
+### Failure mode and disabling
+
+If the Desktop dir is unreachable, render.py warns on stderr and continues.
+Local artifact is canonical; Desktop publish is best-effort. Exit code
+stays 0 if local write succeeded. Set `NEXOURA_NO_PUBLISH=1` to skip.
+
+---
+
+## §8 Examples
 
 See `examples/`:
 
@@ -330,7 +366,7 @@ python3 build_sample.py
 
 ---
 
-## §8 Anti-patterns
+## §9 Anti-patterns
 
 Reject these in review.
 

@@ -28,6 +28,7 @@ patched into the reference.
 import argparse
 import base64
 import datetime
+import os
 import pathlib
 import re
 import subprocess
@@ -119,6 +120,52 @@ def render_html(md_path: pathlib.Path, out_path: pathlib.Path, theme: str = "dar
         .replace("{{TIMESTAMP}}", datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC"))
     )
     out_path.write_text(out)
+    publish_to_desktop(out_path)
+
+
+# --- Desktop preview publish ---------------------------------------------
+
+
+def publish_to_desktop(local_path: pathlib.Path) -> None:
+    """Copy a freshly-rendered artifact to the Desktop preview tree.
+
+    Best-effort. See SKILL.md §7 for path-derivation and audit-trail rules.
+    """
+    if os.environ.get("NEXOURA_NO_PUBLISH"):
+        return
+    preview_dir = pathlib.Path(os.environ.get(
+        "NEXOURA_PREVIEW_DIR",
+        "/mnt/c/Users/Omar/OneDrive/Desktop/nexoura-preview",
+    ))
+    try:
+        # Derive engagement from cwd.
+        cwd = pathlib.Path.cwd().resolve()
+        engagements_root = pathlib.Path("/home/omar/dev/nexoura-engagements")
+        try:
+            rel = cwd.relative_to(engagements_root)
+            engagement = rel.parts[0] if rel.parts else cwd.name
+        except ValueError:
+            engagement = cwd.name
+        # Derive category from the immediate parent of the rendered output.
+        category = local_path.parent.name or "loose"
+        # Stage-prefixed dirs (e.g. 03-branding) and 'prototype' pass through;
+        # everything else compresses to 'loose'.
+        if not (category[:2].isdigit() or category in ("prototype", "loose")):
+            category = "loose"
+        dest_dir = preview_dir / engagement / category
+        dest_dir.mkdir(parents=True, exist_ok=True)
+        dest = dest_dir / local_path.name
+        shutil.copy2(local_path, dest)
+        # Audit log.
+        log = preview_dir / "published.log"
+        log.parent.mkdir(parents=True, exist_ok=True)
+        with log.open("a") as f:
+            f.write(
+                f"{datetime.datetime.utcnow().isoformat()}Z "
+                f"{local_path.resolve()} -> {dest.resolve()}\n"
+            )
+    except Exception as e:
+        sys.stderr.write(f"[publish_to_desktop] warning: {e}\n")
 
 
 # --- DOCX path -----------------------------------------------------------
@@ -179,6 +226,7 @@ def render_docx(md_path: pathlib.Path, out_path: pathlib.Path) -> None:
     )
     n = post_process_docx_pills(out_path)
     print(f"  pills rewritten: {n}")
+    publish_to_desktop(out_path)
 
 
 # -------------------------------------------------------------------------
