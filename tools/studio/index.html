@@ -1,16 +1,264 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
+<!--
+  NEXOURA Studio — Shell (B3)
+  Replaces the B1 placeholder index.html.
+
+  Structure:
+    <head>  — charset, viewport, title
+              Brand tokens inlined from brand-preamble.html <style> block
+              (single HTTP request, no FOUC, no duplicate token definitions)
+    <body>  — header (brand-preamble chrome)
+              sidebar nav (6 links)
+              #app   (view mount — studio.js writes here)
+              footer (brand-preamble chrome)
+              SSE status dot
+    Scripts — studio.css (view-specific styles)
+              studio.js  (SSE client + view router)
+-->
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>NEXOURA Studio</title>
+
+  <!-- Sora — brand-components SKILL.md §5 — weights 400/500/700 -->
+  <!-- Already loaded by brand-preamble; kept here since preamble is inlined, not linked. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;700&display=swap">
+
+  <!--
+    Brand tokens — inlined from brand-preamble.html <style> block.
+    Approach: single inline <style> = one fewer HTTP round-trip, no FOUC.
+    We do NOT duplicate in studio.css — studio.css imports only view-specific rules.
+    Source: tools/studio/brand-preamble.html (B2, 7,984 bytes)
+  -->
+  <style>
+    /* ── Color tokens ── brand-spec §1 + brand-components §4 ── */
+    :root {
+      --nx-purple: #7861FF;
+      --nx-violet: #5B30FF;
+      --nx-blue:   #2563FF;
+      --nx-cyan:   #00E0FF;
+      --nx-bg:     #0A0F16;
+      --nx-text:   #F5F7FA;
+      --nx-grad: linear-gradient(135deg, #7861FF 0%, #5B30FF 28%, #2563FF 68%, #00E0FF 100%);
+      /* Studio sub-brand accent (Open Decision #2) — cyan */
+      --nx-studio: #00E0FF;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--nx-bg);
+      color: var(--nx-text);
+      font-family: 'Sora', Inter, Geist, system-ui, sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Header ── */
+    .nx-studio-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 32px;
+      border-bottom: 1px solid rgba(120, 97, 255, 0.20);
+      flex-shrink: 0;
+    }
+
+    /* ── Logo lockup — brand-components SKILL.md §1 ── */
+    .nx-logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 0;
+      font-family: 'Sora', sans-serif;
+      font-weight: 700;
+      font-size: 32px;
+      letter-spacing: 0.3em;
+      color: var(--nx-text);
+      text-decoration: none;
+      line-height: 1;
+    }
+    .nx-wordmark-pre, .nx-wordmark-post { display: inline-block; }
+
+    /* O-ring — brand-components SKILL.md §1 + §2 */
+    .nx-oring {
+      display: inline-block;
+      position: relative;
+      top: 0.04em;
+      width: 1em;
+      height: 1em;
+      background: var(--nx-grad);
+      border-radius: 50%;
+      -webkit-mask: radial-gradient(circle, transparent 52%, black 53% 100%);
+      mask: radial-gradient(circle, transparent 52%, black 53% 100%);
+      filter: drop-shadow(0 0 6px rgba(120, 97, 255, 0.35));
+    }
+
+    /* Sub-brand label */
+    .nx-subbrand {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      color: var(--nx-studio);
+      text-transform: uppercase;
+      margin-left: 10px;
+      align-self: flex-end;
+      padding-bottom: 3px;
+    }
+
+    /* ── Footer ── */
+    .nx-studio-footer {
+      flex-shrink: 0;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      padding: 16px 32px;
+      gap: 16px;
+      border-top: 2px solid transparent;
+      border-image: var(--nx-grad) 1;
+    }
+    .nx-tagline {
+      font-family: 'Sora', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.5em;
+      text-transform: uppercase;
+      background: var(--nx-grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .nx-meta {
+      font-size: 11px;
+      color: rgba(245, 247, 250, 0.45);
+      text-align: right;
+    }
+
+    /* ── Body layout: sidebar + view area ── */
+    .nx-shell {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+    }
+  </style>
+
+  <!-- View-specific styles (does NOT duplicate brand tokens) -->
+  <link rel="stylesheet" href="/static/studio.css">
 </head>
+
 <body>
-  <h1>NEXOURA Studio — foundation B1 live.</h1>
-  <p>Views land in B3+. Brand preamble lands in B2.</p>
-  <p>
-    <a href="/api/state">API: /api/state</a> &mdash;
-    <a href="/api/events">SSE: /api/events</a>
-  </p>
+
+  <!-- HEADER — brand-preamble chrome -->
+  <header class="nx-studio-header">
+    <div style="display:flex;align-items:baseline;gap:0">
+      <a href="#/home" class="nx-logo" aria-label="NEXOURA Studio — go to home">
+        <span class="nx-wordmark-pre">NEX</span>
+        <span class="nx-oring" aria-label="O"></span>
+        <span class="nx-wordmark-post">URA</span>
+      </a>
+      <span class="nx-subbrand">Studio</span>
+    </div>
+  </header>
+
+  <!-- SHELL: sidebar + main -->
+  <div class="nx-shell">
+
+    <!-- SIDEBAR NAV -->
+    <!--
+      6 links total.
+      Active in this PR: HOME, DECISIONS.
+      Others: PROJECTS, AGENTS, ACTIVITY, SYSTEM — "Coming soon" state.
+    -->
+    <nav class="nx-sidebar" aria-label="Studio navigation">
+      <ul class="nx-sidebar__nav" role="list" style="list-style:none">
+
+        <!-- HOME — active -->
+        <li>
+          <a href="#/home" class="nx-nav-link" aria-label="Home">
+            HOME
+          </a>
+        </li>
+
+        <!-- PROJECTS — coming soon -->
+        <li>
+          <a href="#/projects" class="nx-nav-link nx-nav-link--disabled"
+             aria-disabled="true" tabindex="-1">
+            PROJECTS
+            <span class="nx-nav-badge">Soon</span>
+          </a>
+        </li>
+
+        <!-- DECISIONS — active -->
+        <li>
+          <a href="#/decisions" class="nx-nav-link" aria-label="Decisions">
+            DECISIONS
+          </a>
+        </li>
+
+        <!-- AGENTS — coming soon -->
+        <li>
+          <a href="#/agents" class="nx-nav-link nx-nav-link--disabled"
+             aria-disabled="true" tabindex="-1">
+            AGENTS
+            <span class="nx-nav-badge">Soon</span>
+          </a>
+        </li>
+
+        <!-- ACTIVITY — coming soon -->
+        <li>
+          <a href="#/activity" class="nx-nav-link nx-nav-link--disabled"
+             aria-disabled="true" tabindex="-1">
+            ACTIVITY
+            <span class="nx-nav-badge">Soon</span>
+          </a>
+        </li>
+
+        <!-- SYSTEM — coming soon -->
+        <li>
+          <a href="#/system" class="nx-nav-link nx-nav-link--disabled"
+             aria-disabled="true" tabindex="-1">
+            SYSTEM
+            <span class="nx-nav-badge">Soon</span>
+          </a>
+        </li>
+
+      </ul>
+    </nav>
+
+    <!-- MAIN: view mount -->
+    <main class="nx-view" id="app" aria-live="polite" aria-atomic="false">
+      <!-- studio.js renders the active view here -->
+      <noscript>
+        <p style="padding:20px;color:rgba(245,247,250,0.5)">
+          JavaScript is needed to run NEXOURA Studio.
+          Enable JavaScript and reload this page.
+        </p>
+      </noscript>
+    </main>
+
+  </div><!-- /.nx-shell -->
+
+  <!-- FOOTER — brand-preamble chrome -->
+  <footer class="nx-studio-footer">
+    <div class="nx-tagline">WHERE AI BUILDS · NEXOURA Studio</div>
+    <div class="nx-meta">NEXOURA Studio</div>
+  </footer>
+
+  <!-- SSE live status indicator (top-right, fixed) -->
+  <div class="nx-sse-status" role="status" aria-live="polite" aria-label="Connection status">
+    <span class="nx-sse-dot" id="nx-sse-dot"></span>
+    <span id="nx-sse-label">Connecting</span>
+  </div>
+
+  <!-- Studio JS: SSE client + view router -->
+  <script src="/static/studio.js"></script>
+
 </body>
 </html>

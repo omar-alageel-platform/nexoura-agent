@@ -50,6 +50,14 @@ _client_queues: list[queue.Queue] = []
 _clients_lock = threading.Lock()
 
 _INDEX_PATH = _STUDIO_DIR / "index.html"
+_STATIC_DIR = _STUDIO_DIR / "static"
+
+# MIME types for static assets
+_MIME = {
+    ".css": "text/css; charset=utf-8",
+    ".js":  "application/javascript; charset=utf-8",
+    ".html": "text/html; charset=utf-8",
+}
 
 # Heartbeat interval (seconds) — keeps proxies from closing idle SSE connections.
 _HEARTBEAT_INTERVAL = 15
@@ -94,6 +102,8 @@ class StudioHandler(BaseHTTPRequestHandler):
             self._serve_state()
         elif path == "/api/events":
             self._serve_events()
+        elif path.startswith("/static/"):
+            self._serve_static(path)
         else:
             self._send_404()
 
@@ -107,6 +117,33 @@ class StudioHandler(BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header("Content-Type", "text/html; charset=utf-8")
         self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
+    def _serve_static(self, url_path: str) -> None:
+        """Serve files from tools/studio/static/. Only serves known extensions."""
+        # Strip /static/ prefix and resolve to the static dir
+        rel = url_path[len("/static/"):]
+        file_path = (_STATIC_DIR / rel).resolve()
+        # Security: must be under _STATIC_DIR
+        try:
+            file_path.relative_to(_STATIC_DIR.resolve())
+        except ValueError:
+            self._send_404()
+            return
+        suffix = file_path.suffix
+        if suffix not in _MIME:
+            self._send_404()
+            return
+        try:
+            body = file_path.read_bytes()
+        except OSError:
+            self._send_404()
+            return
+        self.send_response(200)
+        self.send_header("Content-Type", _MIME[suffix])
+        self.send_header("Content-Length", str(len(body)))
+        self.send_header("Cache-Control", "no-cache")
         self.end_headers()
         self.wfile.write(body)
 

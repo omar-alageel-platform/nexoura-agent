@@ -1,0 +1,187 @@
+<!--
+  NEXOURA Studio — HOME view fragment (B3)
+  Loaded dynamically into #app by studio.js router.
+
+  This is a static fallback / SSR placeholder.
+  studio.js calls renderHome(state) and writes innerHTML into #app,
+  so this file is not fetched at runtime — it documents the
+  HTML structure the renderer produces and is used by tests.
+
+  Sections:
+    1. Metric tiles (4)
+    2. Director status cards (5)
+    3. Active engagement panel + stage timeline
+    4. Pending decisions queue preview (top 3)
+    5. Recent activity feed (last 10 items)
+
+  Language rule: 6th-grade reading level, plain words, short sentences.
+  Microcopy: tools/studio/microcopy-brief.md
+-->
+
+<!-- Metric tiles -->
+<div class="nx-view-title">Home</div>
+<div class="nx-view-subtitle">Live view of your platform. Updates automatically.</div>
+
+<div class="nx-metrics">
+
+  <!-- Tile 1: Active Dispatches -->
+  <div class="nx-tile">
+    <div class="nx-tile__label">Dispatches</div>
+    <div class="nx-tile__value" id="metric-dispatches">—</div>
+  </div>
+
+  <!-- Tile 2: Pending Decisions -->
+  <div class="nx-tile">
+    <div class="nx-tile__label">Decisions</div>
+    <div class="nx-tile__value" id="metric-decisions">—</div>
+  </div>
+
+  <!-- Tile 3: PRs Open -->
+  <div class="nx-tile">
+    <div class="nx-tile__label">PRs Open</div>
+    <div class="nx-tile__value" id="metric-prs">—</div>
+  </div>
+
+  <!-- Tile 4: Cost Runway — never fabricate (Locked Decision #1) -->
+  <!-- Shows "Cost data not available yet." until cost_source is wired -->
+  <div class="nx-tile nx-tile--accent">
+    <div class="nx-tile__label">Cost Runway</div>
+    <div class="nx-tile__value--unknown" id="metric-cost">Cost data not available yet.</div>
+  </div>
+
+</div><!-- /.nx-metrics -->
+
+
+<!-- Director status cards (5 directors) -->
+<!-- Dot colour: green=active, amber=idle, gray=unknown -->
+<div class="nx-section-heading">Directors</div>
+<div class="nx-directors" id="directors-list">
+
+  <div class="nx-director-card">
+    <span class="nx-dot nx-dot--gray" aria-hidden="true"></span>
+    <span>Product Director</span>
+  </div>
+
+  <div class="nx-director-card">
+    <span class="nx-dot nx-dot--gray" aria-hidden="true"></span>
+    <span>Design Director</span>
+  </div>
+
+  <div class="nx-director-card">
+    <span class="nx-dot nx-dot--gray" aria-hidden="true"></span>
+    <span>Brand Director</span>
+  </div>
+
+  <div class="nx-director-card">
+    <span class="nx-dot nx-dot--gray" aria-hidden="true"></span>
+    <span>Tech Director</span>
+  </div>
+
+  <div class="nx-director-card">
+    <span class="nx-dot nx-dot--gray" aria-hidden="true"></span>
+    <span>Strategy Director</span>
+  </div>
+
+</div><!-- /.nx-directors -->
+
+
+<!-- Two-column grid: engagement left, decisions right -->
+<div class="nx-home-grid">
+
+  <!-- Active engagement panel -->
+  <div>
+    <div class="nx-section-heading">Active Engagement</div>
+
+    <!-- Example: Supply Chain SaaS — populated by studio.js from cache -->
+    <div class="nx-engagement" id="engagement-panel">
+
+      <div class="nx-engagement__name">Supply Chain SaaS</div>
+
+      <!-- Stage timeline: S1 requirements → S6 gtm-marketing (current highlighted) -->
+      <!-- Stages: REQ FEAS BRAND ARCH BUILD GTM OPS GATE LIVE -->
+      <div class="nx-stages" role="list" aria-label="Engagement stages">
+
+        <div class="nx-stage" role="listitem">
+          <span class="nx-stage__dot nx-stage__dot--done" aria-hidden="true"></span>
+          <span class="nx-stage__label">REQ</span>
+        </div>
+        <div class="nx-stage-line nx-stage-line--done" aria-hidden="true"></div>
+
+        <div class="nx-stage" role="listitem">
+          <span class="nx-stage__dot nx-stage__dot--done" aria-hidden="true"></span>
+          <span class="nx-stage__label">FEAS</span>
+        </div>
+        <div class="nx-stage-line nx-stage-line--done" aria-hidden="true"></div>
+
+        <div class="nx-stage" role="listitem">
+          <span class="nx-stage__dot nx-stage__dot--done" aria-hidden="true"></span>
+          <span class="nx-stage__label">BRAND</span>
+        </div>
+        <div class="nx-stage-line nx-stage-line--done" aria-hidden="true"></div>
+
+        <div class="nx-stage" role="listitem">
+          <span class="nx-stage__dot nx-stage__dot--done" aria-hidden="true"></span>
+          <span class="nx-stage__label">ARCH</span>
+        </div>
+        <div class="nx-stage-line nx-stage-line--done" aria-hidden="true"></div>
+
+        <div class="nx-stage" role="listitem">
+          <span class="nx-stage__dot nx-stage__dot--done" aria-hidden="true"></span>
+          <span class="nx-stage__label">BUILD</span>
+        </div>
+        <div class="nx-stage-line" aria-hidden="true"></div>
+
+        <!-- Current stage — highlighted with Studio cyan -->
+        <div class="nx-stage" role="listitem" aria-current="step">
+          <span class="nx-stage__dot nx-stage__dot--current" aria-hidden="true"></span>
+          <span class="nx-stage__label nx-stage__label--current">GTM</span>
+        </div>
+        <div class="nx-stage-line" aria-hidden="true"></div>
+
+        <div class="nx-stage" role="listitem">
+          <span class="nx-stage__dot" aria-hidden="true"></span>
+          <span class="nx-stage__label">OPS</span>
+        </div>
+        <div class="nx-stage-line" aria-hidden="true"></div>
+
+        <div class="nx-stage" role="listitem">
+          <span class="nx-stage__dot" aria-hidden="true"></span>
+          <span class="nx-stage__label">GATE</span>
+        </div>
+        <div class="nx-stage-line" aria-hidden="true"></div>
+
+        <div class="nx-stage" role="listitem">
+          <span class="nx-stage__dot" aria-hidden="true"></span>
+          <span class="nx-stage__label">LIVE</span>
+        </div>
+
+      </div><!-- /.nx-stages -->
+
+    </div><!-- /.nx-engagement -->
+
+  </div><!-- left col -->
+
+
+  <!-- Pending decisions queue preview — top 3 -->
+  <div>
+    <div class="nx-section-heading">Decisions Waiting</div>
+
+    <div class="nx-decisions-preview" id="decisions-preview">
+      <!-- Populated by studio.js. Fallback shown when JS is off: -->
+      <p class="nx-empty">No decisions waiting.</p>
+    </div>
+
+    <a href="#/decisions" class="nx-link-subtle">See all decisions</a>
+
+  </div><!-- right col -->
+
+</div><!-- /.nx-home-grid -->
+
+
+<!-- Recent activity feed — last 10 items -->
+<div class="nx-section-heading">Recent Activity</div>
+
+<div class="nx-activity-feed" id="activity-feed">
+  <!-- Populated by studio.js. Fallback: -->
+  <p class="nx-empty">No activity in the last 24 hours.</p>
+</div>

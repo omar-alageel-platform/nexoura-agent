@@ -1,0 +1,117 @@
+<!--
+  NEXOURA Studio — DECISIONS queue view fragment (B3)
+  Loaded dynamically into #app by studio.js router.
+
+  This is a static fallback / SSR placeholder.
+  studio.js calls renderDecisions(state) and writes innerHTML into #app.
+  This file documents the card structure and is used by tests.
+
+  Pattern: T20 decision card
+    - Title
+    - Context (source/path)
+    - Two-sentence summary
+    - Recommendation
+    - Rationale
+    - Actions: Approve | Pick alternative (placeholder)
+
+  Sort controls: oldest first / priority / by-agent
+
+  Language rule: 6th-grade reading level, plain words, short sentences.
+  Microcopy: tools/studio/microcopy-brief.md
+-->
+
+<div class="nx-view-title">Decisions</div>
+<div class="nx-view-subtitle">Items waiting for your approval.</div>
+
+<!-- Sort controls -->
+<div class="nx-decisions-controls" role="group" aria-label="Sort decisions">
+  <span class="nx-sort-label">Sort:</span>
+
+  <!-- Sort: oldest first (default) -->
+  <button class="nx-sort-btn nx-sort-btn--active" data-sort="oldest" type="button">
+    Oldest first
+  </button>
+
+  <!-- Sort: priority (field not in cache yet — keeps order) -->
+  <button class="nx-sort-btn" data-sort="priority" type="button">
+    Priority
+  </button>
+
+  <!-- Sort: by agent -->
+  <button class="nx-sort-btn" data-sort="agent" type="button">
+    By agent
+  </button>
+</div>
+
+
+<!-- Decision cards — populated by studio.js. Static example shown below. -->
+<div id="decisions-list">
+
+  <!-- ── Example decision card (T20 pattern) ── -->
+  <!-- studio.js will replace this block with live data -->
+
+  <div class="nx-decision-card">
+
+    <!-- Header: title + age -->
+    <div class="nx-decision-card__header">
+      <div class="nx-decision-card__title">
+        Approve PR #58 — feat(studio): B3 HOME view
+      </div>
+      <div class="nx-decision-card__age">2h ago</div>
+    </div>
+
+    <!-- Context: source/agent -->
+    <div class="nx-decision-card__context">nexoura-agent / studio</div>
+
+    <!-- Summary: two sentences -->
+    <div class="nx-decision-card__summary">
+      This PR adds the HOME view and DECISIONS queue to NEXOURA Studio.
+      It is ready for review and needs your approval to merge.
+    </div>
+
+    <!-- Recommendation -->
+    <div>
+      <div class="nx-decision-card__rec-label">Recommendation</div>
+      <div class="nx-decision-card__rec">
+        Approve, or pick an alternative below.
+      </div>
+    </div>
+
+    <!-- Rationale -->
+    <div class="nx-decision-card__rationale">
+      No extra rationale yet. See the decision file for details.
+    </div>
+
+    <!-- Actions -->
+    <div class="nx-decision-card__actions">
+
+      <!-- One-click Approve — WCAG 2.5.5: min 44×44 touch target -->
+      <button class="nx-btn-approve" type="button"
+              aria-label="Approve this decision">
+        Approve
+      </button>
+
+      <!--
+        "Pick alternative" — OUT OF SCOPE for B3.
+        Modal will ship in a future PR. Link is a placeholder.
+        Do NOT add modal code here.
+      -->
+      <a class="nx-link-alt" href="#"
+         title="Coming soon — this will open a choice modal in a future update."
+         onclick="return false;"
+         aria-disabled="true">
+        Pick alternative
+      </a>
+
+    </div><!-- /.nx-decision-card__actions -->
+
+  </div><!-- /.nx-decision-card -->
+
+
+  <!-- Empty state (shown when no decisions are waiting) -->
+  <!-- studio.js renders this when decisions array is empty -->
+  <!--
+  <p class="nx-empty">No decisions waiting.</p>
+  -->
+
+</div><!-- /#decisions-list -->
