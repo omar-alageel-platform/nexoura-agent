@@ -1,0 +1,47 @@
+<!--
+  NEXOURA Studio — AGENTS view fragment (B5)
+  Loaded dynamically into #app by studio.js router.
+
+  Three-zone layout (Round 0 design-director recommendation):
+    Zone 1: Active Now  — large cards (200×120) for running agents
+    Zone 2: Available   — medium cards (140×100) for idle profiles
+    Zone 3: Idle        — small cards (100×60) for agents unused 7+ days
+
+  Slide-over panel: profile SOUL excerpt + last 5 dispatches.
+  Language rule: 6th-grade reading level.
+  Microcopy: tools/studio/microcopy-brief.md
+-->
+
+<div class="nx-view-title">Agents</div>
+<div class="nx-view-subtitle">See which agents are running, ready, or resting.</div>
+
+<!-- Zone 1: Active Now -->
+<div class="nx-section-heading">Active Now</div>
+<div class="agents-zone agents-zone--active" id="agents-active">
+  <p class="nx-empty">No agents running right now.</p>
+</div>
+
+<!-- Zone 2: Available -->
+<div class="nx-section-heading">Available</div>
+<div class="agents-zone agents-zone--available" id="agents-available">
+  <p class="nx-empty">All agents are busy.</p>
+</div>
+
+<!-- Zone 3: Idle -->
+<div class="nx-section-heading">Idle <span class="agents-zone-hint">(not used in 7+ days)</span></div>
+<div class="agents-zone agents-zone--idle" id="agents-idle">
+  <p class="nx-empty">No idle agents.</p>
+</div>
+
+<!-- Slide-over panel -->
+<div class="agents-slideover" id="agents-slideover" role="dialog"
+     aria-modal="true" aria-label="Agent profile" hidden>
+  <div class="agents-slideover__inner">
+    <button class="agents-slideover__close" id="agents-slideover-close"
+            type="button" aria-label="Close panel">✕</button>
+    <div id="agents-slideover-content">
+      <p class="nx-empty">Loading profile...</p>
+    </div>
+  </div>
+</div>
+<div class="agents-slideover__backdrop" id="agents-slideover-backdrop" hidden></div>

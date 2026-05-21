@@ -190,11 +190,20 @@ class TestIndexHtml:
         _, body = _get(f"{live_server}/")
         assert "studio.css" in body, "index.html must load studio.css"
 
-    def test_index_has_coming_soon_placeholders(self, live_server: str) -> None:
-        """PROJECTS, AGENTS, ACTIVITY, SYSTEM must show 'Coming soon' in this PR."""
+    def test_index_has_agents_nav_link(self, live_server: str) -> None:
+        """B5: AGENTS nav link must be active (no Soon badge)."""
         _, body = _get(f"{live_server}/")
-        assert "Soon" in body, \
-            "Inactive nav items must have a 'Soon' badge"
+        assert "#/agents" in body, "Sidebar must have a #/agents nav link"
+
+    def test_index_has_activity_nav_link(self, live_server: str) -> None:
+        """B5: ACTIVITY nav link must be active."""
+        _, body = _get(f"{live_server}/")
+        assert "#/activity" in body, "Sidebar must have a #/activity nav link"
+
+    def test_index_has_system_nav_link(self, live_server: str) -> None:
+        """B5: SYSTEM nav link must be active."""
+        _, body = _get(f"{live_server}/")
+        assert "#/system" in body, "Sidebar must have a #/system nav link"
 
 
 # ── /static/ asset tests ───────────────────────────────────────────────────────

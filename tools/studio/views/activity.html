@@ -1,0 +1,40 @@
+<!--
+  NEXOURA Studio — ACTIVITY timeline view fragment (B5)
+  Loaded dynamically into #app by studio.js router.
+
+  Reverse-chronological feed:
+    PRs created/merged, decisions made, dispatches fired.
+
+  Filter controls: date range, type, repo.
+  Auto-update via SSE on prs/decisions/agents section changes.
+  Language rule: 6th-grade reading level.
+  Microcopy: tools/studio/microcopy-brief.md
+-->
+
+<div class="nx-view-title">Activity</div>
+<div class="nx-view-subtitle">Everything that happened, newest first.</div>
+
+<!-- Filter bar -->
+<div class="activity-filters" role="group" aria-label="Filter activity">
+  <span class="nx-sort-label">When:</span>
+  <button class="nx-sort-btn nx-sort-btn--active" data-af-range="today" type="button">Today</button>
+  <button class="nx-sort-btn" data-af-range="week" type="button">This week</button>
+  <button class="nx-sort-btn" data-af-range="month" type="button">This month</button>
+  <button class="nx-sort-btn" data-af-range="all" type="button">All</button>
+
+  <span class="nx-sort-label activity-filters__sep">Type:</span>
+  <button class="nx-sort-btn nx-sort-btn--active" data-af-type="all" type="button">All</button>
+  <button class="nx-sort-btn" data-af-type="prs" type="button">PRs</button>
+  <button class="nx-sort-btn" data-af-type="decisions" type="button">Decisions</button>
+  <button class="nx-sort-btn" data-af-type="dispatches" type="button">Dispatches</button>
+
+  <span class="nx-sort-label activity-filters__sep">Repo:</span>
+  <button class="nx-sort-btn nx-sort-btn--active" data-af-repo="all" type="button">All</button>
+  <button class="nx-sort-btn" data-af-repo="supply-chain-saas" type="button">Supply Chain</button>
+  <button class="nx-sort-btn" data-af-repo="nexoura-agent" type="button">nexoura-agent</button>
+</div>
+
+<!-- Timeline feed -->
+<div class="activity-feed" id="activity-feed" role="feed" aria-label="Activity timeline">
+  <p class="nx-empty">Nothing happened yet today.</p>
+</div>

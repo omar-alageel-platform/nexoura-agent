@@ -41,7 +41,7 @@ if str(_STUDIO_DIR) not in sys.path:
 from cache import Cache       # type: ignore[import]
 from watcher import FileWatcher  # type: ignore[import]
 
-# ── Global state ──────────────────────────────────────────────────────────
+# ── Global state ──────────────────────────────────────────────────────
 
 HOST = "127.0.0.1"
 PORT = 5000
@@ -63,6 +63,9 @@ _ENGAGEMENTS_ROOT = Path("/home/omar/dev/nexoura-engagements")
 
 # Root for gate decision records (B4)
 _GATE_DECISIONS_ROOT = _ENGAGEMENTS_ROOT
+
+# Root for director/agent profile SOULs (B5)
+_PROFILES_DIR = _STUDIO_DIR.parents[1] / "profiles"
 
 # MIME types for static assets
 _MIME = {
@@ -120,6 +123,8 @@ class StudioHandler(BaseHTTPRequestHandler):
             self._serve_view(path)
         elif path == "/api/artifact":
             self._serve_artifact()
+        elif path.startswith("/api/profile/"):
+            self._serve_profile(path)
         else:
             self._send_404()
 
@@ -173,6 +178,102 @@ class StudioHandler(BaseHTTPRequestHandler):
     def _serve_state(self) -> None:
         data = _cache.read()
         body = json.dumps(data, indent=2, default=str).encode("utf-8")
+        self.send_response(200)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Length", str(len(body)))
+        self.send_header("Cache-Control", "no-cache")
+        self.end_headers()
+        self.wfile.write(body)
+
+    def _serve_view(self, url_path: str) -> None:
+        """Serve view HTML fragments from tools/studio/views/."""
+        rel = url_path[len("/views/"):]
+        file_path = (_VIEWS_DIR / rel).resolve()
+        try:
+            file_path.relative_to(_VIEWS_DIR.resolve())
+        except ValueError:
+            self._send_404()
+            return
+        if file_path.suffix != ".html":
+            self._send_404()
+            return
+        try:
+            body = file_path.read_bytes()
+        except OSError:
+            self._send_404()
+            return
+        self.send_response(200)
+        self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.send_header("Content-Length", str(len(body)))
+        self.send_header("Cache-Control", "no-cache")
+        self.end_headers()
+        self.wfile.write(body)
+
+    def _serve_profile(self, url_path: str) -> None:
+        """
+        GET /api/profile/<slug>
+        Return JSON: { soul: <first 800 chars>, dispatches: [...], memory: <str|null> }
+        """
+        import sqlite3 as _sqlite3
+        slug = url_path[len("/api/profile/"):]
+        # Security: slug must be simple identifier
+        import re as _re
+        if not _re.match(r"^[a-z0-9][a-z0-9\-]{0,63}$", slug):
+            self._send_404()
+            return
+        profile_dir = (_PROFILES_DIR / slug).resolve()
+        try:
+            profile_dir.relative_to(_PROFILES_DIR.resolve())
+        except ValueError:
+            self._send_404()
+            return
+        # Profile must exist as a directory containing SOUL.md
+        if not (profile_dir.is_dir() and (profile_dir / "SOUL.md").exists()):
+            self._send_404()
+            return
+
+        soul_text: str | None = None
+        soul_path = profile_dir / "SOUL.md"
+        if soul_path.exists():
+            try:
+                soul_text = soul_path.read_text(encoding="utf-8", errors="replace")[:800]
+            except OSError:
+                soul_text = None
+
+        memory_text: str | None = None
+        memory_path = profile_dir / "MEMORY.md"
+        if memory_path.exists():
+            try:
+                memory_text = memory_path.read_text(encoding="utf-8", errors="replace")[:400]
+            except OSError:
+                pass
+
+        # Last 5 dispatches from state.db where title contains slug
+        dispatches: list[dict] = []
+        state_db = Path.home() / ".hermes" / "state.db"
+        if state_db.exists():
+            try:
+                conn = _sqlite3.connect(str(state_db), timeout=3)
+                cur = conn.cursor()
+                cur.execute(
+                    "SELECT id, started_at, estimated_cost_usd, end_reason "
+                    "FROM sessions WHERE (title LIKE ? OR id LIKE ?) "
+                    "ORDER BY started_at DESC LIMIT 5",
+                    (f"%{slug}%", f"%{slug}%"),
+                )
+                for row in cur.fetchall():
+                    dispatches.append({
+                        "id": row[0],
+                        "started_at": row[1],
+                        "estimated_cost_usd": row[2],
+                        "outcome": row[3],
+                    })
+                conn.close()
+            except Exception:
+                pass
+
+        payload = {"soul": soul_text, "dispatches": dispatches, "memory": memory_text}
+        body = json.dumps(payload, default=str).encode("utf-8")
         self.send_response(200)
         self.send_header("Content-Type", "application/json")
         self.send_header("Content-Length", str(len(body)))
@@ -240,32 +341,6 @@ class StudioHandler(BaseHTTPRequestHandler):
         self.send_response(404)
         self.send_header("Content-Type", "text/plain")
         self.send_header("Content-Length", str(len(body)))
-        self.end_headers()
-        self.wfile.write(body)
-
-    # ── B4: views handler ──────────────────────────────────────────────────
-
-    def _serve_view(self, url_path: str) -> None:
-        """Serve HTML fragments from tools/studio/views/. B4 route."""
-        rel = url_path[len("/views/"):]
-        file_path = (_VIEWS_DIR / rel).resolve()
-        try:
-            file_path.relative_to(_VIEWS_DIR.resolve())
-        except ValueError:
-            self._send_404()
-            return
-        if file_path.suffix != ".html":
-            self._send_404()
-            return
-        try:
-            body = file_path.read_bytes()
-        except OSError:
-            self._send_404()
-            return
-        self.send_response(200)
-        self.send_header("Content-Type", "text/html; charset=utf-8")
-        self.send_header("Content-Length", str(len(body)))
-        self.send_header("Cache-Control", "no-cache")
         self.end_headers()
         self.wfile.write(body)
 

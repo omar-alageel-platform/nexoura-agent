@@ -22,6 +22,7 @@ if str(_STUDIO_DIR) not in sys.path:
     sys.path.insert(0, str(_STUDIO_DIR))
 
 from cache import Cache  # type: ignore[import]
+import cache as cache_mod  # type: ignore[import]
 
 
 class TestCacheRead(unittest.TestCase):
@@ -173,6 +174,92 @@ class TestLastUpdated(unittest.TestCase):
         with tempfile.TemporaryDirectory() as td:
             cache = Cache(path=Path(td) / "cache.json")
             self.assertIsNone(cache.last_updated("prs"))
+
+
+# ── B5: Agent activity tests ───────────────────────────────────────────────
+
+
+class TestGetAgentActivityReturnThreeKeys(unittest.TestCase):
+    """get_agent_activity() always returns active, available, idle keys."""
+
+    def test_returns_three_keys(self):
+        result = cache_mod.get_agent_activity()
+        self.assertIn("active",    result, "Missing 'active' key")
+        self.assertIn("available", result, "Missing 'available' key")
+        self.assertIn("idle",      result, "Missing 'idle' key")
+
+    def test_all_values_are_lists(self):
+        result = cache_mod.get_agent_activity()
+        self.assertIsInstance(result["active"],    list)
+        self.assertIsInstance(result["available"], list)
+        self.assertIsInstance(result["idle"],      list)
+
+    def test_all_profiles_have_slug_key(self):
+        result = cache_mod.get_agent_activity()
+        for zone in ("active", "available", "idle"):
+            for entry in result[zone]:
+                self.assertIn("slug", entry, f"Entry in '{zone}' missing 'slug': {entry}")
+
+
+class TestGetAgentActivityGracefulWhenStateDbMissing(unittest.TestCase):
+    """When state.db is missing, all profiles go to 'available'."""
+
+    def test_graceful_degradation(self):
+        import tempfile as _tmp
+        with _tmp.TemporaryDirectory() as fake_home:
+            # Point home to a dir without state.db
+            with patch.dict("os.environ", {"HOME": fake_home}):
+                from pathlib import Path as _P
+                fake_db = _P(fake_home) / ".hermes" / "state.db"
+                self.assertFalse(fake_db.exists(), "state.db should not exist in fake home")
+                # Call with a patched STATE_DB path that doesn't exist
+                with patch.object(cache_mod, "get_agent_activity",
+                                  wraps=cache_mod.get_agent_activity):
+                    # We test directly: monkeypatch the DB path
+                    original = cache_mod.Path.home
+                    try:
+                        cache_mod.Path.home = staticmethod(lambda: _P(fake_home))
+                        result = cache_mod.get_agent_activity()
+                    finally:
+                        cache_mod.Path.home = original
+                # Either graceful (no crash) or all in available
+                self.assertIsInstance(result, dict)
+                self.assertIn("active",    result)
+                self.assertIn("available", result)
+                self.assertIn("idle",      result)
+                # When DB is missing, nothing should be in active
+                self.assertEqual(result["active"], [])
+
+    def test_no_crash_on_missing_db(self):
+        """get_agent_activity() must never raise — only return safe defaults."""
+        import tempfile as _tmp
+        with _tmp.TemporaryDirectory() as fake_home:
+            from pathlib import Path as _P
+            orig = cache_mod.Path.home
+            try:
+                cache_mod.Path.home = staticmethod(lambda: _P(fake_home))
+                result = cache_mod.get_agent_activity()
+            except Exception as exc:
+                self.fail(f"get_agent_activity raised unexpectedly: {exc}")
+            finally:
+                cache_mod.Path.home = orig
+            self.assertIsInstance(result, dict)
+
+
+class TestCacheAgentsSection(unittest.TestCase):
+    """Cache.refresh('agents') adds 'agents' section with data + updated_at."""
+
+    def test_refresh_agents_section(self):
+        with tempfile.TemporaryDirectory() as td:
+            cache_path = Path(td) / "cache.json"
+            cache = Cache(path=cache_path)
+            mock_result = {"active": [], "available": [{"slug": "test"}], "idle": []}
+            with patch.object(cache_mod, "get_agent_activity", return_value=mock_result):
+                cache.refresh("agents")
+            data = json.loads(cache_path.read_text(encoding="utf-8"))
+            self.assertIn("agents", data)
+            self.assertIn("updated_at", data["agents"])
+            self.assertEqual(data["agents"]["data"]["available"][0]["slug"], "test")
 
 
 if __name__ == "__main__":
