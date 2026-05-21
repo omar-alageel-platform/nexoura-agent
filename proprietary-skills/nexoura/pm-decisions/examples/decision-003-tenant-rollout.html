@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Decision 003 — Pick Phase 6 Tenant Zero rollout strategy</title>
+<style>
+  :root { --nx-purple:#7861FF; --nx-violet:#5B30FF; --nx-blue:#2563FF; --nx-cyan:#00E0FF; --nx-dark:#0A0F16; --nx-light:#F5F7FA; --nx-gradient: linear-gradient(135deg, #7861FF 0%, #5B30FF 28%, #2563FF 68%, #00E0FF 100%); }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--nx-light);color:#0A0F16;padding:24px;line-height:1.5}
+  .card{max-width:880px;margin:0 auto;background:white;border-radius:16px;padding:32px;box-shadow:0 10px 40px rgba(10,15,22,.12);position:relative;border:2px solid transparent;background-clip:padding-box}
+  .card::before{content:"";position:absolute;inset:-2px;border-radius:16px;background:var(--nx-gradient);z-index:-1}
+  .label{text-transform:uppercase;letter-spacing:1.4px;font-size:11px;font-weight:700;color:var(--nx-violet);margin-bottom:8px}
+  h1{margin:0 0 16px;font-size:24px;font-weight:700;background:var(--nx-gradient);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .context{background:rgba(120,97,255,.06);border-left:3px solid var(--nx-purple);padding:12px 16px;margin:20px 0 28px;border-radius:6px;font-size:14px}
+  .options{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin:0 0 28px}
+  .option{border:1px solid rgba(10,15,22,.12);border-radius:12px;padding:18px;background:white}
+  .option h3{margin:0 0 8px;font-size:16px;color:var(--nx-violet)}
+  .option p{margin:0 0 12px;font-size:13px;color:#334}
+  .option ul{margin:0 0 10px;padding-left:18px;font-size:12.5px}
+  .pros li{color:#15803d;margin-bottom:4px}
+  .cons li{color:#b91c1c;margin-bottom:4px}
+  .recommendation{background:var(--nx-gradient);color:white;padding:18px 22px;border-radius:12px;margin:0 0 24px;font-size:15px}
+  .recommendation strong{font-weight:800}
+  .actions{display:flex;gap:12px;flex-wrap:wrap}
+  .btn{padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none;border:none;display:inline-block}
+  .btn-primary{background:var(--nx-gradient);color:white}
+  .btn-secondary{background:white;color:var(--nx-violet);border:1.5px solid var(--nx-violet)}
+  .btn-tertiary{background:transparent;color:#555;border:1px solid #ccc}
+  @media (prefers-color-scheme: dark){
+    body{background:var(--nx-dark);color:var(--nx-light)}
+    .card{background:#131927;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+    .context{background:rgba(120,97,255,.12)}
+    .option{background:#1a2235;border-color:rgba(255,255,255,.1)}
+    .option p{color:#c9d1e0}
+    .btn-secondary{background:#1a2235;color:var(--nx-cyan);border-color:var(--nx-cyan)}
+    .btn-tertiary{background:transparent;color:#aaa;border-color:#444}
+  }
+  @media (max-width:720px){.options{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="label">NEXOURA Decision · 003</div>
+  <h1>Pick Phase 6 Tenant Zero rollout strategy</h1>
+  <div class="context"><strong>Context:</strong> Tenant Zero infrastructure is feature-complete and we need to pick how aggressively to onboard the first real client cohort. Choice locks the SLA, support model, and engineering bandwidth for Q3.</div>
+
+  <div class="options">
+    <div class="option">
+      <h3>Soft launch</h3>
+      <p>Invite 3 friendly tenants, manual onboarding, no SLA promised. Iterate fast in private.</p>
+      <ul class="pros"><li>Lowest support load</li><li>Room to break things</li><li>Faster product-feedback loop</li></ul>
+      <ul class="cons"><li>No revenue signal yet</li><li>Delays public proof</li></ul>
+    </div>
+    <div class="option">
+      <h3>Cohort launch</h3>
+      <p>Open a 10-tenant cohort with a published SLA. Public announcement, full onboarding flow live.</p>
+      <ul class="pros"><li>Real revenue signal</li><li>Forces SLA discipline</li><li>Public proof for sales</li></ul>
+      <ul class="cons"><li>Higher support burden</li><li>SLA breach risk on day 1</li></ul>
+    </div>
+    <div class="option">
+      <h3>Open beta</h3>
+      <p>Self-serve sign-up, no cohort cap, "beta" disclaimer. Maximum surface area.</p>
+      <ul class="pros"><li>Widest learning surface</li><li>No gatekeeping cost</li></ul>
+      <ul class="cons"><li>Support load unbounded</li><li>Quality bar unenforceable</li><li>Brand risk if it wobbles</li></ul>
+    </div>
+  </div>
+
+  <div class="recommendation"><strong>Recommendation: Soft launch</strong> — we have not yet hit the stability bar for a published SLA; 3 friendly tenants gives us real signal without trading away the brand on day 1.</div>
+
+  <div class="actions">
+    <a class="btn btn-primary" href="#approve">Approve Soft launch</a>
+    <a class="btn btn-secondary" href="#alternative">Pick Cohort or Open beta</a>
+    <a class="btn btn-tertiary" href="#more-info">Need more info</a>
+  </div>
+</div>
+</body>
+</html>
