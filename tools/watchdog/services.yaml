@@ -1,0 +1,12 @@
+## watchdog services list — flat YAML for trivial bash parsing.
+## Each entry has: name, url, (optional) fallback_url.
+## Lines starting with '#' are ignored.
+
+services:
+  - name: gateway
+    url: http://127.0.0.1:8642/api/health
+    fallback_url: http://127.0.0.1:8642/
+  - name: dashboard
+    url: http://127.0.0.1:9119
+  - name: workspace
+    url: http://localhost:3000
