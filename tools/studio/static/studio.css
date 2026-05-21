@@ -1776,3 +1776,123 @@
     gap: 8px;
   }
 }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   B6 — Mobile gap-fill rules
+   Breakpoints: 768px (iPad portrait) and 480px (phones ≥ 375px)
+   Additive only — no existing @media blocks modified.
+   Touch targets ≥ 44×44px per WCAG 2.5.5 (criterion 2.5.5).
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* ── 768px: sidebar collapses to icon-only strip ── */
+@media (max-width: 768px) {
+  /* Sidebar shrinks to icon strip; labels hidden via overflow */
+  .nx-sidebar {
+    width: 52px;
+    padding: 16px 0;
+    overflow: hidden;
+  }
+  /* Nav links become icon-only squares (44×44 touch target, WCAG 2.5.5) */
+  .nx-sidebar__nav {
+    padding: 0 4px;
+  }
+  .nx-nav-link {
+    padding: 0;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0;         /* hide text label */
+    border-radius: 8px;
+  }
+  /* Show only the emoji/icon (first character — handled by JS data-icon attr) */
+  .nx-nav-link::before {
+    content: attr(data-icon);
+    font-size: 18px;
+    line-height: 1;
+  }
+  /* Hide the "coming soon" badge — no room */
+  .nx-nav-badge {
+    display: none;
+  }
+  /* View area gets more room */
+  .nx-view {
+    padding: 20px 16px;
+  }
+  /* SSE indicator moves left so it doesn't sit over content */
+  .nx-sse-status {
+    right: auto;
+    left: 60px;
+  }
+  /* Gate alert stacks vertically on narrow */
+  .projects-gate-alert {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  /* Decision card header allows age to wrap */
+  .nx-decision-card__header {
+    flex-wrap: wrap;
+  }
+  /* Ensure modal close buttons meet 44×44 touch target (WCAG 2.5.5) */
+  .gate-modal__close,
+  .artifact-modal__close,
+  .agents-slideover__close {
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+  }
+  /* Decision row: allow title to wrap instead of truncating harshly */
+  .nx-decision-row {
+    flex-wrap: wrap;
+  }
+  /* Sort buttons: ensure touch target height */
+  .nx-sort-btn {
+    min-height: 44px;
+    padding: 10px 14px;
+  }
+}
+
+/* ── 480px: phones (covers 375px iPhone SE) ── */
+@media (max-width: 480px) {
+  /* Metric tiles go single column on phones */
+  .nx-metrics {
+    grid-template-columns: 1fr 1fr;
+  }
+  /* Tile values slightly smaller so they fit */
+  .nx-tile__value {
+    font-size: 22px;
+  }
+  /* Gate modal uses full screen height on phones */
+  .gate-modal {
+    max-height: 95vh;
+    border-radius: 8px;
+  }
+  /* Artifact modal fills screen on phones */
+  .artifact-modal {
+    border-radius: 8px;
+    max-height: 95vh;
+  }
+  /* Gate action buttons full-width on phones */
+  .gate-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  /* Projects gate button full-width */
+  .projects-gate-btn {
+    width: 100%;
+  }
+  /* System spend chart: allow label wrapping */
+  .system-spend__label {
+    white-space: normal;
+    text-align: center;
+  }
+  /* Activity badge hidden on very small screens to save space */
+  .activity-row__badge {
+    display: none;
+  }
+}
