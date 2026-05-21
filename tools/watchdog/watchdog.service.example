@@ -1,0 +1,29 @@
+# Example systemd user unit for watchdog.sh.
+#
+# Install:
+#   mkdir -p ~/.config/systemd/user
+#   cp tools/watchdog/watchdog.service.example ~/.config/systemd/user/watchdog.service
+#   # edit ExecStart to point at your checkout
+#   systemctl --user daemon-reload
+#   systemctl --user enable --now watchdog.service
+#   journalctl --user -u watchdog -f
+
+[Unit]
+Description=NEXOURA local service watchdog
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+# Adjust this path to your checkout location.
+ExecStart=%h/dev/nexoura-agent/tools/watchdog/watchdog.sh
+Restart=on-failure
+RestartSec=10
+# Optional overrides:
+# Environment=WATCHDOG_INTERVAL=30
+# Environment=NEXOURA_PREVIEW_DIR=%h/nexoura-preview
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target
