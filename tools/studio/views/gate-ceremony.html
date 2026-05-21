@@ -1,0 +1,101 @@
+<!--
+  NEXOURA Studio — Gate Ceremony modal fragment (B4)
+  Rendered by renderGateCeremony() in studio.js as a modal overlay.
+
+  Locked Decision #3:
+    FULL ceremony  → S1 Idea, S2 Strategy, S3 Brand, S4 Design, S5 Build
+    FAST-PATH      → S6 Operate (single approve button + optional note)
+
+  FULL layout:
+    1. Stage summary header
+    2. Deliverables checklist (auto-detected status)
+    3. Validator scorecard (if present)
+    4. Rationale text field (required, min 20 chars)
+    5. APPROVE / REQUEST CHANGES / DEFER buttons
+
+  FAST-PATH layout (S6):
+    1. Stage summary header
+    2. Optional 1-line note field
+    3. Single "Approve operational stage" button
+
+  On submit: POST /api/gate/decide → toast "Gate decision recorded" 3s.
+  Language rule: 6th-grade reading level.
+  Microcopy: tools/studio/microcopy-brief.md
+-->
+
+<!-- Gate Ceremony modal — injected by studio.js -->
+<div class="gate-backdrop" id="gate-backdrop" role="dialog"
+     aria-modal="true" aria-label="Gate Ceremony" style="display:none">
+  <div class="gate-modal">
+
+    <!-- Header -->
+    <div class="gate-modal__header">
+      <div>
+        <div class="gate-modal__title" id="gate-title">Gate Review</div>
+        <div class="gate-modal__subtitle" id="gate-subtitle">Review this stage before moving on.</div>
+      </div>
+      <button class="gate-modal__close" id="gate-close"
+              type="button" aria-label="Close gate ceremony">&#x2715;</button>
+    </div>
+
+    <!-- FULL ceremony body (S1–S5) -->
+    <div id="gate-full-body">
+
+      <!-- Deliverables checklist -->
+      <div class="gate-section-label">Deliverables</div>
+      <div class="gate-checklist" id="gate-checklist">
+        <!-- Populated by renderGateCeremony() -->
+        <p class="nx-empty">No deliverables found.</p>
+      </div>
+
+      <!-- Validator scorecard (shown only if data exists) -->
+      <div id="gate-scorecard-wrap" style="display:none">
+        <div class="gate-section-label">Scores</div>
+        <div class="gate-scorecard" id="gate-scorecard"></div>
+      </div>
+
+      <!-- Rationale field -->
+      <div class="gate-section-label">
+        Your reason
+        <span class="gate-field-hint">(required, at least 20 characters)</span>
+      </div>
+      <textarea class="gate-rationale" id="gate-rationale"
+                rows="4" minlength="20"
+                placeholder="Explain why you are approving, requesting changes, or deferring."></textarea>
+      <div class="gate-rationale-error" id="gate-rationale-error" style="display:none">
+        Enter at least 20 characters to continue.
+      </div>
+
+      <!-- FULL action buttons -->
+      <div class="gate-actions" id="gate-full-actions">
+        <button class="gate-btn gate-btn--approve" id="gate-approve"
+                type="button">Approve</button>
+        <button class="gate-btn gate-btn--changes" id="gate-changes"
+                type="button">Request Changes</button>
+        <button class="gate-btn gate-btn--defer" id="gate-defer"
+                type="button">Defer</button>
+      </div>
+
+    </div><!-- /#gate-full-body -->
+
+    <!-- FAST-PATH body (S6 only) -->
+    <div id="gate-fast-body" style="display:none">
+
+      <div class="gate-section-label">Optional note</div>
+      <input class="gate-note" id="gate-note" type="text"
+             maxlength="200"
+             placeholder="Add a short note (optional).">
+
+      <div class="gate-actions gate-actions--fast">
+        <button class="gate-btn gate-btn--approve" id="gate-fast-approve"
+                type="button">Approve operational stage</button>
+      </div>
+
+    </div><!-- /#gate-fast-body -->
+
+  </div><!-- /.gate-modal -->
+</div><!-- /.gate-backdrop -->
+
+<!-- Toast notification — appended by studio.js -->
+<div class="gate-toast" id="gate-toast" role="status" aria-live="polite"
+     style="display:none">Gate decision recorded.</div>
