@@ -248,7 +248,445 @@
 
   // ── Renderer registry ─────────────────────────────────────────────────
 
-  var _renderers = { '/home': renderHome, '/decisions': renderDecisions };
+  var _renderers = { '/home': renderHome, '/decisions': renderDecisions, '/projects': renderProjects };
+
+  // ── B4: PROJECTS renderer ─────────────────────────────────────────────
+
+  // 7-stage lifecycle — Locked Decision: FULL for S1-S5, FAST-PATH for S6
+  var PROJ_STAGES = [
+    { key:'S1', label:'S1 Idea' },
+    { key:'S2', label:'S2 Strategy' },
+    { key:'S3', label:'S3 Brand' },
+    { key:'S4', label:'S4 Design' },
+    { key:'S5', label:'S5 Build' },
+    { key:'S6', label:'S6 Operate' },
+    { key:'S7', label:'S7 Sunset' },
+  ];
+
+  function renderProjects(state) {
+    var engs  = (state.engagements && state.engagements.data) || [];
+    var decs  = (state.decisions   && state.decisions.data)   || [];
+
+    var h = '';
+    h += '<div class="nx-view-title">Projects</div>';
+    h += '<div class="nx-view-subtitle">Track each product from idea to launch.</div>';
+
+    // Product tabs — only Supply Chain SaaS active; rest are placeholders
+    h += '<div class="projects-tabs" role="tablist" aria-label="Products">';
+    h += '<button class="projects-tab projects-tab--active" role="tab" aria-selected="true"'
+       + ' data-product="supply-chain-saas">Supply Chain SaaS</button>';
+    ['Work','One','Enterprise'].forEach(function(p) {
+      h += '<button class="projects-tab projects-tab--placeholder" role="tab"'
+         + ' aria-selected="false" disabled aria-disabled="true">'+esc(p)
+         + ' <span class="nx-nav-badge">Not started</span></button>';
+    });
+    h += '</div>';
+
+    // Empty state
+    if (engs.length === 0) {
+      h += '<p class="nx-empty">No projects yet. Start one to see it here.</p>';
+      return h;
+    }
+
+    // Use first engagement (Supply Chain SaaS)
+    var eng = engs[0];
+    var stageIdx = typeof eng.stage_index === 'number' ? eng.stage_index : 0;
+
+    // 7-stage timeline
+    h += '<div class="projects-timeline" role="list" aria-label="Project stages">';
+    PROJ_STAGES.forEach(function(s, i) {
+      var done = i < stageIdx;
+      var cur  = i === stageIdx;
+      var dotC = done ? 'projects-stage__dot--done' : cur ? 'projects-stage__dot--current' : '';
+      var lblC = cur  ? 'projects-stage__label--current' : '';
+      var curAttr = cur ? ' aria-current="step"' : '';
+      h += '<div class="projects-stage" role="listitem"'+curAttr+'>'
+         + '<span class="projects-stage__dot '+dotC+'" aria-hidden="true"></span>'
+         + '<span class="projects-stage__label '+lblC+'">'+esc(s.label)+'</span>'
+         + '</div>';
+      if (i < PROJ_STAGES.length - 1) {
+        h += '<div class="projects-stage-line'+(done?' projects-stage-line--done':'')+'" aria-hidden="true"></div>';
+      }
+    });
+    h += '</div>';
+
+    // Deliverables grid
+    h += '<div class="nx-section-heading">Deliverables</div>';
+    var delivs = (eng.deliverables && eng.deliverables[eng.current_stage]) || null;
+    if (!delivs) {
+      h += '<p class="nx-empty">Data not yet available.</p>';
+    } else {
+      h += '<div class="projects-deliverables">';
+      delivs.forEach(function(d) {
+        var status = d.status || 'unknown';
+        var pillClass = status === 'shipped' ? 'projects-pill--shipped'
+          : status === 'partial'  ? 'projects-pill--partial'
+          : status === 'missing'  ? 'projects-pill--missing'
+          : 'projects-pill--unknown';
+        var pillLabel = status === 'shipped' ? 'Shipped'
+          : status === 'partial' ? 'Partial'
+          : status === 'missing' ? 'Missing'
+          : 'Unknown';
+        h += '<div class="projects-deliverable">'
+           + '<div class="projects-deliverable__title">'+esc(d.title || d.name || 'Untitled')+'</div>';
+        if (d.pr_url) {
+          h += '<a class="projects-deliverable__link" href="'+esc(d.pr_url)+'"'
+             + ' target="_blank" rel="noopener noreferrer">View PR ↗</a>';
+        }
+        if (d.artifact_path) {
+          h += '<a class="projects-deliverable__link" href="#" data-artifact="'+esc(d.artifact_path)
+             + '" data-artifact-name="'+esc(d.title || 'Artifact')+'">View artifact</a>';
+        }
+        h += '<span class="projects-pill '+pillClass+'">'+esc(pillLabel)+'</span>';
+        h += '</div>';
+      });
+      h += '</div>';
+    }
+
+    // Lower grid: team + decisions
+    h += '<div class="projects-lower-grid">';
+
+    // Team
+    h += '<div><div class="nx-section-heading">Team</div>';
+    var team = eng.team || [];
+    if (team.length === 0) {
+      h += '<p class="nx-empty">No team assigned yet.</p>';
+    } else {
+      h += '<div class="projects-team">';
+      team.forEach(function(member) {
+        h += '<div class="projects-team-member">'
+           + '<span class="nx-dot nx-dot--green" aria-hidden="true"></span>'
+           + '<span>'+esc(member)+'</span></div>';
+      });
+      h += '</div>';
+    }
+    h += '</div>';
+
+    // Last 5 decisions for this engagement
+    h += '<div><div class="nx-section-heading">Recent Decisions</div>';
+    var engId = eng.name || '';
+    var projDecs = decs.filter(function(d) {
+      return d.engagement_id === engId || !d.engagement_id;
+    }).slice(-5).reverse();
+    if (projDecs.length === 0) {
+      h += '<p class="nx-empty">No decisions yet.</p>';
+    } else {
+      h += '<div class="projects-decisions">';
+      projDecs.forEach(function(d) {
+        h += '<div class="projects-decision-row">'
+           + '<span class="projects-decision-row__title">'+esc(d.title)+'</span>'
+           + '<span class="projects-decision-row__age">'+esc(d.age)+'</span>'
+           + '</div>';
+      });
+      h += '</div>';
+    }
+    h += '</div>';
+    h += '</div>'; // .projects-lower-grid
+
+    // Gate block — shown when gate_pending=true on current stage
+    if (eng.gate_pending) {
+      h += '<div class="projects-gate-block">'
+         + '<div class="projects-gate-alert">'
+         + '<span class="projects-gate-alert__icon" aria-hidden="true">&#9654;</span>'
+         + '<span class="projects-gate-alert__text">This stage is ready for a gate review.</span>'
+         + '<button class="projects-gate-btn" type="button"'
+         + ' data-gate-eng="'+esc(eng.name || '')+'"'
+         + ' data-gate-stage-idx="'+stageIdx+'">'
+         + 'Open Gate Ceremony</button>'
+         + '</div></div>';
+    }
+
+    return h;
+  }
+
+  // ── B4: Artifact viewer ───────────────────────────────────────────────
+
+  function _ensureArtifactModal() {
+    if (document.getElementById('artifact-backdrop')) return;
+    var wrap = document.createElement('div');
+    wrap.innerHTML = '<div class="artifact-backdrop" id="artifact-backdrop" role="dialog"'
+      + ' aria-modal="true" aria-label="Artifact viewer" style="display:none">'
+      + '<div class="artifact-modal">'
+      + '<div class="artifact-modal__header">'
+      + '<span class="artifact-modal__title" id="artifact-title">Artifact</span>'
+      + '<button class="artifact-modal__close" id="artifact-close" type="button" aria-label="Close viewer">&#x2715;</button>'
+      + '</div>'
+      + '<div class="artifact-modal__body" id="artifact-body"><p class="nx-empty">Loading...</p></div>'
+      + '</div></div>';
+    document.body.appendChild(wrap.firstChild);
+
+    document.getElementById('artifact-close').addEventListener('click', closeArtifact);
+    document.getElementById('artifact-backdrop').addEventListener('click', function(e) {
+      if (e.target === e.currentTarget) closeArtifact();
+    });
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && document.getElementById('artifact-backdrop').style.display !== 'none') {
+        closeArtifact();
+      }
+    });
+  }
+
+  function closeArtifact() {
+    var bd = document.getElementById('artifact-backdrop');
+    if (bd) bd.style.display = 'none';
+    var body = document.getElementById('artifact-body');
+    if (body) body.innerHTML = '<p class="nx-empty">Loading...</p>';
+  }
+
+  function openArtifact(relPath, name) {
+    _ensureArtifactModal();
+    var bd = document.getElementById('artifact-backdrop');
+    var body = document.getElementById('artifact-body');
+    var title = document.getElementById('artifact-title');
+    if (title) title.textContent = name || 'Artifact';
+    if (body) body.innerHTML = '<p class="nx-empty">Loading...</p>';
+    bd.style.display = 'flex';
+
+    fetch('/api/artifact?path=' + encodeURIComponent(relPath), {credentials:'same-origin'})
+      .then(function(r) {
+        if (!r.ok) throw new Error('Could not load artifact. Status: ' + r.status);
+        var ct = r.headers.get('Content-Type') || '';
+        if (ct.indexOf('image/') === 0) {
+          return r.blob().then(function(blob) {
+            var url = URL.createObjectURL(blob);
+            body.innerHTML = '<img src="'+url+'" alt="'+esc(name)+'">';
+          });
+        } else if (ct.indexOf('text/html') !== -1) {
+          return r.text().then(function(html) {
+            var iframe = document.createElement('iframe');
+            iframe.setAttribute('sandbox', '');
+            iframe.srcdoc = html;
+            body.innerHTML = '';
+            body.appendChild(iframe);
+          });
+        } else {
+          return r.text().then(function(txt) {
+            var pre = document.createElement('pre');
+            pre.textContent = txt;
+            body.innerHTML = '';
+            body.appendChild(pre);
+          });
+        }
+      })
+      .catch(function(err) {
+        body.innerHTML = '<p class="nx-empty" style="padding:20px">Could not load artifact. Try again.</p>';
+        console.warn('[studio] artifact load error:', err);
+      });
+  }
+
+  // Delegate artifact link clicks in #app
+  document.addEventListener('click', function(evt) {
+    var link = evt.target.closest('[data-artifact]');
+    if (!link) return;
+    evt.preventDefault();
+    openArtifact(link.dataset.artifact, link.dataset.artifactName || 'Artifact');
+  });
+
+  // Delegate gate button clicks in #app
+  document.addEventListener('click', function(evt) {
+    var btn = evt.target.closest('.projects-gate-btn');
+    if (!btn) return;
+    var engId = btn.dataset.gateEng || '';
+    var stageIdx = parseInt(btn.dataset.gateStageIdx || '0', 10);
+    openGateCeremony(engId, stageIdx);
+  });
+
+  // ── B4: Gate Ceremony modal ───────────────────────────────────────────
+
+  var _gateEngId = '';
+  var _gateStageIdx = 0;
+
+  function _ensureGateModal() {
+    if (document.getElementById('gate-backdrop')) return;
+    var wrap = document.createElement('div');
+    wrap.innerHTML = '<div class="gate-backdrop" id="gate-backdrop" role="dialog"'
+      + ' aria-modal="true" aria-label="Gate Ceremony" style="display:none">'
+      + '<div class="gate-modal">'
+      + '<div class="gate-modal__header">'
+      + '<div><div class="gate-modal__title" id="gate-title">Gate Review</div>'
+      + '<div class="gate-modal__subtitle" id="gate-subtitle">Review this stage before moving on.</div></div>'
+      + '<button class="gate-modal__close" id="gate-close" type="button" aria-label="Close gate ceremony">&#x2715;</button>'
+      + '</div>'
+      // FULL body
+      + '<div id="gate-full-body">'
+      + '<div class="gate-section-label">Deliverables</div>'
+      + '<div class="gate-checklist" id="gate-checklist"><p class="nx-empty">No deliverables found.</p></div>'
+      + '<div id="gate-scorecard-wrap" style="display:none">'
+      + '<div class="gate-section-label">Scores</div>'
+      + '<div class="gate-scorecard" id="gate-scorecard"></div></div>'
+      + '<div class="gate-section-label">Your reason'
+      + '<span class="gate-field-hint">(required, at least 20 characters)</span></div>'
+      + '<textarea class="gate-rationale" id="gate-rationale" rows="4" minlength="20"'
+      + ' placeholder="Explain why you are approving, requesting changes, or deferring."></textarea>'
+      + '<div class="gate-rationale-error" id="gate-rationale-error" style="display:none">'
+      + 'Enter at least 20 characters to continue.</div>'
+      + '<div class="gate-actions" id="gate-full-actions">'
+      + '<button class="gate-btn gate-btn--approve" id="gate-approve" type="button">Approve</button>'
+      + '<button class="gate-btn gate-btn--changes" id="gate-changes" type="button">Request Changes</button>'
+      + '<button class="gate-btn gate-btn--defer" id="gate-defer" type="button">Defer</button>'
+      + '</div></div>'
+      // FAST-PATH body
+      + '<div id="gate-fast-body" style="display:none">'
+      + '<div class="gate-section-label">Optional note</div>'
+      + '<input class="gate-note" id="gate-note" type="text" maxlength="200"'
+      + ' placeholder="Add a short note (optional).">'
+      + '<div class="gate-actions gate-actions--fast">'
+      + '<button class="gate-btn gate-btn--approve" id="gate-fast-approve" type="button">'
+      + 'Approve operational stage</button>'
+      + '</div></div>'
+      + '</div></div>';
+    document.body.appendChild(wrap.firstChild);
+
+    // Toast element
+    var toastWrap = document.createElement('div');
+    toastWrap.innerHTML = '<div class="gate-toast" id="gate-toast" role="status"'
+      + ' aria-live="polite" style="display:none">Gate decision recorded.</div>';
+    document.body.appendChild(toastWrap.firstChild);
+
+    document.getElementById('gate-close').addEventListener('click', closeGateCeremony);
+    document.getElementById('gate-backdrop').addEventListener('click', function(e) {
+      if (e.target === e.currentTarget) closeGateCeremony();
+    });
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && document.getElementById('gate-backdrop').style.display !== 'none') {
+        closeGateCeremony();
+      }
+    });
+    document.getElementById('gate-approve').addEventListener('click', function() { _submitGate('approve'); });
+    document.getElementById('gate-changes').addEventListener('click', function() { _submitGate('request_changes'); });
+    document.getElementById('gate-defer').addEventListener('click', function() { _submitGate('defer'); });
+    document.getElementById('gate-fast-approve').addEventListener('click', function() { _submitGate('approve'); });
+  }
+
+  function closeGateCeremony() {
+    var bd = document.getElementById('gate-backdrop');
+    if (bd) bd.style.display = 'none';
+  }
+
+  function openGateCeremony(engId, stageIdx) {
+    _ensureGateModal();
+    _gateEngId = engId;
+    _gateStageIdx = stageIdx;
+
+    var s = PROJ_STAGES[stageIdx] || { key:'S?', label:'Stage '+(stageIdx+1) };
+    var nextS = PROJ_STAGES[stageIdx + 1] || { label:'completion' };
+    var isFastPath = (s.key === 'S6'); // Locked Decision #3
+
+    document.getElementById('gate-title').textContent = 'Gate Review — ' + s.label;
+    document.getElementById('gate-subtitle').textContent =
+      'Closing ' + s.label + '. Opening ' + nextS.label + '.';
+
+    var fullBody = document.getElementById('gate-full-body');
+    var fastBody = document.getElementById('gate-fast-body');
+    fullBody.style.display = isFastPath ? 'none' : 'block';
+    fastBody.style.display = isFastPath ? 'block' : 'none';
+
+    if (!isFastPath) {
+      // Populate deliverables checklist from cached state
+      var eng = null;
+      if (_state && _state.engagements && _state.engagements.data) {
+        eng = _state.engagements.data.find(function(e) { return e.name === engId; })
+           || _state.engagements.data[0] || null;
+      }
+      var delivs = (eng && eng.deliverables && eng.deliverables[eng.current_stage]) || [];
+      var cl = document.getElementById('gate-checklist');
+      if (delivs.length === 0) {
+        cl.innerHTML = '<p class="nx-empty">No deliverables found.</p>';
+      } else {
+        cl.innerHTML = delivs.map(function(d) {
+          var st = d.status || 'unknown';
+          var icon = st === 'shipped' ? '&#10003;' : st === 'partial' ? '&#9888;' : '&#10007;';
+          var iconClass = st === 'shipped' ? 'gate-check-icon--ok'
+            : st === 'partial' ? 'gate-check-icon--warn' : 'gate-check-icon--miss';
+          return '<div class="gate-check-row">'
+            + '<span class="gate-check-icon '+iconClass+'">'+icon+'</span>'
+            + '<span>'+esc(d.title || d.name || 'Untitled')+'</span>'
+            + '</div>';
+        }).join('');
+      }
+
+      // Validator scorecard
+      var scores = (eng && eng.validator_scores) || null;
+      var scoreWrap = document.getElementById('gate-scorecard-wrap');
+      var scoreEl   = document.getElementById('gate-scorecard');
+      if (scores && Object.keys(scores).length > 0) {
+        scoreEl.innerHTML = Object.keys(scores).map(function(dim) {
+          return '<div class="gate-score-cell">'
+            + '<div class="gate-score-cell__dim">'+esc(dim)+'</div>'
+            + '<div class="gate-score-cell__val">'+esc(String(scores[dim]))+'</div>'
+            + '</div>';
+        }).join('');
+        scoreWrap.style.display = 'block';
+      } else {
+        scoreWrap.style.display = 'none';
+      }
+
+      // Reset rationale
+      var rationale = document.getElementById('gate-rationale');
+      if (rationale) rationale.value = '';
+      var ratErr = document.getElementById('gate-rationale-error');
+      if (ratErr) ratErr.style.display = 'none';
+    } else {
+      var noteEl = document.getElementById('gate-note');
+      if (noteEl) noteEl.value = '';
+    }
+
+    document.getElementById('gate-backdrop').style.display = 'flex';
+  }
+
+  function _submitGate(decision) {
+    var isFastPath = (PROJ_STAGES[_gateStageIdx] || {}).key === 'S6';
+    var rationale = '';
+    var note = '';
+
+    if (!isFastPath) {
+      var el = document.getElementById('gate-rationale');
+      rationale = el ? el.value.trim() : '';
+      if (rationale.length < 20) {
+        var err = document.getElementById('gate-rationale-error');
+        if (err) err.style.display = 'block';
+        return;
+      }
+    } else {
+      var noteEl2 = document.getElementById('gate-note');
+      note = noteEl2 ? noteEl2.value.trim() : '';
+    }
+
+    var payload = {
+      engagement_id: _gateEngId,
+      stage: (PROJ_STAGES[_gateStageIdx] || {}).key || '',
+      decision: decision,
+      rationale: rationale,
+      note: note,
+    };
+
+    fetch('/api/gate/decide', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(payload),
+      credentials: 'same-origin',
+    })
+    .then(function(r) {
+      if (!r.ok) throw new Error('Server returned ' + r.status);
+      return r.json();
+    })
+    .then(function() {
+      closeGateCeremony();
+      _showGateToast();
+    })
+    .catch(function(err) {
+      console.warn('[studio] gate/decide error:', err);
+      closeGateCeremony();
+      _showGateToast(); // still show toast — file may have been written
+    });
+  }
+
+  function _showGateToast() {
+    var toast = document.getElementById('gate-toast');
+    if (!toast) return;
+    toast.style.display = 'block';
+    setTimeout(function() { toast.style.display = 'none'; }, 3000);
+  }
 
   // Sort button delegation (event fires before re-render rebuilds DOM)
   document.addEventListener('click', function (evt) {

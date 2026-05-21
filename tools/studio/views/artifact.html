@@ -1,0 +1,30 @@
+<!--
+  NEXOURA Studio — Artifact viewer fragment (B4)
+  Used as a static reference / test target.
+  The actual viewer is rendered by renderArtifact() in studio.js
+  as a modal overlay injected into the page body.
+
+  Supports:
+    HTML  → shown in <iframe sandbox>
+    Markdown → shown in <pre> (plain text, no JS lib)
+    PNG   → shown in <img>
+
+  Close: press Esc or click the backdrop.
+  Language rule: 6th-grade reading level.
+  Microcopy: tools/studio/microcopy-brief.md
+-->
+
+<!-- Artifact modal overlay — injected by studio.js -->
+<div class="artifact-backdrop" id="artifact-backdrop" role="dialog"
+     aria-modal="true" aria-label="Artifact viewer" style="display:none">
+  <div class="artifact-modal">
+    <div class="artifact-modal__header">
+      <span class="artifact-modal__title" id="artifact-title">Artifact</span>
+      <button class="artifact-modal__close" id="artifact-close"
+              type="button" aria-label="Close viewer">&#x2715;</button>
+    </div>
+    <div class="artifact-modal__body" id="artifact-body">
+      <p class="nx-empty">Loading...</p>
+    </div>
+  </div>
+</div>

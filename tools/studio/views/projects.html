@@ -1,0 +1,105 @@
+<!--
+  NEXOURA Studio — PROJECTS view fragment (B4)
+  Loaded dynamically into #app by studio.js renderProjects().
+
+  This file is a static fallback / SSR placeholder.
+  studio.js calls renderProjects(state) and writes innerHTML into #app.
+  Tests fetch this URL to verify it exists and is served.
+
+  Sections:
+    1. Product tabs (Supply Chain SaaS active; Work/One/Enterprise placeholders)
+    2. 7-stage lifecycle timeline (S1–S7)
+    3. Per-stage deliverables grid
+    4. Project team list
+    5. Last 5 decisions on this project
+    6. Gate approval block (when gate_pending=true)
+
+  Language rule: 6th-grade reading level, plain words, short sentences.
+  Microcopy: tools/studio/microcopy-brief.md
+-->
+
+<!-- Product tabs -->
+<div class="nx-view-title">Projects</div>
+<div class="nx-view-subtitle">Track each product from idea to launch.</div>
+
+<div class="projects-tabs" role="tablist" aria-label="Products">
+  <button class="projects-tab projects-tab--active" role="tab" aria-selected="true"
+          data-product="supply-chain-saas">Supply Chain SaaS</button>
+  <button class="projects-tab projects-tab--placeholder" role="tab" aria-selected="false"
+          disabled aria-disabled="true">Work <span class="nx-nav-badge">Not started</span></button>
+  <button class="projects-tab projects-tab--placeholder" role="tab" aria-selected="false"
+          disabled aria-disabled="true">One <span class="nx-nav-badge">Not started</span></button>
+  <button class="projects-tab projects-tab--placeholder" role="tab" aria-selected="false"
+          disabled aria-disabled="true">Enterprise <span class="nx-nav-badge">Not started</span></button>
+</div>
+
+<!-- 7-stage lifecycle timeline -->
+<div class="projects-timeline" role="list" aria-label="Project stages">
+  <div class="projects-stage projects-stage--done" role="listitem">
+    <span class="projects-stage__dot projects-stage__dot--done" aria-hidden="true"></span>
+    <span class="projects-stage__label">S1 Idea</span>
+  </div>
+  <div class="projects-stage-line projects-stage-line--done" aria-hidden="true"></div>
+  <div class="projects-stage projects-stage--current" role="listitem" aria-current="step">
+    <span class="projects-stage__dot projects-stage__dot--current" aria-hidden="true"></span>
+    <span class="projects-stage__label projects-stage__label--current">S2 Strategy</span>
+  </div>
+  <div class="projects-stage-line" aria-hidden="true"></div>
+  <div class="projects-stage" role="listitem">
+    <span class="projects-stage__dot" aria-hidden="true"></span>
+    <span class="projects-stage__label">S3 Brand</span>
+  </div>
+  <div class="projects-stage-line" aria-hidden="true"></div>
+  <div class="projects-stage" role="listitem">
+    <span class="projects-stage__dot" aria-hidden="true"></span>
+    <span class="projects-stage__label">S4 Design</span>
+  </div>
+  <div class="projects-stage-line" aria-hidden="true"></div>
+  <div class="projects-stage" role="listitem">
+    <span class="projects-stage__dot" aria-hidden="true"></span>
+    <span class="projects-stage__label">S5 Build</span>
+  </div>
+  <div class="projects-stage-line" aria-hidden="true"></div>
+  <div class="projects-stage" role="listitem">
+    <span class="projects-stage__dot" aria-hidden="true"></span>
+    <span class="projects-stage__label">S6 Operate</span>
+  </div>
+  <div class="projects-stage-line" aria-hidden="true"></div>
+  <div class="projects-stage" role="listitem">
+    <span class="projects-stage__dot" aria-hidden="true"></span>
+    <span class="projects-stage__label">S7 Sunset</span>
+  </div>
+</div>
+
+<!-- Deliverables grid — populated by studio.js -->
+<div class="nx-section-heading">Deliverables</div>
+<div class="projects-deliverables" id="projects-deliverables">
+  <p class="nx-empty">Data not yet available.</p>
+</div>
+
+<!-- Two-column: team + decisions -->
+<div class="projects-lower-grid">
+  <div>
+    <div class="nx-section-heading">Team</div>
+    <div class="projects-team" id="projects-team">
+      <p class="nx-empty">No team assigned yet.</p>
+    </div>
+  </div>
+  <div>
+    <div class="nx-section-heading">Recent Decisions</div>
+    <div class="projects-decisions" id="projects-decisions">
+      <p class="nx-empty">No decisions yet.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Gate approval block — shown when gate_pending=true -->
+<div class="projects-gate-block" id="projects-gate-block" style="display:none">
+  <div class="projects-gate-alert">
+    <span class="projects-gate-alert__icon" aria-hidden="true">&#9654;</span>
+    <span class="projects-gate-alert__text">This stage is ready for a gate review.</span>
+    <button class="projects-gate-btn" id="projects-open-gate" type="button">
+      Open Gate Ceremony
+    </button>
+  </div>
+</div>

@@ -3,9 +3,12 @@
 NEXOURA Studio — HTTP server + SSE endpoint (B1).
 
 Routes:
-    GET /             → serve tools/studio/index.html
-    GET /api/state    → return Cache.read() as JSON (snapshot for page load)
-    GET /api/events   → SSE stream; emits 'state-changed' on each cache refresh
+    GET /                   → serve tools/studio/index.html
+    GET /api/state          → return Cache.read() as JSON (snapshot for page load)
+    GET /api/events         → SSE stream; emits 'state-changed' on each cache refresh
+    GET /views/<name>.html  → serve tools/studio/views/<name>.html (B4)
+    GET /api/artifact       → serve artifact files under nexoura-engagements/ (B4)
+    POST /api/gate/decide   → write a gate decision JSON record (B4)
 
 Bound to 127.0.0.1:5000 (localhost only — Open Decision #5).
 
@@ -24,8 +27,10 @@ import signal
 import sys
 import threading
 import time
+from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+from urllib.parse import urlparse, parse_qs
 
 # ── Module path setup ─────────────────────────────────────────────────────
 # Allow sibling imports (cache, watcher) when run directly.
@@ -51,6 +56,13 @@ _clients_lock = threading.Lock()
 
 _INDEX_PATH = _STUDIO_DIR / "index.html"
 _STATIC_DIR = _STUDIO_DIR / "static"
+_VIEWS_DIR  = _STUDIO_DIR / "views"
+
+# Root for artifact file serving (B4) — path traversal is validated server-side.
+_ENGAGEMENTS_ROOT = Path("/home/omar/dev/nexoura-engagements")
+
+# Root for gate decision records (B4)
+_GATE_DECISIONS_ROOT = _ENGAGEMENTS_ROOT
 
 # MIME types for static assets
 _MIME = {
@@ -104,6 +116,17 @@ class StudioHandler(BaseHTTPRequestHandler):
             self._serve_events()
         elif path.startswith("/static/"):
             self._serve_static(path)
+        elif path.startswith("/views/"):
+            self._serve_view(path)
+        elif path == "/api/artifact":
+            self._serve_artifact()
+        else:
+            self._send_404()
+
+    def do_POST(self) -> None:
+        path = self.path.split("?", 1)[0]
+        if path == "/api/gate/decide":
+            self._handle_gate_decide()
         else:
             self._send_404()
 
@@ -215,6 +238,148 @@ class StudioHandler(BaseHTTPRequestHandler):
     def _send_404(self) -> None:
         body = b"Not found"
         self.send_response(404)
+        self.send_header("Content-Type", "text/plain")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
+    # ── B4: views handler ──────────────────────────────────────────────────
+
+    def _serve_view(self, url_path: str) -> None:
+        """Serve HTML fragments from tools/studio/views/. B4 route."""
+        rel = url_path[len("/views/"):]
+        file_path = (_VIEWS_DIR / rel).resolve()
+        try:
+            file_path.relative_to(_VIEWS_DIR.resolve())
+        except ValueError:
+            self._send_404()
+            return
+        if file_path.suffix != ".html":
+            self._send_404()
+            return
+        try:
+            body = file_path.read_bytes()
+        except OSError:
+            self._send_404()
+            return
+        self.send_response(200)
+        self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.send_header("Content-Length", str(len(body)))
+        self.send_header("Cache-Control", "no-cache")
+        self.end_headers()
+        self.wfile.write(body)
+
+    # ── B4: artifact handler ───────────────────────────────────────────────
+
+    _ARTIFACT_MIME = {
+        ".html": "text/html; charset=utf-8",
+        ".htm":  "text/html; charset=utf-8",
+        ".md":   "text/plain; charset=utf-8",
+        ".txt":  "text/plain; charset=utf-8",
+        ".png":  "image/png",
+        ".jpg":  "image/jpeg",
+        ".jpeg": "image/jpeg",
+    }
+
+    def _serve_artifact(self) -> None:
+        """
+        GET /api/artifact?path=<relative-path>
+        Serves files under _ENGAGEMENTS_ROOT. Rejects path traversal.
+        """
+        parsed = urlparse(self.path)
+        qs = parse_qs(parsed.query)
+        rel_parts = qs.get("path", [])
+        if not rel_parts:
+            self._send_error(400, b"Missing path parameter.")
+            return
+        rel = rel_parts[0].lstrip("/")
+        candidate = (_ENGAGEMENTS_ROOT / rel).resolve()
+        try:
+            candidate.relative_to(_ENGAGEMENTS_ROOT.resolve())
+        except ValueError:
+            self._send_error(403, b"Path not allowed.")
+            return
+        if not candidate.exists() or not candidate.is_file():
+            self._send_404()
+            return
+        mime = self._ARTIFACT_MIME.get(candidate.suffix.lower(), "application/octet-stream")
+        try:
+            body = candidate.read_bytes()
+        except OSError:
+            self._send_error(500, b"Could not read file.")
+            return
+        self.send_response(200)
+        self.send_header("Content-Type", mime)
+        self.send_header("Content-Length", str(len(body)))
+        self.send_header("Cache-Control", "no-cache")
+        self.end_headers()
+        self.wfile.write(body)
+
+    # ── B4: gate/decide handler ────────────────────────────────────────────
+
+    def _handle_gate_decide(self) -> None:
+        """
+        POST /api/gate/decide
+        Writes a JSON decision record to:
+            _ENGAGEMENTS_ROOT/<engagement_id>/decisions/<timestamp>.json
+        No git commit — the file watcher picks it up.
+        """
+        try:
+            length = int(self.headers.get("Content-Length", 0))
+        except (TypeError, ValueError):
+            length = 0
+        raw = self.rfile.read(length) if length > 0 else b"{}"
+        try:
+            payload = json.loads(raw.decode("utf-8"))
+        except (json.JSONDecodeError, UnicodeDecodeError):
+            self._send_error(400, b"Invalid JSON body.")
+            return
+
+        eng_id = str(payload.get("engagement_id", "")).strip()
+        if not eng_id:
+            self._send_error(400, b"Missing engagement_id.")
+            return
+
+        # Validate engagement_id is a safe directory name (no slashes, no ..)
+        if "/" in eng_id or "\\" in eng_id or ".." in eng_id:
+            self._send_error(400, b"Invalid engagement_id.")
+            return
+
+        decisions_dir = _ENGAGEMENTS_ROOT / eng_id / "decisions"
+        try:
+            decisions_dir.mkdir(parents=True, exist_ok=True)
+        except OSError:
+            self._send_error(500, b"Could not create decisions directory.")
+            return
+
+        ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+        record_path = decisions_dir / f"{ts}.json"
+        record = {
+            "engagement_id": eng_id,
+            "stage":         payload.get("stage", ""),
+            "decision":      payload.get("decision", ""),
+            "rationale":     payload.get("rationale", ""),
+            "note":          payload.get("note", ""),
+            "recorded_at":   datetime.now(timezone.utc).isoformat(),
+        }
+        try:
+            record_path.write_text(
+                json.dumps(record, indent=2, default=str),
+                encoding="utf-8",
+            )
+        except OSError:
+            self._send_error(500, b"Could not write decision record.")
+            return
+
+        resp = json.dumps({"ok": True, "path": str(record_path)}).encode("utf-8")
+        self.send_response(200)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Length", str(len(resp)))
+        self.end_headers()
+        self.wfile.write(resp)
+
+    def _send_error(self, code: int, body: bytes) -> None:
+        self.send_response(code)
         self.send_header("Content-Type", "text/plain")
         self.send_header("Content-Length", str(len(body)))
         self.end_headers()
