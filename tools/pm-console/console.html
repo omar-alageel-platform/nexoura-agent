@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PM Console — NEXOURA</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --nx-purple: #7861FF;
+    --nx-violet: #5B30FF;
+    --nx-blue:   #2563FF;
+    --nx-cyan:   #00E0FF;
+    --nx-navy:   #0A0F16;
+    --nx-white:  #F5F7FA;
+    --nx-slate-900: #101826;
+    --nx-slate-700: #475569;
+    --nx-slate-500: #64748B;
+    --nx-slate-300: #CBD5E1;
+    --nx-slate-100: #F1F5F9;
+    --nx-grad: linear-gradient(135deg, #7861FF 0%, #5B30FF 28%, #2563FF 68%, #00E0FF 100%);
+    --nx-border: rgba(120,97,255,0.20);
+
+    /* Status pills */
+    --nx-green: #34D399;
+    --nx-amber: #FBBF24;
+    --nx-red:   #F87171;
+
+    /* Theme defaults: dark */
+    --bg: var(--nx-navy);
+    --fg: var(--nx-white);
+    --muted: #94A3B8;
+    --card: var(--nx-slate-900);
+    --card-border: var(--nx-border);
+  }
+
+  @media (prefers-color-scheme: light) {
+    :root {
+      --bg: #F8FAFC;
+      --fg: var(--nx-navy);
+      --muted: var(--nx-slate-700);
+      --card: #FFFFFF;
+      --card-border: rgba(91,48,255,0.18);
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1280px; margin: 0 auto; padding: 40px 32px 80px; }
+
+  /* Header */
+  .hdr { display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: center; padding-bottom: 22px; margin-bottom: 32px; border-bottom: 1px solid var(--card-border); }
+  .kicker { display: inline-block; font-weight: 600; font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase; padding: 5px 10px; border-radius: 999px; background: rgba(120,97,255,0.12); color: var(--nx-purple); border: 1px solid var(--card-border); }
+  h1 { font-family: 'Sora', sans-serif; font-weight: 700; font-size: 2rem; margin: 14px 0 4px; letter-spacing: -0.01em; }
+  .sub { color: var(--muted); font-size: 0.95rem; margin: 0; }
+  .stamp { font-size: 0.8rem; color: var(--muted); text-align: right; white-space: nowrap; }
+  .oring { position: relative; width: 40px; height: 40px; border-radius: 50%; background: var(--nx-grad); padding: 2px; margin-left: auto; margin-bottom: 8px; }
+  .oring::before { content:""; position:absolute; inset:2px; background: var(--bg); border-radius: 50%; }
+  .oring::after { content:""; position:absolute; inset:10px; border-radius: 50%; background: var(--nx-grad); opacity: 0.95; }
+
+  /* Grid */
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+  @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } .wrap { padding: 24px 18px 60px; } h1 { font-size: 1.5rem; } }
+
+  /* Section panels */
+  .panel { background: var(--card); border: 1px solid var(--card-border); border-radius: 14px; padding: 22px; }
+  .panel h2 { font-family: 'Sora', sans-serif; font-size: 1.1rem; margin: 0 0 16px; letter-spacing: 0.02em; display: flex; align-items: center; gap: 10px; }
+  .panel h2::before { content:""; display:inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--nx-grad); }
+
+  .empty { color: var(--muted); font-style: italic; font-size: 0.9rem; padding: 12px 0; }
+
+  /* Cards inside panels */
+  .card { padding: 14px; border-radius: 10px; background: rgba(120,97,255,0.05); border: 1px solid var(--card-border); margin-bottom: 12px; }
+  .card:last-child { margin-bottom: 0; }
+  .card-title { font-family: 'Sora', sans-serif; font-weight: 600; font-size: 1rem; margin: 0 0 6px; }
+  .card-meta { color: var(--muted); font-size: 0.82rem; margin: 0 0 8px; }
+
+  /* Stage progress */
+  .stages { display: flex; gap: 3px; margin: 8px 0 10px; }
+  .stage { flex: 1; height: 6px; border-radius: 3px; background: rgba(120,97,255,0.15); }
+  .stage.done { background: var(--nx-grad); }
+  .stage.active { background: var(--nx-cyan); box-shadow: 0 0 8px rgba(0,224,255,0.5); }
+  .stage-badge { display: inline-block; font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 8px; border-radius: 6px; background: rgba(0,224,255,0.12); color: var(--nx-cyan); border: 1px solid rgba(0,224,255,0.3); font-weight: 600; }
+
+  /* Commit list */
+  .commits { list-style: none; padding: 0; margin: 10px 0 0; font-size: 0.82rem; }
+  .commits li { padding: 5px 0; border-top: 1px dashed var(--card-border); color: var(--muted); }
+  .commits li:first-child { border-top: none; }
+  .commit-msg { color: var(--fg); }
+
+  /* PR list */
+  .pr { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-top: 1px dashed var(--card-border); font-size: 0.85rem; }
+  .pr:first-child { border-top: none; }
+  .pr a { color: var(--nx-cyan); text-decoration: none; }
+  .pr a:hover { text-decoration: underline; }
+  .pr-state { font-size: 0.68rem; padding: 2px 7px; border-radius: 4px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
+  .pr-state.open { background: rgba(120,97,255,0.18); color: var(--nx-purple); }
+  .pr-state.merged { background: rgba(91,48,255,0.18); color: var(--nx-violet); }
+  .pr-state.closed { background: rgba(100,116,139,0.18); color: var(--nx-slate-500); }
+
+  /* Health pills */
+  .health { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  @media (max-width: 720px) { .health { grid-template-columns: 1fr; } }
+  .pill { padding: 14px; border-radius: 10px; border: 1px solid var(--card-border); background: rgba(120,97,255,0.05); }
+  .pill-label { font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+  .pill-value { display: flex; align-items: center; gap: 8px; font-family: 'Sora', sans-serif; font-weight: 600; font-size: 1.05rem; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  .dot.green { background: var(--nx-green); box-shadow: 0 0 8px rgba(52,211,153,0.5); }
+  .dot.amber { background: var(--nx-amber); box-shadow: 0 0 8px rgba(251,191,36,0.5); }
+  .dot.red   { background: var(--nx-red);   box-shadow: 0 0 8px rgba(248,113,113,0.5); }
+  .pill-stamp { font-size: 0.72rem; color: var(--muted); margin-top: 6px; }
+
+  a.decision-link { color: var(--nx-cyan); text-decoration: none; font-size: 0.82rem; }
+  a.decision-link:hover { text-decoration: underline; }
+
+  footer { text-align: center; color: var(--muted); font-size: 0.78rem; margin-top: 40px; padding-top: 22px; border-top: 1px solid var(--card-border); }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hdr">
+      <div>
+        <span class="kicker">PM Console · Live</span>
+        <h1>NEXOURA Operations</h1>
+        <p class="sub">Active engagements, pending decisions, recent activity, and system health.</p>
+      </div>
+      <div>
+        <div class="oring" aria-hidden="true"></div>
+        <div class="stamp">Generated: <!-- TIMESTAMP --></div>
+      </div>
+    </div>
+
+    <section class="panel" style="margin-bottom: 22px;">
+      <h2>Active Engagements</h2>
+      <!-- ENGAGEMENTS -->
+    </section>
+
+    <div class="grid">
+      <section class="panel">
+        <h2>Pending Decisions</h2>
+        <!-- DECISIONS -->
+      </section>
+
+      <section class="panel">
+        <h2>Recent Activity (24h)</h2>
+        <!-- ACTIVITY -->
+      </section>
+    </div>
+
+    <section class="panel" style="margin-top: 22px;">
+      <h2>System Health</h2>
+      <!-- HEALTH -->
+    </section>
+
+    <footer>NEXOURA · Where AI Builds — PM Console live dashboard</footer>
+  </div>
+</body>
+</html>

@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "$id": "https://nexoura.local/schemas/pm-console.json",
+  "title": "PM Console Data",
+  "description": "Internal data shape produced by tools/pm-console/generate.py and consumed by render().",
+  "type": "object",
+  "required": ["generated_at", "engagements", "decisions", "prs", "health"],
+  "properties": {
+    "generated_at": {
+      "type": "string",
+      "description": "Human-readable UTC timestamp injected into the <!-- TIMESTAMP --> marker."
+    },
+    "engagements": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "stage_index", "stage_total", "current_stage", "commits"],
+        "properties": {
+          "name": { "type": "string", "description": "Engagement directory name." },
+          "stage_index": { "type": "integer", "minimum": 0, "description": "Zero-based current stage index in the NEXOURA lifecycle." },
+          "stage_total": { "type": "integer", "minimum": 1, "description": "Total number of lifecycle stages (currently 9)." },
+          "current_stage": { "type": "string", "description": "Slug of the current stage (e.g. 'requirements', 'implementation')." },
+          "commits": {
+            "type": "array",
+            "maxItems": 5,
+            "items": {
+              "type": "object",
+              "required": ["sha", "author", "age", "message"],
+              "properties": {
+                "sha": { "type": "string", "description": "Short git SHA." },
+                "author": { "type": "string" },
+                "age": { "type": "string", "description": "Humanized relative age, e.g. '2h ago'." },
+                "message": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "decisions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["title", "age", "path", "url"],
+        "properties": {
+          "title": { "type": "string", "description": "Title parsed from <title> tag of decision HTML." },
+          "age": { "type": "string", "description": "Humanized age since file mtime." },
+          "path": { "type": "string", "description": "Absolute filesystem path." },
+          "url": { "type": "string", "description": "file:// URL for opening in a browser." }
+        }
+      }
+    },
+    "prs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["repo", "number", "title", "state", "url", "age"],
+        "properties": {
+          "repo": { "type": "string", "description": "owner/repo slug." },
+          "number": { "type": ["integer", "string"] },
+          "title": { "type": "string" },
+          "state": { "type": "string", "enum": ["open", "merged", "closed"] },
+          "url": { "type": "string", "format": "uri" },
+          "age": { "type": "string" }
+        }
+      }
+    },
+    "health": {
+      "type": "object",
+      "required": ["gateway", "dashboard", "workspace", "last_check", "log_exists"],
+      "properties": {
+        "log_exists": { "type": "boolean", "description": "Whether ~/.hermes/watchdog.log exists." },
+        "last_check": { "type": ["string", "null"], "description": "ISO timestamp of latest log line, or null." },
+        "gateway":   { "$ref": "#/definitions/component" },
+        "dashboard": { "$ref": "#/definitions/component" },
+        "workspace": { "$ref": "#/definitions/component" }
+      }
+    }
+  },
+  "definitions": {
+    "component": {
+      "type": "object",
+      "required": ["status", "color"],
+      "properties": {
+        "status": { "type": "string", "description": "Human-readable status, e.g. 'OK', 'DEGRADED', 'DOWN'." },
+        "color": { "type": "string", "enum": ["green", "amber", "red"], "description": "Pill color in the NEXOURA palette." }
+      }
+    }
+  }
+}
