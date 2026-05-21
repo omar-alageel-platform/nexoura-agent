@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<!--
+  NEXOURA Studio — Brand Preamble
+  Chrome fragment included at the top of every Studio view.
+
+  Source citations:
+    O-ring markup  : proprietary-skills/nexoura/brand-components/SKILL.md §1 (logo lockup)
+    O-ring CSS     : proprietary-skills/nexoura/brand-components/SKILL.md §2 (O-ring geometry)
+    Color tokens   : nexoura-brand-spec.md §1 + brand-components/SKILL.md §4
+    Sora CDN       : brand-components/SKILL.md §5
+    Footer pattern : brand-components/SKILL.md §9
+    Sub-brand cyan : Open Decision #2 — Studio accent = #00E0FF
+    No JavaScript  : static chrome fragment per B2 scope constraint
+-->
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Sora — brand-components SKILL.md §5 — weights 400/500/700 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;700&display=swap">
+
+  <style>
+    /* ── Color tokens ── brand-spec §1 + brand-components §4 ── */
+    :root {
+      /* 4 locked brand accent hex codes — nexoura-brand-spec.md §1 */
+      --nx-purple: #7861FF;   /* nx-purple-500 — gradient start, primary accent */
+      --nx-violet: #5B30FF;   /* nx-violet-600 — gradient mid-stop              */
+      --nx-blue:   #2563FF;   /* nx-blue-500   — gradient mid-stop              */
+      --nx-cyan:   #00E0FF;   /* nx-cyan-400   — gradient end; Studio accent    */
+
+      /* Surface tokens — brand-spec §1 dark mode */
+      --nx-bg:     #0A0F16;   /* nx-navy-950   — deep navy background           */
+      --nx-text:   #F5F7FA;   /* nx-white-50   — soft white body text           */
+
+      /* Signature gradient — brand-spec §2 */
+      --nx-grad: linear-gradient(135deg,
+        #7861FF 0%,
+        #5B30FF 28%,
+        #2563FF 68%,
+        #00E0FF 100%);
+
+      /* Studio-specific accent (Open Decision #2) */
+      --nx-studio: #00E0FF;   /* cyan only — active nav, primary CTA border    */
+    }
+
+    /* ── Reset & base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--nx-bg);
+      color: var(--nx-text);
+      font-family: 'Sora', Inter, Geist, system-ui, sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Header ── */
+    .nx-studio-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 32px;
+      border-bottom: 1px solid rgba(120, 97, 255, 0.20);
+    }
+
+    /* ── Logo lockup — brand-components SKILL.md §1 ── */
+    /* Markup carried verbatim from §1: NEX + .nx-oring + URA */
+    .nx-logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 0;
+      font-family: 'Sora', sans-serif;
+      font-weight: 700;
+      font-size: 32px;         /* MD variant — brand-components §1 nx-logo--md */
+      letter-spacing: 0.3em;   /* wide premium tracking per brand-spec §5       */
+      color: var(--nx-text);
+      text-decoration: none;
+      line-height: 1;
+    }
+
+    .nx-wordmark-pre,
+    .nx-wordmark-post {
+      display: inline-block;
+    }
+
+    /*
+      O-ring — CSS-mask radial-gradient ring variant.
+      Source: brand-components/SKILL.md §1 ("radial-gradient mask cuts an inner
+      transparent hole — not a flat disc") and §2 geometry rules (locked):
+        - Outer diameter 1em
+        - fill="none" / transparent center (page bg shows through)
+        - Gradient 135° #7861FF → #5B30FF → #2563FF → #00E0FF
+        - top: 0.04em optical centering against caps
+        - Optional drop-shadow glow on dark surfaces
+    */
+    .nx-oring {
+      display: inline-block;
+      position: relative;
+      top: 0.04em;              /* optical centering — brand-components §1      */
+      width: 1em;
+      height: 1em;
+      background: var(--nx-grad);
+      border-radius: 50%;
+      /* Mask: transparent disc punches the inner hole — true ring, not disc */
+      -webkit-mask: radial-gradient(
+        circle,
+        transparent 52%,
+        black 53% 100%
+      );
+      mask: radial-gradient(
+        circle,
+        transparent 52%,
+        black 53% 100%
+      );
+      /* Glow — brand-spec §2: purple glow rgba(120,97,255,0.35) on dark */
+      filter: drop-shadow(0 0 6px rgba(120, 97, 255, 0.35));
+    }
+
+    /* ── Sub-brand label ── */
+    .nx-subbrand {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      color: var(--nx-studio);   /* cyan — Studio accent, Open Decision #2 */
+      text-transform: uppercase;
+      margin-left: 10px;
+      align-self: flex-end;
+      padding-bottom: 3px;
+    }
+
+    /* ── Studio-specific accent applications (Open Decision #2) ── */
+    /* Active nav item border */
+    .nx-nav-item--active {
+      border-bottom: 2px solid var(--nx-studio);
+      color: var(--nx-studio);
+    }
+
+    /* Primary CTA button border */
+    .nx-btn--studio-cta {
+      border: 1.5px solid var(--nx-studio);
+      color: var(--nx-studio);
+      background: transparent;
+      font-family: 'Sora', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      padding: 8px 18px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .nx-btn--studio-cta:hover {
+      background: rgba(0, 224, 255, 0.10);
+    }
+
+    /* ── Footer — brand-components SKILL.md §9 ── */
+    /*
+      Two-column grid; 2px gradient bar anchors top edge.
+      Tagline: WHERE AI BUILDS (uppercase, gradient text-fill) — footer only.
+      Sub-brand lockup appended: NEXOURA Studio per spec §4.
+    */
+    .nx-studio-footer {
+      margin-top: auto;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      padding: 16px 32px;
+      gap: 16px;
+      border-top: 2px solid transparent;
+      border-image: var(--nx-grad) 1;
+    }
+
+    .nx-tagline {
+      font-family: 'Sora', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.5em;   /* brand-components §9: 0.5em tracking           */
+      text-transform: uppercase;
+      /* Gradient text-fill — footer tagline only, per brand-components §12 */
+      background: var(--nx-grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .nx-meta {
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 0.06em;
+      color: rgba(245, 247, 250, 0.45);
+      text-align: right;
+    }
+
+    /* ── Main content area (downstream views fill this) ── */
+    .nx-studio-content {
+      flex: 1;
+      padding: 32px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="nx-studio-header">
+    <!-- Logo lockup — markup verbatim from brand-components SKILL.md §1 -->
+    <div style="display:flex;align-items:baseline;gap:0">
+      <span class="nx-logo" aria-label="NEXOURA">
+        <span class="nx-wordmark-pre">NEX</span>
+        <span class="nx-oring" aria-label="O"></span>
+        <span class="nx-wordmark-post">URA</span>
+      </span>
+      <!-- Studio sub-brand in cyan — Open Decision #2 -->
+      <span class="nx-subbrand">Studio</span>
+    </div>
+  </header>
+
+  <!-- CONTENT SLOT — downstream views inject here -->
+  <main class="nx-studio-content">
+    <!-- downstream view content -->
+  </main>
+
+  <!-- FOOTER — brand-components SKILL.md §9 -->
+  <!-- Tagline from brand-spec §4; sub-brand lockup appended per spec §4/§8 -->
+  <footer class="nx-studio-footer">
+    <div class="nx-tagline">WHERE AI BUILDS · NEXOURA Studio</div>
+    <div class="nx-meta">NEXOURA Studio</div>
+  </footer>
+
+</body>
+</html>
