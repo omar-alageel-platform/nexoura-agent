@@ -246,7 +246,7 @@
     return h;
   }
 
-  // ── Renderer registry ─────────────────────────────────────────────────
+  // ── Relative time helper (no library — hand-rolled per spec) ─────
 
   var _renderers = { '/home': renderHome, '/decisions': renderDecisions, '/projects': renderProjects };
 
@@ -688,7 +688,395 @@
     setTimeout(function() { toast.style.display = 'none'; }, 3000);
   }
 
-  // Sort button delegation (event fires before re-render rebuilds DOM)
+  function relTime(tsRaw) {
+    if (!tsRaw) return '';
+    var t = typeof tsRaw === 'number' ? tsRaw * 1000 : Date.parse(tsRaw);
+    if (isNaN(t)) return '';
+    var secs = Math.floor((Date.now() - t) / 1000);
+    if (secs < 60)  return secs + 's ago';
+    if (secs < 3600) return Math.floor(secs / 60) + 'm ago';
+    if (secs < 86400) return Math.floor(secs / 3600) + 'h ago';
+    if (secs < 172800) return '1d ago';
+    return Math.floor(secs / 86400) + 'd ago';
+  }
+
+  // ── Profile avatar color (hash slug → palette color) ─────────────
+
+  var _PALETTE = ['#7861FF','#5B30FF','#2563FF','#00E0FF'];
+  function slugColor(slug) {
+    var h = 0;
+    for (var i = 0; i < slug.length; i++) h = (h * 31 + slug.charCodeAt(i)) >>> 0;
+    return _PALETTE[h % _PALETTE.length];
+  }
+
+  function slugInitials(slug) {
+    return (slug || 'AG').slice(0, 2).toUpperCase();
+  }
+
+  // ── AGENTS renderer ───────────────────────────────────────────────
+
+  function renderAgents(state) {
+    var agents = (state.agents && state.agents.data) || {};
+    var active    = agents.active    || [];
+    var available = agents.available || [];
+    var idle      = agents.idle      || [];
+
+    var h = '';
+    h += '<div class="nx-view-title">Agents</div>';
+    h += '<div class="nx-view-subtitle">See which agents are running, ready, or resting.</div>';
+
+    // Zone 1: Active Now
+    h += '<div class="nx-section-heading">Active Now</div>';
+    h += '<div class="agents-zone agents-zone--active">';
+    if (active.length === 0) {
+      h += '<p class="nx-empty">No agents running right now.</p>';
+    } else {
+      active.forEach(function(a) {
+        var col = slugColor(a.slug || a.name || '');
+        var ini = slugInitials(a.slug || a.name || 'AG');
+        h += '<button class="agents-card agents-card--active" tabindex="0"'
+           + ' data-slug="' + esc(a.slug) + '" aria-label="View ' + esc(a.slug) + ' profile">'
+           + '<span class="agents-card__pulse"></span>'
+           + '<span class="agents-avatar" style="background:' + col + '">' + esc(ini) + '</span>'
+           + '<span class="agents-card__name">' + esc(a.slug) + '</span>'
+           + '<span class="agents-card__role">Running</span>'
+           + '</button>';
+      });
+    }
+    h += '</div>';
+
+    // Zone 2: Available
+    h += '<div class="nx-section-heading">Available</div>';
+    h += '<div class="agents-zone agents-zone--available">';
+    if (available.length === 0) {
+      h += '<p class="nx-empty">All agents are busy.</p>';
+    } else {
+      available.forEach(function(a) {
+        var col = slugColor(a.slug || a.name || '');
+        var ini = slugInitials(a.slug || a.name || 'AG');
+        var role = esc(a.role || _slugToRole(a.slug));
+        h += '<button class="agents-card agents-card--available" tabindex="0"'
+           + ' data-slug="' + esc(a.slug) + '" aria-label="View ' + esc(a.slug) + ' profile">'
+           + '<span class="agents-avatar" style="background:' + col + '">' + esc(ini) + '</span>'
+           + '<span class="agents-card__name">' + esc(a.slug) + '</span>'
+           + '<span class="agents-card__role">' + role + '</span>'
+           + '</button>';
+      });
+    }
+    h += '</div>';
+
+    // Zone 3: Idle
+    h += '<div class="nx-section-heading">Idle '
+       + '<span class="agents-zone-hint">(not used in 7+ days)</span></div>';
+    h += '<div class="agents-zone agents-zone--idle">';
+    if (idle.length === 0) {
+      h += '<p class="nx-empty">No idle agents.</p>';
+    } else {
+      idle.forEach(function(a) {
+        var col = slugColor(a.slug || a.name || '');
+        var ini = slugInitials(a.slug || a.name || 'AG');
+        h += '<button class="agents-card agents-card--idle" tabindex="0"'
+           + ' data-slug="' + esc(a.slug) + '" aria-label="View ' + esc(a.slug) + ' profile">'
+           + '<span class="agents-avatar" style="background:' + col + '">' + esc(ini) + '</span>'
+           + '<span class="agents-card__name">' + esc(a.slug) + '</span>'
+           + '</button>';
+      });
+    }
+    h += '</div>';
+
+    // Slide-over (hidden by default)
+    h += '<div class="agents-slideover" id="agents-slideover" role="dialog"'
+       + ' aria-modal="true" aria-label="Agent profile" hidden>'
+       + '<div class="agents-slideover__inner">'
+       + '<button class="agents-slideover__close" id="agents-slideover-close"'
+       + ' type="button" aria-label="Close panel">&#x2715;</button>'
+       + '<div id="agents-slideover-content"><p class="nx-empty">Select an agent.</p></div>'
+       + '</div></div>'
+       + '<div class="agents-slideover__backdrop" id="agents-slideover-backdrop" hidden></div>';
+
+    return h;
+  }
+
+  // Derive a one-line role from profile slug
+  function _slugToRole(slug) {
+    if (!slug) return '';
+    var map = {
+      'accessibility-reviewer':    'Accessibility review',
+      'architecture-director':     'Tech architecture',
+      'brand-director':            'Brand strategy',
+      'brand-strategist':          'Brand research',
+      'business-analyst':          'Business analysis',
+      'copywriter':                'Content writing',
+      'design-director':           'UX and design',
+      'marketing-director':        'Go-to-market',
+      'nfr-author':                'Non-functional requirements',
+      'product-director':          'Product strategy',
+      'product-manager':           'Product management',
+      'technical-writer-bilingual':'Technical writing',
+      'trademark-researcher':      'Trademark research',
+      'ux-researcher':             'User research',
+      'validator':                 'Quality validation',
+      'visual-designer':           'Visual design',
+    };
+    return map[slug] || slug.replace(/-/g, ' ');
+  }
+
+  // Slide-over open/close via event delegation
+  document.addEventListener('click', function(evt) {
+    var card = evt.target.closest('.agents-card[data-slug]');
+    if (card) { _openSlideOver(card.dataset.slug); return; }
+    var closeBtn = evt.target.closest('#agents-slideover-close');
+    if (closeBtn) { _closeSlideOver(); return; }
+    var bd = evt.target.closest('#agents-slideover-backdrop');
+    if (bd) { _closeSlideOver(); return; }
+  });
+
+  function _openSlideOver(slug) {
+    var so = document.getElementById('agents-slideover');
+    var bd = document.getElementById('agents-slideover-backdrop');
+    var ct = document.getElementById('agents-slideover-content');
+    if (!so || !ct) return;
+    so.hidden = false;
+    if (bd) bd.hidden = false;
+    ct.innerHTML = '<p class="nx-empty">Loading...</p>';
+    fetch('/api/profile/' + encodeURIComponent(slug))
+      .then(function(r) { return r.json(); })
+      .then(function(d) { ct.innerHTML = _renderSlideOverContent(slug, d); })
+      .catch(function() { ct.innerHTML = '<p class="nx-empty">Profile not found.</p>'; });
+  }
+
+  function _closeSlideOver() {
+    var so = document.getElementById('agents-slideover');
+    var bd = document.getElementById('agents-slideover-backdrop');
+    if (so) so.hidden = true;
+    if (bd) bd.hidden = true;
+  }
+
+  function _renderSlideOverContent(slug, d) {
+    var col = slugColor(slug);
+    var ini = slugInitials(slug);
+    var h = '';
+    h += '<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;padding-top:8px">'
+       + '<span class="agents-avatar" style="background:' + col + ';width:48px;height:48px;font-size:16px">' + esc(ini) + '</span>'
+       + '<div><div style="font-size:15px;font-weight:700;color:var(--nx-text)">' + esc(slug) + '</div>'
+       + '<div style="font-size:11px;color:rgba(245,247,250,0.45)">' + esc(_slugToRole(slug)) + '</div></div>'
+       + '</div>';
+    if (d.soul) {
+      h += '<div class="nx-section-heading" style="margin-top:0">Profile</div>'
+         + '<div class="agents-soul">' + esc(d.soul) + '</div>';
+    }
+    var dispatches = d.dispatches || [];
+    h += '<div class="nx-section-heading">Last dispatches</div>';
+    if (dispatches.length === 0) {
+      h += '<p class="nx-empty">No dispatches on record.</p>';
+    } else {
+      dispatches.forEach(function(dp) {
+        h += '<div class="agents-dispatch-row">'
+           + '<span class="agents-dispatch-row__age">' + esc(relTime(dp.started_at)) + '</span>'
+           + '<span>' + esc(dp.id || '—') + '</span>'
+           + (dp.estimated_cost_usd != null ? '<span style="color:rgba(245,247,250,0.40);margin-left:auto">$' + Number(dp.estimated_cost_usd).toFixed(3) + '</span>' : '')
+           + '</div>';
+      });
+    }
+    if (d.memory) {
+      h += '<div class="nx-section-heading">Memory</div>'
+         + '<div class="agents-soul" style="max-height:120px;overflow-y:auto">' + esc(d.memory) + '</div>';
+    }
+    return h;
+  }
+
+  // ── ACTIVITY renderer ─────────────────────────────────────────────
+
+  var _afRange = 'today';
+  var _afType  = 'all';
+  var _afRepo  = 'all';
+
+  function renderActivity(state) {
+    var prs       = (state.prs       && state.prs.data)       || [];
+    var decs      = (state.decisions && state.decisions.data) || [];
+    var agents    = (state.agents    && state.agents.data)    || {};
+    var dispatches = agents.all_sessions || [];
+
+    var events = [];
+    prs.forEach(function(pr) {
+      events.push({
+        type: 'prs', icon: '&#x1F500;', badge: 'PR',
+        badgeClass: 'activity-row__badge--pr',
+        text: 'PR #' + pr.number + ' ' + pr.state + ' \u2014 ' + (pr.title || ''),
+        ts: pr.ts_ms || 0, tsRaw: pr.ts_ms,
+        href: pr.url || '#', repo: pr.repo || '',
+      });
+    });
+    decs.forEach(function(d) {
+      events.push({
+        type: 'decisions', icon: '&#x2713;', badge: 'Decision',
+        badgeClass: 'activity-row__badge--decision',
+        text: d.title || 'Untitled decision',
+        ts: d.ts_ms || 0, tsRaw: d.ts_ms,
+        href: d.url || d.path || '#', repo: '',
+      });
+    });
+    dispatches.forEach(function(dp) {
+      events.push({
+        type: 'dispatches', icon: '&#x26A1;', badge: 'Dispatch',
+        badgeClass: 'activity-row__badge--dispatch',
+        text: 'Agent dispatched: ' + (dp.slug || dp.id || 'unknown'),
+        ts: dp.started_at ? dp.started_at * 1000 : 0, tsRaw: dp.started_at,
+        href: '#', repo: '',
+      });
+    });
+
+    events.sort(function(a, b) { return b.ts - a.ts; });
+
+    var now = Date.now();
+    var cutoff = 0;
+    if (_afRange === 'today') {
+      var d0 = new Date(); d0.setHours(0,0,0,0); cutoff = d0.getTime();
+    } else if (_afRange === 'week')  { cutoff = now - 7 * 86400000; }
+    else if (_afRange === 'month') { cutoff = now - 30 * 86400000; }
+
+    var filtered = events.filter(function(e) {
+      if (_afRange !== 'all' && e.ts < cutoff) return false;
+      if (_afType  !== 'all' && e.type !== _afType) return false;
+      if (_afRepo  !== 'all' && e.repo && !e.repo.includes(_afRepo)) return false;
+      return true;
+    });
+
+    var h = '';
+    h += '<div class="nx-view-title">Activity</div>';
+    h += '<div class="nx-view-subtitle">Everything that happened, newest first.</div>';
+
+    h += '<div class="activity-filters" role="group" aria-label="Filter activity">';
+    h += '<span class="nx-sort-label">When:</span>';
+    [['today','Today'],['week','This week'],['month','This month'],['all','All']].forEach(function(r) {
+      h += '<button class="nx-sort-btn' + (_afRange===r[0]?' nx-sort-btn--active':'') + '" data-af-range="' + r[0] + '" type="button">' + r[1] + '</button>';
+    });
+    h += '<span class="nx-sort-label activity-filters__sep">Type:</span>';
+    [['all','All'],['prs','PRs'],['decisions','Decisions'],['dispatches','Dispatches']].forEach(function(t) {
+      h += '<button class="nx-sort-btn' + (_afType===t[0]?' nx-sort-btn--active':'') + '" data-af-type="' + t[0] + '" type="button">' + t[1] + '</button>';
+    });
+    h += '<span class="nx-sort-label activity-filters__sep">Repo:</span>';
+    [['all','All'],['supply-chain-saas','Supply Chain'],['nexoura-agent','nexoura-agent']].forEach(function(rv) {
+      h += '<button class="nx-sort-btn' + (_afRepo===rv[0]?' nx-sort-btn--active':'') + '" data-af-repo="' + rv[0] + '" type="button">' + rv[1] + '</button>';
+    });
+    h += '</div>';
+
+    h += '<div class="activity-feed" role="feed" aria-label="Activity timeline">';
+    if (filtered.length === 0) {
+      var msg = _afRange === 'today' ? 'Nothing happened yet today.' : 'No results for this filter.';
+      h += '<p class="nx-empty">' + msg + '</p>';
+    } else {
+      filtered.forEach(function(e) {
+        var hasHref = e.href && e.href !== '#';
+        var tag  = hasHref ? 'a href="' + esc(e.href) + '" target="_blank" rel="noopener"' : 'div';
+        var etag = hasHref ? 'a' : 'div';
+        h += '<' + tag + ' class="activity-row">'
+           + '<span class="activity-row__icon" aria-hidden="true">' + e.icon + '</span>'
+           + '<span class="activity-row__text">' + esc(e.text) + '</span>'
+           + '<span class="activity-row__badge ' + e.badgeClass + '">' + e.badge + '</span>'
+           + '<span class="activity-row__age">' + esc(relTime(e.tsRaw)) + '</span>'
+           + '</' + etag + '>';
+      });
+    }
+    h += '</div>';
+
+    return h;
+  }
+
+  // Activity filter delegation
+  document.addEventListener('click', function(evt) {
+    var btn = evt.target.closest('[data-af-range]');
+    if (btn && btn.dataset.afRange) { _afRange = btn.dataset.afRange; if (_route === '/activity') renderView(); return; }
+    btn = evt.target.closest('[data-af-type]');
+    if (btn && btn.dataset.afType)  { _afType  = btn.dataset.afType;  if (_route === '/activity') renderView(); return; }
+    btn = evt.target.closest('[data-af-repo]');
+    if (btn && btn.dataset.afRepo)  { _afRepo  = btn.dataset.afRepo;  if (_route === '/activity') renderView(); return; }
+  });
+
+  // ── SYSTEM renderer ───────────────────────────────────────────────
+
+  function renderSystem(state) {
+    var health = (state.health && state.health.data) || {};
+    var system = (state.system && state.system.data) || {};
+    var logLines = system.watchdog_lines !== undefined ? system.watchdog_lines : null;
+    var spend    = system.spend || {};
+
+    var h = '';
+    h += '<div class="nx-view-title">System</div>';
+    h += '<div class="nx-view-subtitle">Services, logs, and costs at a glance.</div>';
+
+    // Service health table
+    h += '<div class="nx-section-heading">Service Health</div>';
+    h += '<div class="system-health-table" role="table" aria-label="Service health">';
+    var services = [
+      {key:'gateway',  label:'Hermes gateway'},
+      {key:'studio',   label:'Studio server'},
+      {key:'watchdog', label:'Watchdog'},
+      {key:'dashboard',label:'Dashboard'},
+    ];
+    var lastCheck = health.last_check || null;
+    services.forEach(function(svc) {
+      var info  = health[svc.key] || {};
+      var status = info.status || 'Unknown';
+      var color  = info.color  || 'unknown';
+      var pillC  = 'system-pill--' + ({'green':'green','amber':'amber','red':'red'}[color] || 'unknown');
+      var icon   = {'green':'&#x2713;','amber':'&#x26A0;','red':'&#x2717;'}[color] || '?';
+      h += '<div class="system-health-row" role="row">'
+         + '<span class="system-health-row__name" role="cell">' + esc(svc.label) + '</span>'
+         + '<span class="system-pill ' + pillC + '" role="cell">' + icon + ' ' + esc(status) + '</span>'
+         + '<span class="system-health-row__check" role="cell">'
+         + (lastCheck ? 'Checked ' + esc(lastCheck) : 'Not checked yet') + '</span>'
+         + '</div>';
+    });
+    h += '</div>';
+
+    // Watchdog log
+    h += '<div class="nx-section-heading">Watchdog Log</div>';
+    h += '<div class="system-log" aria-label="Watchdog log tail">';
+    if (logLines === null) {
+      h += 'Watchdog log not found.';
+    } else if (logLines.length === 0) {
+      h += 'Log is empty.';
+    } else {
+      h += esc(logLines.join('\n'));
+    }
+    h += '</div>';
+
+    // Token spend chart
+    h += '<div class="nx-section-heading">Token Spend \u2014 Last 7 Days</div>';
+    h += '<div class="system-spend" aria-label="Token spend by provider">';
+    var providers = Object.keys(spend);
+    if (providers.length === 0) {
+      h += '<p class="nx-empty">No spend data yet.</p>';
+    } else {
+      var maxAmt = Math.max.apply(null, providers.map(function(p) { return spend[p] || 0; }));
+      var BAR_MAX = 80;
+      providers.forEach(function(p) {
+        var amt  = spend[p] || 0;
+        var barH = maxAmt > 0 ? Math.max(3, Math.round((amt / maxAmt) * BAR_MAX)) : 3;
+        h += '<div class="system-spend__bar-wrap">'
+           + '<span class="system-spend__amount">$' + amt.toFixed(2) + '</span>'
+           + '<div class="system-spend__bar" style="height:' + barH + 'px" aria-label="' + esc(p) + ' $' + amt.toFixed(2) + '"></div>'
+           + '<span class="system-spend__label">' + esc(p) + '</span>'
+           + '</div>';
+      });
+    }
+    h += '</div>';
+
+    return h;
+  }
+
+  // ── Renderer registry ─────────────────────────────────────────────
+
+  var _renderers = {
+    '/home':      renderHome,
+    '/decisions': renderDecisions,
+    '/agents':    renderAgents,
+    '/activity':  renderActivity,
+    '/system':    renderSystem,
+  };
+
+  // Sort button delegation (fires before re-render rebuilds DOM)
   document.addEventListener('click', function (evt) {
     var btn = evt.target.closest('.nx-sort-btn');
     if (!btn) return;

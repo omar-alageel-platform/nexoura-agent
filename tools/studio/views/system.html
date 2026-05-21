@@ -1,0 +1,34 @@
+<!--
+  NEXOURA Studio — SYSTEM panel view fragment (B5)
+  Loaded dynamically into #app by studio.js router.
+
+  Three subsections:
+    1. Service health table (hermes gateway, studio server, watchdog, dashboard)
+    2. Watchdog log tail (last 20 lines from ~/.hermes/watchdog.log)
+    3. Token spend per provider (pure CSS bar chart, last 7 days)
+
+  Auto-updates via SSE on health/watchdog section changes.
+  Language rule: 6th-grade reading level.
+  Microcopy: tools/studio/microcopy-brief.md
+-->
+
+<div class="nx-view-title">System</div>
+<div class="nx-view-subtitle">Services, logs, and costs at a glance.</div>
+
+<!-- Service health table -->
+<div class="nx-section-heading">Service Health</div>
+<div class="system-health-table" id="system-health-table" role="table" aria-label="Service health">
+  <p class="nx-empty">Health data not loaded yet.</p>
+</div>
+
+<!-- Watchdog log tail -->
+<div class="nx-section-heading">Watchdog Log</div>
+<div class="system-log" id="system-log" aria-label="Watchdog log tail">
+  <p class="nx-empty">Watchdog log not found.</p>
+</div>
+
+<!-- Token spend chart -->
+<div class="nx-section-heading">Token Spend — Last 7 Days</div>
+<div class="system-spend" id="system-spend" aria-label="Token spend by provider">
+  <p class="nx-empty">No spend data yet.</p>
+</div>

@@ -231,5 +231,41 @@ class TestSseEventFormat(unittest.TestCase):
         self.assertEqual(payload["section"], "health")
 
 
+class TestProfileRoute(ServerTestCase):
+    """GET /api/profile/<slug> returns JSON with soul + dispatches + memory."""
+
+    def test_profile_route_serves_soul_excerpt(self):
+        """
+        /api/profile/<slug> must return 200 with JSON containing a 'soul' key.
+        We use 'design-director' which has a known SOUL.md on disk.
+        """
+        status, headers, body = self._get("/api/profile/design-director")
+        self.assertEqual(status, 200, f"/api/profile/design-director returned {status}")
+        ct = headers.get("Content-Type", "")
+        self.assertIn("application/json", ct)
+        try:
+            payload = json.loads(body)
+        except json.JSONDecodeError:
+            self.fail("Response is not valid JSON")
+        self.assertIn("soul", payload, "Response must have 'soul' key")
+        self.assertIn("dispatches", payload, "Response must have 'dispatches' key")
+        # soul should be a string (possibly None if profile doesn't exist in test env)
+        if payload["soul"] is not None:
+            self.assertIsInstance(payload["soul"], str)
+            # Must not exceed 800 chars
+            self.assertLessEqual(len(payload["soul"]), 800)
+
+    def test_profile_route_invalid_slug_404(self):
+        """Slugs with path traversal characters must return 404."""
+        status, _, _ = self._get("/api/profile/../../../etc/passwd")
+        # The server sanitises the slug — should return 404
+        self.assertEqual(status, 404)
+
+    def test_profile_route_unknown_slug_returns_404(self):
+        """An unknown slug returns 404 (no fabricated success)."""
+        status, _, _ = self._get("/api/profile/nonexistent-profile-xyz")
+        self.assertEqual(status, 404)
+
+
 if __name__ == "__main__":
     unittest.main()

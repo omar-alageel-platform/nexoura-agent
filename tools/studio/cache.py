@@ -210,6 +210,170 @@ def get_recent_prs() -> list[dict]:
     return results
 
 
+def get_agent_activity() -> dict:
+    """
+    Return { active: [...], available: [...], idle: [...], all_sessions: [...] }
+    by scanning ~/.hermes/state.db.
+
+    active    — sessions started in last 60s with parent_session_id NOT NULL.
+    idle      — profiles whose most-recent session started > 7 days ago.
+    available — all profiles in PROFILES_DIR minus active and idle sets.
+
+    Graceful degradation: if state.db is missing, all profiles → available.
+    """
+    import sqlite3 as _sqlite3
+
+    PROFILES_DIR = Path(__file__).resolve().parents[2] / "profiles"
+    STATE_DB     = Path.home() / ".hermes" / "state.db"
+
+    # Discover all on-disk profiles (enumerate from filesystem — not hardcoded)
+    all_slugs: list[str] = []
+    if PROFILES_DIR.exists():
+        for p in sorted(PROFILES_DIR.iterdir()):
+            if p.is_dir() and (p / "SOUL.md").exists():
+                all_slugs.append(p.name)
+
+    def _slug_entry(slug: str) -> dict:
+        return {"slug": slug, "name": slug}
+
+    if not STATE_DB.exists():
+        return {
+            "active": [],
+            "available": [_slug_entry(s) for s in all_slugs],
+            "idle": [],
+            "all_sessions": [],
+        }
+
+    now_ts   = datetime.now(timezone.utc).timestamp()
+    cutoff_active = now_ts - 60
+    cutoff_idle   = now_ts - 7 * 86400
+
+    try:
+        conn = _sqlite3.connect(str(STATE_DB), timeout=5)
+        conn.row_factory = _sqlite3.Row
+        cur = conn.cursor()
+
+        # Active: child sessions started in last 60s still running (no ended_at)
+        cur.execute(
+            "SELECT id, parent_session_id, started_at, estimated_cost_usd "
+            "FROM sessions WHERE parent_session_id IS NOT NULL "
+            "AND started_at >= ? AND ended_at IS NULL",
+            (cutoff_active,),
+        )
+        active_rows = [dict(r) for r in cur.fetchall()]
+
+        # Most-recent session per profile isn't stored by slug — use title heuristic
+        # or match on profile slug in the id/title. For idle: find sessions whose
+        # most-recent started_at < 7 days ago, grouped by rough slug match.
+        # Since we can't reliably map sessions↔slugs from DB alone, we query
+        # recent top-level sessions and cross-reference by title containing slug.
+        cur.execute(
+            "SELECT id, started_at, title, estimated_cost_usd "
+            "FROM sessions WHERE parent_session_id IS NULL "
+            "ORDER BY started_at DESC LIMIT 200"
+        )
+        all_top = [dict(r) for r in cur.fetchall()]
+
+        # Build all_sessions (dispatch feed) — child sessions, last 100
+        cur.execute(
+            "SELECT id, parent_session_id, started_at, estimated_cost_usd "
+            "FROM sessions WHERE parent_session_id IS NOT NULL "
+            "ORDER BY started_at DESC LIMIT 100"
+        )
+        all_sessions = [dict(r) for r in cur.fetchall()]
+
+        conn.close()
+    except Exception as exc:
+        print(f"[studio/cache] get_agent_activity DB error: {exc}", file=sys.stderr)
+        return {
+            "active": [],
+            "available": [_slug_entry(s) for s in all_slugs],
+            "idle": [],
+            "all_sessions": [],
+        }
+
+    # Map active session IDs to slugs (best effort: match slug in session id prefix)
+    active_slugs: set[str] = set()
+    active_out: list[dict] = []
+    for row in active_rows:
+        # session id like 20260518_131318_e3f100 — no slug embedded, so mark unknown
+        entry = {"slug": "unknown", "dispatch_id": row["id"], "started_at": row["started_at"]}
+        active_out.append(entry)
+
+    # Idle: profile slugs where their slug appears in a title of a recent session
+    # and that session's started_at < 7 days ago.
+    # Strategy: a profile is idle if NO session in the last 7 days has its slug in title.
+    recent_titles: set[str] = set()
+    for row in all_top:
+        if row["started_at"] and row["started_at"] >= cutoff_idle:
+            t = (row.get("title") or "").lower()
+            recent_titles.add(t)
+
+    idle_out: list[dict] = []
+    available_out: list[dict] = []
+
+    for slug in all_slugs:
+        slug_lower = slug.lower()
+        # Check if any recent session references this slug
+        found_recent = any(slug_lower in title for title in recent_titles)
+        if not found_recent:
+            idle_out.append(_slug_entry(slug))
+        else:
+            available_out.append(_slug_entry(slug))
+
+    # If nothing maps to idle (common early on), put all in available
+    if not idle_out and not available_out:
+        available_out = [_slug_entry(s) for s in all_slugs]
+
+    return {
+        "active": active_out,
+        "available": available_out,
+        "idle": idle_out,
+        "all_sessions": all_sessions,
+    }
+
+
+def get_system_data() -> dict:
+    """
+    Return watchdog log tail (last 20 lines) + token spend per provider (last 7 days).
+    """
+    import sqlite3 as _sqlite3
+
+    STATE_DB = Path.home() / ".hermes" / "state.db"
+
+    # Watchdog log tail
+    watchdog_lines = None
+    if WATCHDOG_LOG.exists():
+        try:
+            with WATCHDOG_LOG.open("r", encoding="utf-8", errors="replace") as fh:
+                lines = fh.readlines()[-20:]
+            watchdog_lines = [l.rstrip("\n") for l in lines]
+        except OSError:
+            watchdog_lines = None
+
+    # Token spend per provider — last 7 days
+    spend: dict = {}
+    if STATE_DB.exists():
+        try:
+            conn = _sqlite3.connect(str(STATE_DB), timeout=5)
+            cur = conn.cursor()
+            cutoff = datetime.now(timezone.utc).timestamp() - 7 * 86400
+            cur.execute(
+                "SELECT billing_provider, SUM(estimated_cost_usd) "
+                "FROM sessions WHERE started_at >= ? AND estimated_cost_usd IS NOT NULL "
+                "GROUP BY billing_provider",
+                (cutoff,),
+            )
+            for provider, total in cur.fetchall():
+                key = provider or "unknown"
+                spend[key] = round(float(total or 0), 4)
+            conn.close()
+        except Exception as exc:
+            print(f"[studio/cache] get_system_data DB error: {exc}", file=sys.stderr)
+
+    return {"watchdog_lines": watchdog_lines, "spend": spend}
+
+
 def get_system_health() -> dict:
     """Parse ~/.hermes/watchdog.log tail. Works fine even if the file is missing."""
     health: dict = {
@@ -264,6 +428,8 @@ class Cache:
         "decisions":   lambda preview_dir: get_pending_decisions(preview_dir),
         "prs":         lambda preview_dir: get_recent_prs(),
         "health":      lambda preview_dir: get_system_health(),
+        "agents":      lambda preview_dir: get_agent_activity(),
+        "system":      lambda preview_dir: get_system_data(),
     }
 
     def __init__(self, path: Path = CACHE_PATH) -> None:
