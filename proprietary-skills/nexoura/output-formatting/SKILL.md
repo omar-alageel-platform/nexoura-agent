@@ -66,6 +66,7 @@ The template uses brace-delimited placeholders (not pandoc-native `$var$`) so it
 
 | Placeholder           | Source                                    | Required |
 |-----------------------|-------------------------------------------|----------|
+| `{{THEME}}`           | `--theme` flag of `render.py` (`dark`/`light`) | yes  |
 | `{{TITLE}}`           | YAML `title:`                             | yes      |
 | `{{KICKER}}`          | YAML `kicker:` (default `NEXOURA · STUDIO`) | no     |
 | `{{SUBTITLE}}`        | YAML `subtitle:`                          | no       |
@@ -151,6 +152,38 @@ pandoc input.md --reference-doc=reference.docx -o output.docx
 ```
 
 For client deliverables where visual fidelity matters, **prefer HTML**. DOCX is the structural fallback for stakeholders who must edit in Word.
+
+---
+
+## §3.5 Dark / light mode (T15.5)
+
+Two themes via CSS variables under `[data-theme="dark"]` and `[data-theme="light"]`. Brand accents (purple/violet/blue/cyan + gradient + O-ring) are **identical in both modes**; only surfaces, text, borders swap. Pill semantics preserved with contrast-tuned hues.
+
+Light tokens: `--bg-primary:#FFFFFF`, `--text-primary:#0A0F16`, `--text-secondary:#475569`, `--card-bg:#F9FAFB`, `--border-color:#e2e8f0`. Dark unchanged from T15.0.
+
+A floating top-right button toggles `data-theme` and persists to `localStorage['nx-theme']`. First load honours the server default unless the OS advertises `prefers-color-scheme: light`. Hidden in print.
+
+### When to use which
+
+| Channel | Mode |
+|---|---|
+| Default / stage-transition reports / on-screen client briefing | **dark** |
+| Print, PDF distribution, light-host embed | **light** |
+| Stakeholder review where preference is unknown | **both** |
+
+When in doubt: dark — the switcher gives readers an out. Force light only when the channel forbids dark.
+
+### `render.py --theme` flag
+
+```bash
+python3 render.py in.md out.html                            # dark (backward compatible)
+python3 render.py in.md --theme=light --out-dir dist/       # dist/in.light.html
+python3 render.py in.md --theme=both  --out-dir dist/       # dist/in.dark.html + dist/in.light.html
+```
+
+DOCX is theme-independent (styling lives in `reference.docx`); `--theme` is a no-op for `.docx`.
+
+Component-level theming for downstream renderers: **T16 `nexoura-brand-components`** — shares the same `--nx-*` / `--bg-*` / `--text-*` CSS variable contract.
 
 ---
 
@@ -306,7 +339,7 @@ Reject these in review.
 - **No overdone gradient.** Maximum one coordinated gradient surface per document (O-ring + H2 borders + footer tagline = one coordinated use). No gradient cards, buttons, or dividers.
 - **No drop shadows on cards.** Subtle 1px borders at `rgba(120,97,255,0.20)` only.
 - **No HUD / loot-meter metaphors.** No hex-grid backgrounds, faux-3D bevels, or game-UI progress bars.
-- **No light-on-dark mixing.** Template is dark-primary. A light template may ship later; until then dark only.
+- **No light-on-dark mixing within a single render.** Pick a theme (`--theme=dark` or `--theme=light`, see §3.5) and let the reader's switcher toggle the other. Do not inject a hand-coloured "light card" into a dark page or vice versa.
 - **No alternate fonts.** Sora / Inter / Geist / system-ui is the entire allowed stack.
 - **No alternate logo treatments.** The O-ring is the mark. Do not stretch, recolour, animate, or replace with stylized text-only NEXOURA.
 - **No tagline elsewhere.** `WHERE AI BUILDS` is footer-only.

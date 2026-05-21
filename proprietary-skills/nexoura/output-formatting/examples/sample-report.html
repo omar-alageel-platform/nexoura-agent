@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -20,24 +20,49 @@
 </style>
 <style>
   :root {
+    /* Brand accents — IDENTICAL in dark and light per brand spec. */
     --nx-purple: #7861FF;
     --nx-violet: #5B30FF;
     --nx-blue:   #2563FF;
     --nx-cyan:   #00E0FF;
-    --nx-navy:   #0A0F16;
-    --nx-white:  #F5F7FA;
-    --nx-slate-900: #101826;
-    --nx-slate-700: #475569;
-    --nx-slate-300: #cbd5e1;
-    --nx-slate-400: #94a3b8;
     --nx-grad: linear-gradient(135deg, #7861FF 0%, #5B30FF 28%, #2563FF 68%, #00E0FF 100%);
-    --nx-border: rgba(120,97,255,0.20);
   }
+
+  /* --- DARK THEME (default) -------------------------------------------- */
+  [data-theme="dark"] {
+    --bg-primary:     #0A0F16;
+    --bg-elevated:    #101826;  /* pre/code, deep surface */
+    --text-primary:   #F5F7FA;
+    --text-strong:    #ffffff;
+    --text-secondary: #cbd5e1;
+    --text-muted:     #94a3b8;
+    --border-color:   rgba(120,97,255,0.20);
+    --card-bg:        rgba(120,97,255,0.04);
+    --code-bg:        rgba(120,97,255,0.10);
+    --oring-core:     #0A0F16;
+    --pill-p2-text:   #0A0F16;
+  }
+
+  /* --- LIGHT THEME ------------------------------------------------------ */
+  [data-theme="light"] {
+    --bg-primary:     #FFFFFF;
+    --bg-elevated:    #F1F5F9;  /* slate-100, pre/code surface */
+    --text-primary:   #0A0F16;
+    --text-strong:    #0A0F16;
+    --text-secondary: #475569;  /* slate-700 per spec */
+    --text-muted:     #64748b;  /* slate-500 */
+    --border-color:   #e2e8f0;  /* slate-200 — subtle, not purple-tinted */
+    --card-bg:        #F9FAFB;  /* subtle off-white per spec */
+    --code-bg:        rgba(120,97,255,0.08);
+    --oring-core:     #FFFFFF;
+    --pill-p2-text:   #0A0F16;
+  }
+
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; }
   body {
-    background: var(--nx-navy);
-    color: var(--nx-white);
+    background: var(--bg-primary);
+    color: var(--text-primary);
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Geist, sans-serif;
     font-size: 16px;
     line-height: 1.7;
@@ -46,59 +71,84 @@
   .nx-wrap { max-width: 960px; margin: 0 auto; padding: 56px 40px 80px; }
 
   /* Header */
-  .nx-header { position: relative; display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: start; padding-bottom: 28px; margin-bottom: 40px; border-bottom: 1px solid var(--nx-border); }
-  .nx-kicker { display: inline-block; font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; padding: 6px 12px; border-radius: 999px; background: rgba(120,97,255,0.12); color: var(--nx-purple); border: 1px solid var(--nx-border); }
-  .nx-title { font-family: 'Sora', sans-serif; font-weight: 700; font-size: 2.5rem; line-height: 1.15; margin: 18px 0 8px; color: #ffffff; letter-spacing: -0.01em; }
-  .nx-subtitle { font-family: 'Inter', sans-serif; font-weight: 400; color: var(--nx-slate-300); font-size: 1.05rem; margin: 0; max-width: 64ch; }
-  .nx-date { font-family: 'Inter', sans-serif; font-size: 0.85rem; color: var(--nx-slate-400); text-align: right; white-space: nowrap; }
-  .nx-author { font-family: 'Inter', sans-serif; font-size: 0.8rem; color: var(--nx-slate-400); margin-top: 6px; text-align: right; }
+  .nx-header { position: relative; display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: start; padding-bottom: 28px; margin-bottom: 40px; border-bottom: 1px solid var(--border-color); }
+  .nx-kicker { display: inline-block; font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; padding: 6px 12px; border-radius: 999px; background: rgba(120,97,255,0.12); color: var(--nx-purple); border: 1px solid rgba(120,97,255,0.30); }
+  .nx-title { font-family: 'Sora', sans-serif; font-weight: 700; font-size: 2.5rem; line-height: 1.15; margin: 18px 0 8px; color: var(--text-strong); letter-spacing: -0.01em; }
+  .nx-subtitle { font-family: 'Inter', sans-serif; font-weight: 400; color: var(--text-secondary); font-size: 1.05rem; margin: 0; max-width: 64ch; }
+  .nx-date { font-family: 'Inter', sans-serif; font-size: 0.85rem; color: var(--text-muted); text-align: right; white-space: nowrap; }
+  .nx-author { font-family: 'Inter', sans-serif; font-size: 0.8rem; color: var(--text-muted); margin-top: 6px; text-align: right; }
 
-  /* O-ring logo mark (CSS only) */
+  /* O-ring logo mark (CSS only) — gradient is mode-invariant */
   .nx-oring { position: relative; width: 48px; height: 48px; border-radius: 50%; background: var(--nx-grad); padding: 2px; margin-bottom: 12px; margin-left: auto; }
-  .nx-oring::before { content: ""; position: absolute; inset: 2px; background: var(--nx-navy); border-radius: 50%; }
+  .nx-oring::before { content: ""; position: absolute; inset: 2px; background: var(--oring-core); border-radius: 50%; }
   .nx-oring::after { content: ""; position: absolute; inset: 11px; border-radius: 50%; background: var(--nx-grad); opacity: 0.95; }
 
   /* Metric grid */
   .nx-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; margin: 8px 0 40px; }
-  .nx-metric { padding: 20px 22px; border: 1px solid var(--nx-border); border-radius: 14px; background: rgba(120,97,255,0.04); }
-  .nx-metric .label { font-family: 'Inter', sans-serif; font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--nx-slate-400); margin-bottom: 8px; }
+  .nx-metric { padding: 20px 22px; border: 1px solid var(--border-color); border-radius: 14px; background: var(--card-bg); }
+  .nx-metric .label { font-family: 'Inter', sans-serif; font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; }
   .nx-metric .value { font-family: 'Sora', sans-serif; font-weight: 700; font-size: 2rem; line-height: 1.1; color: var(--nx-purple); }
   .nx-metric:nth-child(3n+2) .value { color: var(--nx-blue); }
   .nx-metric:nth-child(3n+3) .value { color: var(--nx-cyan); }
-  .nx-metric .delta { font-family: 'Inter', sans-serif; font-size: 0.82rem; color: var(--nx-slate-300); margin-top: 6px; }
+  .nx-metric .delta { font-family: 'Inter', sans-serif; font-size: 0.82rem; color: var(--text-secondary); margin-top: 6px; }
 
   /* Body */
-  .nx-body { font-family: 'Inter', sans-serif; color: var(--nx-white); }
-  .nx-body h2 { font-family: 'Sora', sans-serif; font-weight: 600; font-size: 1.5rem; color: #ffffff; padding-left: 14px; margin-top: 44px; margin-bottom: 14px; border-left: 3px solid; border-image: var(--nx-grad) 1; }
-  .nx-body h3 { font-family: 'Sora', sans-serif; font-weight: 600; font-size: 1.15rem; color: var(--nx-white); margin-top: 28px; margin-bottom: 10px; }
-  .nx-body p, .nx-body li { color: var(--nx-slate-300); }
-  .nx-body strong { color: var(--nx-white); font-weight: 600; }
-  .nx-body code { background: rgba(120,97,255,0.10); padding: 2px 6px; border-radius: 4px; font-family: ui-monospace, 'JetBrains Mono', Menlo, Consolas, monospace; font-size: 0.92em; color: var(--nx-cyan); }
-  .nx-body pre { background: var(--nx-slate-900); padding: 16px 18px; border-radius: 10px; border: 1px solid var(--nx-border); overflow-x: auto; font-size: 0.9rem; }
-  .nx-body pre code { background: transparent; color: var(--nx-white); padding: 0; }
-  .nx-body a { color: var(--nx-cyan); text-decoration: none; border-bottom: 1px solid rgba(0,224,255,0.35); }
+  .nx-body { font-family: 'Inter', sans-serif; color: var(--text-primary); }
+  .nx-body h2 { font-family: 'Sora', sans-serif; font-weight: 600; font-size: 1.5rem; color: var(--text-strong); padding-left: 14px; margin-top: 44px; margin-bottom: 14px; border-left: 3px solid; border-image: var(--nx-grad) 1; }
+  .nx-body h3 { font-family: 'Sora', sans-serif; font-weight: 600; font-size: 1.15rem; color: var(--text-strong); margin-top: 28px; margin-bottom: 10px; }
+  .nx-body p, .nx-body li { color: var(--text-secondary); }
+  .nx-body strong { color: var(--text-strong); font-weight: 600; }
+  .nx-body code { background: var(--code-bg); padding: 2px 6px; border-radius: 4px; font-family: ui-monospace, 'JetBrains Mono', Menlo, Consolas, monospace; font-size: 0.92em; color: var(--nx-blue); }
+  [data-theme="dark"] .nx-body code { color: var(--nx-cyan); }
+  .nx-body pre { background: var(--bg-elevated); padding: 16px 18px; border-radius: 10px; border: 1px solid var(--border-color); overflow-x: auto; font-size: 0.9rem; }
+  .nx-body pre code { background: transparent; color: var(--text-primary); padding: 0; }
+  .nx-body a { color: var(--nx-blue); text-decoration: none; border-bottom: 1px solid rgba(37,99,255,0.35); }
+  [data-theme="dark"] .nx-body a { color: var(--nx-cyan); border-bottom-color: rgba(0,224,255,0.35); }
   .nx-body table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 0.95rem; }
-  .nx-body th, .nx-body td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--nx-border); }
-  .nx-body th { font-family: 'Sora', sans-serif; font-weight: 600; color: var(--nx-white); }
+  .nx-body th, .nx-body td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--border-color); }
+  .nx-body th { font-family: 'Sora', sans-serif; font-weight: 600; color: var(--text-strong); }
 
-  /* Status pills */
+  /* Status pills — semantic colours retained across both modes */
   .pill { display: inline-block; font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.72rem; letter-spacing: 0.10em; text-transform: uppercase; padding: 3px 10px; border-radius: 999px; border: 1px solid; vertical-align: middle; }
-  .pill-verified { color: #34d399; background: rgba(52,211,153,0.10); border-color: rgba(52,211,153,0.35); }
-  .pill-resolved { color: var(--nx-cyan); background: rgba(0,224,255,0.10); border-color: rgba(0,224,255,0.35); }
-  .pill-pending  { color: #fbbf24; background: rgba(251,191,36,0.10); border-color: rgba(251,191,36,0.35); }
-  .pill-blocked  { color: #f87171; background: rgba(248,113,113,0.12); border-color: rgba(248,113,113,0.40); }
+  .pill-verified { color: #059669; background: rgba(52,211,153,0.12); border-color: rgba(52,211,153,0.45); }
+  [data-theme="dark"] .pill-verified { color: #34d399; background: rgba(52,211,153,0.10); border-color: rgba(52,211,153,0.35); }
+  .pill-resolved { color: var(--nx-blue); background: rgba(0,224,255,0.12); border-color: rgba(0,224,255,0.40); }
+  [data-theme="dark"] .pill-resolved { color: var(--nx-cyan); background: rgba(0,224,255,0.10); border-color: rgba(0,224,255,0.35); }
+  .pill-pending  { color: #b45309; background: rgba(251,191,36,0.15); border-color: rgba(251,191,36,0.45); }
+  [data-theme="dark"] .pill-pending { color: #fbbf24; background: rgba(251,191,36,0.10); border-color: rgba(251,191,36,0.35); }
+  .pill-blocked  { color: #b91c1c; background: rgba(248,113,113,0.12); border-color: rgba(248,113,113,0.45); }
+  [data-theme="dark"] .pill-blocked { color: #f87171; background: rgba(248,113,113,0.12); border-color: rgba(248,113,113,0.40); }
   .pill-p0 { color: #ffffff; background: #DC2626; border-color: #DC2626; }
   .pill-p1 { color: #ffffff; background: #2563FF; border-color: #2563FF; }
-  .pill-p2 { color: #0A0F16; background: #F59E0B; border-color: #F59E0B; }
+  .pill-p2 { color: var(--pill-p2-text); background: #F59E0B; border-color: #F59E0B; }
   .pill-p3 { color: #ffffff; background: #6B7280; border-color: #6B7280; }
   .pill-p4 { color: #ffffff; background: #6B7280; border-color: #6B7280; }
 
   /* Footer */
-  .nx-footer { margin-top: 72px; padding-top: 24px; border-top: 1px solid var(--nx-border); display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 16px; font-family: 'Inter', sans-serif; font-size: 0.8rem; color: var(--nx-slate-400); }
-  .nx-wordmark { font-family: 'Sora', sans-serif; font-weight: 700; letter-spacing: 0.16em; color: var(--nx-white); }
+  .nx-footer { margin-top: 72px; padding-top: 24px; border-top: 1px solid var(--border-color); display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 16px; font-family: 'Inter', sans-serif; font-size: 0.8rem; color: var(--text-muted); }
+  .nx-wordmark { font-family: 'Sora', sans-serif; font-weight: 700; letter-spacing: 0.16em; color: var(--text-strong); }
   .nx-tagline-wrap { text-align: center; }
   .nx-tagline-img { display: inline-block; max-width: 100%; height: auto; border-radius: 4px; opacity: 0.95; }
   .nx-ts { text-align: right; }
+
+  /* Theme switcher button — top-right fixed */
+  .nx-theme-switch {
+    position: fixed; top: 18px; right: 18px; z-index: 1000;
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    font-size: 16px; line-height: 1; cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-family: 'Inter', sans-serif;
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+  .nx-theme-switch:hover { border-color: var(--nx-purple); }
+  .nx-theme-switch:focus { outline: 2px solid var(--nx-purple); outline-offset: 2px; }
+
+  @media print {
+    .nx-theme-switch { display: none; }
+  }
 
   @media (max-width: 640px) {
     .nx-wrap { padding: 32px 20px 56px; }
@@ -111,6 +161,7 @@
 </style>
 </head>
 <body>
+<button class="nx-theme-switch" type="button" aria-label="Toggle colour theme" title="Toggle theme" onclick="(function(){var r=document.documentElement;var n=r.getAttribute('data-theme')==='dark'?'light':'dark';r.setAttribute('data-theme',n);try{localStorage.setItem('nx-theme',n);}catch(e){}document.querySelector('.nx-theme-switch').textContent=n==='dark'?'☀':'☾';})()">☀</button>
 <div class="nx-wrap">
 
   <header class="nx-header">
@@ -127,7 +178,7 @@
   </header>
 
   <section class="nx-metrics">
-    <div class="nx-metric"><div class="label">Findings</div><div class="value">5</div><div class="delta">3 verified · 1 pending · 1 blocked</div></div><div class="nx-metric"><div class="label">Cache hit</div><div class="value">87%</div><div class="delta">target ≥ 85%</div></div><div class="nx-metric"><div class="label">Failover p50</div><div class="value">4.2s</div><div class="delta">SLO ≤ 5.0s</div></div>
+    
   </section>
 
   <main class="nx-body">
@@ -189,9 +240,30 @@ recovery.</li>
     <div class="nx-tagline-wrap">
       <img class="nx-tagline-img" src="data:image/png;base64,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" alt="WHERE AI BUILDS" width="300" height="30">
     </div>
-    <div class="nx-ts">Generated 2026-05-20 19:56 UTC</div>
+    <div class="nx-ts">Generated 2026-05-20 22:36 UTC</div>
   </footer>
 
 </div>
+<script>
+(function(){
+  try {
+    var stored = null;
+    try { stored = localStorage.getItem('nx-theme'); } catch (e) {}
+    var initial = stored;
+    if (!initial) {
+      var prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+      // Server-rendered default stays unless user has expressed an OS preference.
+      if (prefersLight) initial = 'light';
+    }
+    if (initial) {
+      document.documentElement.setAttribute('data-theme', initial);
+    }
+    var btn = document.querySelector('.nx-theme-switch');
+    if (btn) {
+      btn.textContent = document.documentElement.getAttribute('data-theme') === 'dark' ? '☀' : '☾';
+    }
+  } catch (e) {}
+})();
+</script>
 </body>
 </html>
