@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <title>NEXOURA Component Library</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;700&display=swap">
+  <link rel="stylesheet" href="components.css">
+  <style>
+    body { padding: 48px; max-width: 1100px; margin: 0 auto; }
+    section { margin-bottom: 56px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+    .demo-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; padding: 16px 0; }
+    pre { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; overflow-x: auto; font-size: 12px; color: var(--text-secondary); }
+  </style>
+</head>
+<body>
+  <h1>NEXOURA Component Library</h1>
+  <p>Copy-paste primitives. Each block shows the rendered component followed by its HTML.</p>
+
+  <section>
+    <h2>Logo lockup</h2>
+    <div class="demo-row">
+      <!-- logo-lockup -->
+      <span class="nx-logo nx-logo--md">
+        <span class="nx-wordmark-pre">NEX</span>
+        <span class="nx-oring"></span>
+        <span class="nx-wordmark-post">URA</span>
+      </span>
+      <!-- /logo-lockup -->
+    </div>
+<pre>&lt;span class="nx-logo nx-logo--md"&gt;
+  &lt;span class="nx-wordmark-pre"&gt;NEX&lt;/span&gt;
+  &lt;span class="nx-oring"&gt;&lt;/span&gt;
+  &lt;span class="nx-wordmark-post"&gt;URA&lt;/span&gt;
+&lt;/span&gt;</pre>
+  </section>
+
+  <section>
+    <h2>Buttons</h2>
+    <div class="demo-row">
+      <!-- button-primary -->
+      <button class="nx-btn nx-btn--primary">Primary action</button>
+      <!-- /button-primary -->
+      <!-- button-secondary -->
+      <button class="nx-btn nx-btn--secondary">Secondary</button>
+      <!-- /button-secondary -->
+      <!-- button-ghost -->
+      <button class="nx-btn nx-btn--ghost">Ghost</button>
+      <!-- /button-ghost -->
+      <button class="nx-btn nx-btn--primary" disabled>Disabled</button>
+    </div>
+<pre>&lt;button class="nx-btn nx-btn--primary"&gt;Primary action&lt;/button&gt;
+&lt;button class="nx-btn nx-btn--secondary"&gt;Secondary&lt;/button&gt;
+&lt;button class="nx-btn nx-btn--ghost"&gt;Ghost&lt;/button&gt;</pre>
+  </section>
+
+  <section>
+    <h2>Cards</h2>
+    <div class="grid">
+      <!-- card-elevated -->
+      <div class="nx-card"><h3>Elevated</h3><p>Default surface card with border + soft shadow.</p></div>
+      <!-- /card-elevated -->
+      <!-- card-accent -->
+      <div class="nx-card--accent"><h3>Accent</h3><p>Gradient top edge + brand tint background.</p></div>
+      <!-- /card-accent -->
+      <!-- card-flat -->
+      <div class="nx-card--flat"><h3>Flat</h3><p>Background tint only, no border.</p></div>
+      <!-- /card-flat -->
+    </div>
+<pre>&lt;div class="nx-card"&gt;...&lt;/div&gt;
+&lt;div class="nx-card--accent"&gt;...&lt;/div&gt;
+&lt;div class="nx-card--flat"&gt;...&lt;/div&gt;</pre>
+  </section>
+
+  <section>
+    <h2>Pills</h2>
+    <div class="demo-row">
+      <!-- pills -->
+      <span class="pill pill-verified">Verified</span>
+      <span class="pill pill-resolved">Resolved</span>
+      <span class="pill pill-warning">Warning</span>
+      <span class="pill pill-blocked">Blocked</span>
+      <span class="pill pill-p0">P0</span>
+      <span class="pill pill-p1">P1</span>
+      <span class="pill pill-p2">P2</span>
+      <span class="pill pill-p3">P3</span>
+      <span class="pill pill-p4">P4</span>
+      <!-- /pills -->
+    </div>
+<pre>&lt;span class="pill pill-verified"&gt;Verified&lt;/span&gt;
+&lt;span class="pill pill-p0"&gt;P0&lt;/span&gt;</pre>
+  </section>
+
+  <section>
+    <h2>Footer</h2>
+    <!-- footer -->
+    <footer class="nx-footer">
+      <div class="nx-tagline">WHERE AI BUILDS</div>
+      <div class="nx-meta">NEXOURA Studio · 2026 · v1.0</div>
+    </footer>
+    <!-- /footer -->
+<pre>&lt;footer class="nx-footer"&gt;
+  &lt;div class="nx-tagline"&gt;WHERE AI BUILDS&lt;/div&gt;
+  &lt;div class="nx-meta"&gt;NEXOURA Studio · 2026&lt;/div&gt;
+&lt;/footer&gt;</pre>
+  </section>
+</body>
+</html>
