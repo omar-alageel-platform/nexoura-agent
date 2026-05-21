@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Round 1 Concepts — NEXOURA Studio Public Homepage Hero</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root { color-scheme: dark light; }
+* { box-sizing: border-box; }
+body { font-family: 'Inter', system-ui, sans-serif; background: #0A0F16; color: #F5F7FA; margin: 0; line-height: 1.55; }
+.shell { max-width: 1080px; margin: 0 auto; padding: 48px 32px; }
+.kicker { display: inline-block; padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+  background: linear-gradient(135deg,#7861FF,#5B30FF,#2563FF,#00E0FF); color: #0A0F16; }
+h1 { font-family: 'Sora', sans-serif; font-weight: 700; font-size: 32px; margin: 16px 0 8px; }
+.lede { color: #CBD5E1; font-size: 15px; margin-bottom: 32px; }
+.grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+@media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+.concept { background: #101826; border: 1px solid #1F2937; border-radius: 12px; padding: 24px; display: flex; flex-direction: column; gap: 12px; }
+.concept h2 { font-family: 'Sora', sans-serif; margin: 0; font-size: 22px; }
+.swatch { height: 140px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: 'Sora', sans-serif; font-size: 18px; font-weight: 700; text-align: center; padding: 16px; }
+.swatch-a { background: #0A0F16; color: #F5F7FA; border: 1px solid #1F2937; }
+.swatch-b { background: radial-gradient(circle at 30% 50%, #7861FF, #0A0F16 70%); color: #F5F7FA; }
+.swatch-c { background: #F5F7FA; color: #0A0F16; }
+.desc { font-size: 14px; color: #CBD5E1; }
+.proscons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 13px; }
+.pros li { color: #4ADE80; }
+.cons li { color: #F59E0B; }
+.pros ul, .cons ul { margin: 4px 0 0; padding-left: 18px; }
+.proscons h4 { margin: 0; font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: #94A3B8; }
+.rec-footer { margin-top: 32px; padding: 20px 24px; background: #101826; border: 1px solid #2563FF; border-radius: 12px; font-size: 15px; }
+.rec-footer strong { color: #00E0FF; }
+@media (prefers-color-scheme: light) {
+  body { background: #F5F7FA; color: #0A0F16; }
+  .lede { color: #475569; }
+  .concept { background: #FFFFFF; border-color: #CBD5E1; }
+  .desc { color: #475569; }
+  .rec-footer { background: #FFFFFF; }
+  .swatch-a { background: #FFFFFF; color: #0A0F16; border-color: #CBD5E1; }
+}
+</style>
+</head>
+<body>
+<div class="shell">
+  <span class="kicker">Round 1 · Divergent · Decision Requested</span>
+  <h1>NEXOURA Studio — Public Homepage Hero</h1>
+  <p class="lede">Three directional concepts for the hero treatment. Pick one to drive Round 2.</p>
+
+  <div class="grid">
+
+    <div class="concept">
+      <h2>Quiet Authority</h2>
+      <div class="swatch swatch-a">NEXOURA<br><span style="font-weight:400;font-size:13px;color:#94A3B8">Where AI Builds</span></div>
+      <p class="desc">All-typographic hero on deep navy. No gradients above the fold; the O-ring appears only on scroll. Restraint as the signal.</p>
+      <div class="proscons">
+        <div class="pros"><h4>Pros</h4><ul><li>Reads enterprise</li><li>Cheap to ship</li><li>No motion liability</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>Risks looking thin</li><li>No memorable hook</li></ul></div>
+      </div>
+    </div>
+
+    <div class="concept">
+      <h2>Living Network</h2>
+      <div class="swatch swatch-b">○<br><span style="font-weight:400;font-size:13px">animated ring</span></div>
+      <p class="desc">Hero centered on a slow-rotating gradient O-ring with particle field. Headline anchors right of the ring. The brand mark IS the hero.</p>
+      <div class="proscons">
+        <div class="pros"><h4>Pros</h4><ul><li>High recall</li><li>Distinctive in B2B SaaS</li><li>Ties to brand mark</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>Motion cost</li><li>Risks feeling generic-AI</li></ul></div>
+      </div>
+    </div>
+
+    <div class="concept">
+      <h2>Built For Builders</h2>
+      <div class="swatch swatch-c">WHERE<br>AI BUILDS</div>
+      <p class="desc">Light-mode hero with oversized condensed display type. Asymmetric layout, single accent gradient stripe. Reads like a builder magazine cover, not a SaaS landing.</p>
+      <div class="proscons">
+        <div class="pros"><h4>Pros</h4><ul><li>Founder-loud</li><li>Memorable</li><li>Differentiated</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>May alienate enterprise</li><li>Light mode = brand shift</li></ul></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="rec-footer">
+    <strong>Recommendation: Living Network</strong> — best resolves the Round 0 tension between "premium B2B SaaS" and "distinctive in a category trending toward sameness". Quiet Authority is the safe fallback if the founder reads Living Network as too motion-heavy.
+  </div>
+
+</div>
+</body>
+</html>
