@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Research Brief — Pharma Supply-Chain UX Standards</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root { color-scheme: dark light; }
+* { box-sizing: border-box; }
+body { font-family: 'Inter', system-ui, sans-serif; background: #0A0F16; color: #F5F7FA; margin: 0; line-height: 1.6; }
+.shell { max-width: 880px; margin: 0 auto; padding: 48px 32px; }
+.kicker { display: inline-block; padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+  background: linear-gradient(135deg,#7861FF,#5B30FF,#2563FF,#00E0FF); color: #0A0F16; }
+h1 { font-family: 'Sora', sans-serif; font-weight: 700; font-size: 32px; margin: 16px 0 8px; }
+h2 { font-family: 'Sora', sans-serif; font-weight: 700; font-size: 20px; margin: 32px 0 12px; padding-left: 12px; border-left: 3px solid; border-image: linear-gradient(180deg,#7861FF,#00E0FF) 1; }
+.lede { color: #CBD5E1; font-size: 15px; margin-bottom: 24px; }
+ol.findings { padding-left: 20px; }
+ol.findings li { margin: 8px 0; }
+.grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-top: 16px; }
+@media (max-width: 720px) { .grid { grid-template-columns: 1fr; } }
+.card { background: #101826; border: 1px solid #1F2937; border-radius: 12px; padding: 20px; }
+.card h3 { font-family: 'Sora', sans-serif; margin: 0 0 8px; font-size: 17px; }
+.pill { display: inline-block; font-size: 10px; letter-spacing: 0.08em; padding: 3px 8px; border-radius: 999px; font-weight: 600; text-transform: uppercase; margin-bottom: 10px; }
+.pill.rec { background: rgba(0,224,255,0.12); color: #00E0FF; border: 1px solid rgba(0,224,255,0.3); }
+.pill.ctr { background: rgba(120,97,255,0.12); color: #7861FF; border: 1px solid rgba(120,97,255,0.3); }
+.card .best { font-size: 13px; color: #94A3B8; margin-top: 8px; }
+.card .risk { font-size: 13px; color: #F59E0B; margin-top: 4px; }
+.decision { background: #101826; border: 1px solid #2563FF; border-radius: 12px; padding: 20px; margin-top: 24px; }
+.decision h2 { border: none; padding: 0; margin-top: 0; }
+sup { color: #00E0FF; font-weight: 600; }
+.sources { margin-top: 40px; padding-top: 24px; border-top: 1px solid #1F2937; font-size: 13px; color: #94A3B8; }
+.sources li { margin: 6px 0; }
+@media (prefers-color-scheme: light) {
+  body { background: #F5F7FA; color: #0A0F16; }
+  .lede { color: #475569; }
+  .card, .decision { background: #FFFFFF; border-color: #CBD5E1; }
+  .card .best { color: #475569; }
+  .sources { color: #475569; border-color: #CBD5E1; }
+}
+</style>
+</head>
+<body>
+<div class="shell">
+  <span class="kicker">Research Brief · Round 0</span>
+  <h1>Pharma Supply-Chain UX Standards</h1>
+  <p class="lede">For Phmco Tenant Zero UX direction. 6 sources, accessed 2026-05-21.</p>
+
+  <h2>Key findings</h2>
+  <ol class="findings">
+    <li>Pharma supply-chain UIs default to high-density tables; whitespace-first patterns are explicitly rejected by regulator-trained operators <sup>[1][2][4]</sup>.</li>
+    <li>Batch/lot number is the primary key in every surveyed interface — shown before SKU, before product name, before quantity <sup>[1][2][3]</sup>.</li>
+    <li>Destructive actions (recall, write-off, batch hold) require multi-step confirmation; 2-step is the SAP/Oracle baseline, 3-step appears in Veeva <sup>[1][2][3]</sup>.</li>
+    <li>MENA-deployed tools handle bilingual EN/AR with full RTL mirroring, not just text direction — table columns reverse, batch numbers stay LTR within RTL cells <sup>[5][6]</sup>.</li>
+    <li>Audit logs are append-only and visible from every record; "show audit trail" is a primary navigation element, not a hidden tab <sup>[1][2][4]</sup>.</li>
+  </ol>
+
+  <h2>Recommended directions</h2>
+  <div class="grid">
+    <div class="card">
+      <span class="pill rec">Recommended</span>
+      <h3>Compliance-first</h3>
+      <div class="best">Best for: regulated buyer, ZATCA + SFDA audit readiness.</div>
+      <div class="risk">Risk: feels heavy to first-time operators.</div>
+    </div>
+    <div class="card">
+      <span class="pill ctr">Contrarian</span>
+      <h3>Operator-first</h3>
+      <div class="best">Best for: alert-driven daily ops, faster onboarding.</div>
+      <div class="risk">Risk: audit trail feels secondary; regulator pushback.</div>
+    </div>
+    <div class="card">
+      <span class="pill ctr">Contrarian</span>
+      <h3>Bilingual-first</h3>
+      <div class="best">Best for: parity guarantee, MENA market signal.</div>
+      <div class="risk">Risk: doubles design surface; slows initial delivery.</div>
+    </div>
+  </div>
+
+  <div class="decision">
+    <h2>PM decision needed</h2>
+    <p>Pick the lead direction for Phmco Tenant Zero: <strong>Compliance / Operator / Bilingual</strong>. Recommendation: <strong>Compliance-first</strong> — Phmco's regulator exposure (SFDA + ZATCA Phase 2) makes audit-first the load-bearing path; bilingual parity is non-optional but stays a constraint, not the lead.</p>
+  </div>
+
+  <ol class="sources">
+    <li>[1] SAP S/4HANA for Life Sciences — https://www.sap.com/products/scm/life-sciences.html — accessed 2026-05-21.</li>
+    <li>[2] Oracle SCM Cloud for Pharma — https://www.oracle.com/scm/pharmaceutical/ — accessed 2026-05-21.</li>
+    <li>[3] Veeva Vault QualityDocs — https://www.veeva.com/products/vault-quality/ — accessed 2026-05-21.</li>
+    <li>[4] Tracelink Digital Supply Network — https://www.tracelink.com/ — accessed 2026-05-21.</li>
+    <li>[5] SFDA Wholesale GDP Guidance — https://www.sfda.gov.sa/en/regulations — accessed 2026-05-21.</li>
+    <li>[6] Phmco BRD §3 (regional case study, in repo) — phmco_docker_setup/docs/BRD.md.</li>
+  </ol>
+</div>
+</body>
+</html>
