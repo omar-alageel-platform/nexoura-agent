@@ -15,6 +15,7 @@ Server is started in-process using threading so no subprocess needed.
 from __future__ import annotations
 
 import json
+import os
 import sys
 import threading
 import time
@@ -34,7 +35,21 @@ from server import StudioHandler  # noqa: E402
 
 # ── test server fixture ────────────────────────────────────────────────────────
 
-_TEST_PORT = 15001   # distinct from production port 5000
+_TEST_PORT_BASE = 15001   # distinct from production port 5000
+
+
+def _resolve_test_port() -> int:
+    """Per-xdist-worker port so parallel runs don't collide on bind."""
+    worker = os.environ.get("PYTEST_XDIST_WORKER", "gw0")
+    # 'gw0', 'gw1', ... -> 15001, 15002, ...
+    try:
+        offset = int(worker.removeprefix("gw"))
+    except (ValueError, AttributeError):
+        offset = 0
+    return _TEST_PORT_BASE + offset
+
+
+_TEST_PORT = _resolve_test_port()
 
 
 class _ReuseServer(ThreadingHTTPServer):
