@@ -890,6 +890,10 @@
 }
 
 .projects-gate-btn:focus-visible {
+  outline: 2px solid var(--nx-studio);
+  outline-offset: 2px;
+}
+
 /* ═══════════════════════════════════════════════════════════════════
    B5 ADDITIONS — agents-*, activity-*, system-*
    DO NOT modify classes above this line.
@@ -1489,6 +1493,10 @@
   }
   .gate-actions {
     flex-direction: column;
+  }
+}
+
+.agents-slideover__close {
   line-height: 1;
   transition: color 0.12s;
 }
@@ -1913,4 +1921,93 @@
   .activity-row__badge {
     display: none;
   }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   B7 POLISH — layout fixes + brand consistency
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── Header: gradient underline accent ── */
+.nx-header {
+  border-bottom: 1px solid transparent;
+  background-image: linear-gradient(#0A0F16, #0A0F16),
+    linear-gradient(135deg, #7861FF 0%, #5B30FF 28%, #2563FF 68%, #00E0FF 100%);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+}
+
+/* ── Section headings: slightly more visible ── */
+.nx-section-heading {
+  color: rgba(245, 247, 250, 0.55);
+}
+
+/* ── Metric tiles: stronger value, subtle gradient on accent tile ── */
+.nx-tile--accent .nx-tile__label {
+  background: linear-gradient(135deg, #7861FF 0%, #00E0FF 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── AGENTS: zone spacing and available cards ── */
+.agents-zone {
+  margin-bottom: 16px;
+}
+
+.agents-zone--available {
+  gap: 10px;
+  min-height: 40px;
+}
+
+/* Available cards: same proportional size, never clip content */
+.agents-card--available {
+  width: 140px;
+  height: auto;
+  min-height: 80px;
+  padding: 12px 10px;
+}
+
+/* Active cards: give a bit more padding so pulse + avatar don't crowd */
+.agents-card--active {
+  padding: 14px 12px;
+}
+
+/* ── ACTIVITY feed: breathing room between filter bar and rows ── */
+.activity-filters {
+  margin-bottom: 16px;
+  row-gap: 8px;
+}
+
+.activity-feed {
+  gap: 2px;
+}
+
+/* Wider age column so "just now" / "23h ago" don't clip */
+.activity-row__age {
+  width: 72px;
+  min-width: 60px;
+  text-align: right;
+  flex-shrink: 0;
+  color: rgba(245, 247, 250, 0.35);
+  font-size: 11px;
+}
+
+/* ── HOME: director cards — slightly more contrast ── */
+.nx-director-card {
+  border-color: rgba(120, 97, 255, 0.20);
+}
+
+/* ── Engagement stage dot current — stronger glow ── */
+.nx-stage__dot--current {
+  box-shadow: 0 0 0 4px rgba(0, 224, 255, 0.22), 0 0 8px rgba(0, 224, 255, 0.18);
+}
+
+/* ── View title: subtle gradient text on view titles ── */
+.nx-view-title {
+  background: linear-gradient(90deg, #F5F7FA 60%, rgba(245,247,250,0.65) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: inline-block;
+  margin-bottom: 6px;
 }
